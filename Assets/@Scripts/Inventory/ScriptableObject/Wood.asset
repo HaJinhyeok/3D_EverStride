@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Wood
   m_EditorClassIdentifier: 
   ItemName: 
-  ItemType: 0
+  ItemType: 1
   Price: 0
   Description: 
-  isStack: 0
+  isStack: 1
   Icon: {fileID: 0}
   Prefab: {fileID: 0}
