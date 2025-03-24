@@ -1,11 +1,14 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.TextCore.Text;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    public Inventory Inventory;
+
+    public Image Stamina;
+
     Transform _character;
     Animator _animator;
     Rigidbody _rigidbody;
@@ -24,11 +27,46 @@ public class PlayerController : MonoBehaviour
     float _stamina = 100f;
     float _staminaRegenRate = 5f;
 
-    bool _isGround = true;
-    bool _isDashing = false;
     bool _isClimbing = false;
 
-    Vector3 _camOffset = new Vector3(0, 5, -10);
+    Vector3 _camOffset = new Vector3(0, 5, -5);
+
+    public float Speed
+    {
+        get { return _animator.GetFloat(Define.Speed); }
+        set { _animator.SetFloat(Define.Speed, value); }
+    }
+
+    public bool IsDash
+    {
+        get { return _animator.GetBool(Define.IsDash); }
+        set { _animator.SetBool(Define.IsDash, value); }
+    }
+
+    [SerializeField]
+    public bool IsGround
+    {
+        get { return _animator.GetBool(Define.IsGround); }
+        set { _animator.SetBool(Define.IsGround, value); }
+    }
+
+    public bool IsClimbing
+    {
+        get { return _animator.GetBool(Define.IsClimbing); }
+        set { _animator.SetBool(Define.IsClimbing, value); }
+    }
+
+    public bool IsNextCombo
+    {
+        get { return _animator.GetBool(Define.IsNextCombo); }
+        set { _animator.SetBool(Define.IsNextCombo, value); }
+    }
+
+    public bool IsAttacking
+    {
+        get { return _animator.GetBool(Define.IsAttacking); }
+        set { _animator.SetBool(Define.IsAttacking, value); }
+    }
 
     void Start()
     {
@@ -40,9 +78,9 @@ public class PlayerController : MonoBehaviour
 
         // * 콜라이더
         CapsuleCollider capsule = gameObject.AddComponent<CapsuleCollider>();
-        capsule.center = new Vector3(0, 2.95f, 0);
-        capsule.radius = 1f;
-        capsule.height = 6f;
+        capsule.center = new Vector3(0, 1f, 0);
+        capsule.radius = 0.5f;
+        capsule.height = 2f;
 
         // * 카메라
         _camera = Camera.main;
@@ -54,29 +92,20 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         Jump();
+        Attack();
         Zoom();
         CameraMove();
 
         RecoverStamina();
 
         // 대쉬
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !_isDashing)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !IsDash)
         {
             StartCoroutine(Dash());
         }
 
-        RaycastHit hit;
-        if (Physics.Raycast(_character.position, _character.forward, out hit, 1f))
-        {
-            if (hit.collider.CompareTag("Climbable") && Input.GetKey(KeyCode.W))
-            {
-                _isClimbing = true;
-                Vector3 newVelocity = _rigidbody.linearVelocity;
-                newVelocity.y = _climeSpeed;
-                _rigidbody.linearVelocity = newVelocity;
-            }
-        }
         Move();
+        Roll();
     }
 
     #region Player Movement
@@ -112,30 +141,62 @@ public class PlayerController : MonoBehaviour
             _rigidbody.linearVelocity = new Vector3(0, _rigidbody.linearVelocity.y, 0);
         }
 
+        Speed = _rigidbody.linearVelocity.sqrMagnitude;
         _camAxis.position = transform.position + new Vector3(0, 4, 0);
         _character.eulerAngles = new Vector3(0, _character.eulerAngles.y, 0);
     }
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && _isGround)
+        if (Input.GetKeyDown(KeyCode.Space) && IsGround && _rigidbody.linearVelocity.y <= 0)
         {
-            Debug.Log("Jump");
-            _isGround = false;
-            _rigidbody.AddForce(Vector3.up * 500f);
+            IsGround = false;
+            _animator.SetTrigger(Define.Jump);
+            _rigidbody.AddForce(Vector3.up * 300f);
         }
     }
 
     IEnumerator Dash()
     {
-        if (_stamina > 0)
+        if (_stamina >= 20)
         {
-            _isDashing = true;
+            IsDash = true;
+            IsDash = true;
             float originalSpeed = _speed;
             _speed = _dashSpeed;
+            _stamina -= 20;
             yield return new WaitForSeconds(_dashTime);
             _speed = originalSpeed;
-            _isDashing = false;
+            IsDash = false;
+            IsDash = false;
+        }
+    }
+
+    void Roll()
+    {
+        if(Input.GetKeyDown(KeyCode.C)&&IsGround)
+        {
+        _animator.SetTrigger(Define.Roll);
+        }
+    }
+
+    #endregion
+
+    #region Player Attack
+    void Attack()
+    {
+        // UI 클릭 여부 반환 함수
+        bool isUIClick = UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+        bool isLeftMouseDown = Input.GetMouseButtonDown(0);
+        if (isLeftMouseDown == false || isUIClick)
+            return;
+        if (IsAttacking == false)
+        {
+            IsAttacking = true;
+        }
+        else
+        {
+            IsNextCombo = true;
         }
     }
     #endregion
@@ -168,19 +229,29 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Floor"))
+        if (collision.gameObject.CompareTag(Define.GroundTag))
         {
-            _isGround = true;
+            IsGround = true;
         }
     }
 
     void RecoverStamina()
     {
-        if (!_isClimbing && !_isDashing)
+        if (!_isClimbing && !IsDash)
         {
             _stamina += _staminaRegenRate * Time.deltaTime;
             _stamina = Mathf.Clamp(_stamina, 0, _maxStamina);
         }
+        Stamina.fillAmount = _stamina / _maxStamina;
     }
 
+    public bool PickUpItem(Item item, int amount = -1)
+    {
+        if (item != null && Inventory.AddItem(item, amount))
+        {
+            Destroy(item.gameObject);
+            return true;
+        }
+        return false;
+    }
 }
