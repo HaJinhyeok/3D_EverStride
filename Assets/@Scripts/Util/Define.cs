@@ -23,6 +23,7 @@ public class Define
     #endregion
 
     #region Tag
+    public const string PlayerTag = "Player";
     public const string WeaponTag = "Weapon";
     public const string GroundTag = "Ground";
     public const string ClimbableTag = "Climbable";

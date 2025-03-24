@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
@@ -28,9 +27,11 @@ public class PlayerController : MonoBehaviour
     float _staminaRegenRate = 5f;
 
     bool _isClimbing = false;
+    bool _isInventoryOn = false;
+    [SerializeField]
+    Vector3 _camOffset = new Vector3(0f, 2f, -1f);
 
-    Vector3 _camOffset = new Vector3(0, 5, -5);
-
+    #region Animation
     public float Speed
     {
         get { return _animator.GetFloat(Define.Speed); }
@@ -67,6 +68,7 @@ public class PlayerController : MonoBehaviour
         get { return _animator.GetBool(Define.IsAttacking); }
         set { _animator.SetBool(Define.IsAttacking, value); }
     }
+    #endregion
 
     void Start()
     {
@@ -86,7 +88,7 @@ public class PlayerController : MonoBehaviour
         _camera = Camera.main;
         _camAxis = new GameObject("CamAxis").transform;
         _camera.transform.parent = _camAxis;
-        _camera.transform.position = _camOffset;
+        _camera.transform.position = new Vector3(0, 0, -2);
     }
 
     private void Update()
@@ -102,6 +104,20 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) && !IsDash)
         {
             StartCoroutine(Dash());
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            if (_isInventoryOn)
+            {
+                Inventory.gameObject.SetActive(false);
+                _isInventoryOn = false;
+            }
+            else
+            {
+                Inventory.gameObject.SetActive(true);
+                _isInventoryOn = true;
+            }
         }
 
         Move();
@@ -142,7 +158,7 @@ public class PlayerController : MonoBehaviour
         }
 
         Speed = _rigidbody.linearVelocity.sqrMagnitude;
-        _camAxis.position = transform.position + new Vector3(0, 4, 0);
+        _camAxis.position = transform.position + _camOffset;
         _character.eulerAngles = new Vector3(0, _character.eulerAngles.y, 0);
     }
 
@@ -174,9 +190,9 @@ public class PlayerController : MonoBehaviour
 
     void Roll()
     {
-        if(Input.GetKeyDown(KeyCode.C)&&IsGround)
+        if (Input.GetKeyDown(KeyCode.C) && IsGround)
         {
-        _animator.SetTrigger(Define.Roll);
+            _animator.SetTrigger(Define.Roll);
         }
     }
 
@@ -205,10 +221,10 @@ public class PlayerController : MonoBehaviour
     void Zoom()
     {
         _wheel += Input.GetAxis(Define.MouseScroll) * 10;
-        if (_wheel >= -10)
-            _wheel = -10;
-        if (_wheel <= -20)
-            _wheel = -20;
+        if (_wheel >= -2)
+            _wheel = -2;
+        if (_wheel <= -5)
+            _wheel = -5;
 
         _camera.transform.localPosition = new Vector3(0, 0, _wheel);
     }
