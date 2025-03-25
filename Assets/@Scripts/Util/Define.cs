@@ -20,6 +20,7 @@ public class Define
     public readonly static int IsNextCombo = Animator.StringToHash("IsNextCombo");
     public readonly static int IsAttacking = Animator.StringToHash("IsAttacking");
     public readonly static int AttackComboCount = Animator.StringToHash("AttackComboCount");
+    public readonly static int WeaponTypeHash = Animator.StringToHash("WeaponType");
     #endregion
 
     #region Tag
@@ -36,6 +37,13 @@ public class Define
         Equipment, // ¿Â∫Ò
         Countable, // º“∫Ò
         Etc,
+    }
+    public enum WeaponType : int
+    {
+        None=-1,    // ∏«¡÷∏‘
+        Rock,       // µπ∏Ê¿Ã
+        Axe,        // µµ≥¢
+        Sword,      // ∞À
     }
     #endregion
 }

@@ -9,60 +9,84 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3.5013998
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.5014
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3.5014002
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 66.78
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 7.249902
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -9.49
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9246277
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.35405535
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.019761415
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.13898906
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 40.485
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 10.221
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 20.875
       objectReference: {fileID: 0}
     - target: {fileID: -5274567006767746939, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 3fa6715fb9edccb49a988b94fcb57793, type: 2}
+    - target: {fileID: -2151538449136078647, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -2151538449136078647, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
+      propertyPath: m_TagString
+      value: Ground
+      objectReference: {fileID: 0}
     - target: {fileID: -2151538449136078647, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -227871107362961904, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 3fa6715fb9edccb49a988b94fcb57793, type: 2}
     - target: {fileID: 919132149155446097, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_Name
       value: Rock02
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
+      propertyPath: m_TagString
+      value: Ground
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -85,7 +109,7 @@ PrefabInstance:
       value: 0.015
       objectReference: {fileID: 0}
     - target: {fileID: 6404100539421575124, guid: 7eea887dd135f38438297beecb26b6da, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 3fa6715fb9edccb49a988b94fcb57793, type: 2}
     - target: {fileID: 7943840087756032809, guid: 7eea887dd135f38438297beecb26b6da, type: 3}

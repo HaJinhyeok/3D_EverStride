@@ -5,8 +5,14 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     public Inventory Inventory;
-
     public Image Stamina;
+    public GameObject WeaponPos;
+    public GameObject[] Weapons;
+
+    [SerializeField] GameObject stepRayUpper;
+    [SerializeField] GameObject stepRayLower;
+    [SerializeField] float stepHeight = 0.3f;
+    [SerializeField] float stepSmooth = 0.1f;
 
     Transform _character;
     Animator _animator;
@@ -18,18 +24,20 @@ public class PlayerController : MonoBehaviour
     float _mouseX = 0f;
     float _mouseY = 4f;
     float _wheel = -10f;
-    float _speed = 10f;
-    float _climeSpeed = 5f;
+    float _speed = 5f;
     float _dashSpeed = 15f;
     float _dashTime = 1f;
     float _maxStamina = 100f;
     float _stamina = 100f;
     float _staminaRegenRate = 5f;
 
-    bool _isClimbing = false;
     bool _isInventoryOn = false;
     [SerializeField]
-    Vector3 _camOffset = new Vector3(0f, 2f, -1f);
+    Vector3 _camOffset = new Vector3(0f, 2f, 0f);
+
+    //const float RAY_DISTANCE = 2000f;
+    //RaycastHit slopeHit;
+    //int groundLayer;
 
     #region Animation
     public float Speed
@@ -57,16 +65,22 @@ public class PlayerController : MonoBehaviour
         set { _animator.SetBool(Define.IsClimbing, value); }
     }
 
-    public bool IsNextCombo
-    {
-        get { return _animator.GetBool(Define.IsNextCombo); }
-        set { _animator.SetBool(Define.IsNextCombo, value); }
-    }
+    //public bool IsNextCombo
+    //{
+    //    get { return _animator.GetBool(Define.IsNextCombo); }
+    //    set { _animator.SetBool(Define.IsNextCombo, value); }
+    //}
 
     public bool IsAttacking
     {
         get { return _animator.GetBool(Define.IsAttacking); }
         set { _animator.SetBool(Define.IsAttacking, value); }
+    }
+
+    public int WeaponTypeHash
+    {
+        get { return _animator.GetInteger(Define.WeaponTypeHash); }
+        set { _animator.SetInteger(Define.WeaponTypeHash, value); }
     }
     #endregion
 
@@ -88,14 +102,21 @@ public class PlayerController : MonoBehaviour
         _camera = Camera.main;
         _camAxis = new GameObject("CamAxis").transform;
         _camera.transform.parent = _camAxis;
-        _camera.transform.position = new Vector3(0, 0, -2);
+        _camera.transform.position = new Vector3(0, 0, -3);
+
+        Inventory.gameObject.SetActive(false);
+        _isInventoryOn = false;
+        //WeaponTypeHash = -1; // 맨손
+        WeaponTypeHash = 0; // 돌멩이
+
+        //groundLayer = 1 << LayerMask.NameToLayer(Define.GroundTag);
     }
 
     private void Update()
     {
         Jump();
         Attack();
-        Zoom();
+        //Zoom();
         CameraMove();
 
         RecoverStamina();
@@ -124,19 +145,16 @@ public class PlayerController : MonoBehaviour
         Roll();
     }
 
+    private void FixedUpdate()
+    {
+        stepClimb();
+    }
+
     #region Player Movement
     void Move()
     {
-        if (_isClimbing && Input.GetKey(KeyCode.W))
-        {
-            _rigidbody.linearVelocity = Vector3.up * _climeSpeed * Time.deltaTime;
-            _stamina -= Time.deltaTime * 5f;
-            if (_stamina <= 0)
-            {
-                _isClimbing = false;
-            }
-        }
-        else if (Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical))
+        //bool isOnSlope = IsOnSlope();
+        if (Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical))
         {
             float h = Input.GetAxis(Define.Horizontal);
             float v = Input.GetAxis(Define.Vertical);
@@ -147,7 +165,12 @@ public class PlayerController : MonoBehaviour
 
             // local 방향에서 world 방향으로 바꿔주는 역할???
             Vector3 localMovement = transform.TransformDirection(movement);
+
+            //localMovement = isOnSlope ? ProjectDirectionToSlope(localMovement) : localMovement;
+            // Vector3 tmpGravity = isOnSlope ? Vector3.zero : Vector3.up * _rigidbody.linearVelocity.y;
+
             _rigidbody.linearVelocity = localMovement.normalized * _speed + new Vector3(0, velY, 0);
+            //_rigidbody.linearVelocity = localMovement.normalized * _speed + tmpGravity;
 
             _character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), 5 * Time.deltaTime);
         }
@@ -161,10 +184,44 @@ public class PlayerController : MonoBehaviour
         _camAxis.position = transform.position + _camOffset;
         _character.eulerAngles = new Vector3(0, _character.eulerAngles.y, 0);
     }
+    void stepClimb()
+    {
+        RaycastHit hitLower;
+        if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(Vector3.forward), out hitLower, 0.1f))
+        {
+            RaycastHit hitUpper;
+            if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(Vector3.forward), out hitUpper, 0.2f))
+            {
+                _rigidbody.position -= new Vector3(0f, -stepSmooth * Time.deltaTime, 0f);
+            }
+        }
+
+        RaycastHit hitLower45;
+        if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(1.5f, 0, 1), out hitLower45, 0.1f))
+        {
+
+            RaycastHit hitUpper45;
+            if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(1.5f, 0, 1), out hitUpper45, 0.2f))
+            {
+                _rigidbody.position -= new Vector3(0f, -stepSmooth * Time.deltaTime, 0f);
+            }
+        }
+
+        RaycastHit hitLowerMinus45;
+        if (Physics.Raycast(stepRayLower.transform.position, transform.TransformDirection(-1.5f, 0, 1), out hitLowerMinus45, 0.1f))
+        {
+
+            RaycastHit hitUpperMinus45;
+            if (!Physics.Raycast(stepRayUpper.transform.position, transform.TransformDirection(-1.5f, 0, 1), out hitUpperMinus45, 0.2f))
+            {
+                _rigidbody.position -= new Vector3(0f, -stepSmooth * Time.deltaTime, 0f);
+            }
+        }
+    }
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && IsGround && _rigidbody.linearVelocity.y <= 0)
+        if (Input.GetKeyDown(KeyCode.Space) && IsGround)
         {
             IsGround = false;
             _animator.SetTrigger(Define.Jump);
@@ -212,7 +269,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            IsNextCombo = true;
+            //IsNextCombo = true;
         }
     }
     #endregion
@@ -253,7 +310,7 @@ public class PlayerController : MonoBehaviour
 
     void RecoverStamina()
     {
-        if (!_isClimbing && !IsDash)
+        if (!IsDash)
         {
             _stamina += _staminaRegenRate * Time.deltaTime;
             _stamina = Mathf.Clamp(_stamina, 0, _maxStamina);
@@ -270,4 +327,41 @@ public class PlayerController : MonoBehaviour
         }
         return false;
     }
+
+    public void EquipWeapon(Define.WeaponType type)
+    {
+        GameObject currentWeapon = WeaponPos.transform.GetChild(0).gameObject;
+        if ( currentWeapon != null)
+        {
+            // 장착해제 해주고 인벤토리로 반환
+            // UnequipWeapon();
+        }
+        GameObject weapon = Instantiate(Weapons[(int)type], WeaponPos.transform);
+        WeaponTypeHash = (int)type;
+    }
+
+    public Define.WeaponType UnequipWeapon()
+    {
+        GameObject weapon = WeaponPos.transform.GetChild(0).gameObject;
+        Define.WeaponType weaponType = weapon.GetComponent<Weapon>().GetWeaponType();
+        Destroy(weapon);
+        return weaponType;
+    }
+
+    // 플레이어가 현재 경사면에 있는지 확인
+    //public bool IsOnSlope()
+    //{
+    //    Ray ray=new Ray(transform.position, Vector3.down);
+    //    if(Physics.Raycast(ray,out slopeHit,RAY_DISTANCE,groundLayer))
+    //    {
+    //        float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+    //        return angle != 0;
+    //    }
+    //    return false;
+    //}
+
+    //public Vector3 ProjectDirectionToSlope(Vector3 direction)
+    //{
+    //    return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
+    //}
 }

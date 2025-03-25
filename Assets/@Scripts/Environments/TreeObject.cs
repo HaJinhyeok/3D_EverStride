@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TreeObject : EnvironmentObject
 {
-    public GameObject _wood;
+    public GameObject Wood;
 
     Transform _player;
 
@@ -10,6 +10,7 @@ public class TreeObject : EnvironmentObject
     {
         _durability = 50;
         _player = GameObject.FindGameObjectWithTag(Define.PlayerTag).transform.GetChild(0);
+        //_player = GameObject.FindGameObjectWithTag(Define.PlayerTag).transform;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -35,7 +36,7 @@ public class TreeObject : EnvironmentObject
     {
         float randAngle = Random.Range(0, 360f);
         Vector3 spownPos = new Vector3(Mathf.Cos(randAngle * Mathf.Deg2Rad), 2f, Mathf.Sin(randAngle * Mathf.Deg2Rad)) + transform.position;
-        GameObject wood = Instantiate(_wood, spownPos, Quaternion.identity);
+        GameObject wood = Instantiate(Wood, spownPos, Quaternion.identity);
         wood.GetComponent<Rigidbody>().AddForce(new Vector3(spownPos.x, 0, spownPos.z) * 5f);
     }
 
