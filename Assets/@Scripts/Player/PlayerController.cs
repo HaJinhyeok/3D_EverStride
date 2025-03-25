@@ -107,7 +107,8 @@ public class PlayerController : MonoBehaviour
         Inventory.gameObject.SetActive(false);
         _isInventoryOn = false;
         //WeaponTypeHash = -1; // ∏«º’
-        WeaponTypeHash = 0; // µπ∏Ê¿Ã
+        //WeaponTypeHash = 0; // µπ∏Ê¿Ã
+        WeaponTypeHash = 1; // µµ≥¢
 
         //groundLayer = 1 << LayerMask.NameToLayer(Define.GroundTag);
     }
