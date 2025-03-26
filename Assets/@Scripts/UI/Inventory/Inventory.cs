@@ -210,7 +210,7 @@ public class Inventory : MonoBehaviour
         return true;
     }
 
-    void CreateSlot()
+    protected virtual void CreateSlot()
     {
         for (int i = 0; i < _slots.Length; i++)
         {

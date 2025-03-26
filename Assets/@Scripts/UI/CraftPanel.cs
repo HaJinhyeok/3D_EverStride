@@ -2,11 +2,13 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class CraftPanel : MonoBehaviour
 {
     public GameObject CraftItemSlot;
     public GameObject CraftItemListPanel;
+    public GameObject PreviewSpace;
     // ItemData 리스트를 가져와서 차례로 리스트 채워넣기
     public List<ItemData> CraftItemData = new List<ItemData>();
     public Button CraftButton;
@@ -27,6 +29,18 @@ public class CraftPanel : MonoBehaviour
         return new Vector2(x, y);
     }
 
+    void AddEvent(GameObject go, EventTriggerType type, UnityAction<BaseEventData> action)
+    {
+        var trigger = go.GetComponent<EventTrigger>();
+        if (!trigger)
+            return;
+        EventTrigger.Entry eventTrigger = new EventTrigger.Entry { eventID = type };
+        // trigger에 액션을 담고
+        eventTrigger.callback.AddListener(action);
+        // trigger 추가해주기
+        trigger.triggers.Add(eventTrigger);
+    }
+
     void CreateCraftList()
     {
         for (int i = 0; i < CraftItemData.Count; i++)
@@ -37,13 +51,24 @@ public class CraftPanel : MonoBehaviour
             craftSlot.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
             craftSlot.AddComponent<EventTrigger>();
 
-            // 필요한 이벤트: 클릭 시 - currentItem 변경 / ItemPreviewImage 변경
+            // 필요한 이벤트
+            // 클릭 시 - currentItem 변경 / ItemPreviewImage 변경
+            // 마우스 커서 올릴 시 - CraftItemSlot UI 크기 키워서 가시성 확장?
+            AddEvent(craftSlot, EventTriggerType.PointerClick, (data) => OnClick(craftSlot, (PointerEventData)data));
         }
     }
 
     public void OnClick(GameObject go, PointerEventData eventData)
     {
-
+        currentItem = go.GetComponent<CraftItemSlot>();
+        GameObject previewObject = PreviewSpace.GetComponentInChildren<Item>()?.gameObject;
+        if (previewObject != null)
+        {
+            Destroy(previewObject);
+        }
+        previewObject = Instantiate(currentItem.ItemData.Prefab, Vector3.zero, Quaternion.identity, PreviewSpace.transform);
+        previewObject.AddComponent<PreviewObject>();
+        previewObject.layer = 1 << LayerMask.NameToLayer("PreviewObject");
     }
 
     private void Awake()
@@ -65,5 +90,16 @@ public class CraftPanel : MonoBehaviour
             // 재료가 부족하다는 문구 출력
             Debug.Log("Not enough mineral");
         }
+    }
+
+    private void OnEnable()
+    {
+        // previewCamera 활성화
+    }
+
+    private void OnDisable()
+    {
+        // previewObject 파괴
+        // previewCamera 비활성화
     }
 }

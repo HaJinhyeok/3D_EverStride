@@ -9,4 +9,7 @@ public class ShortcutInventory : Inventory
         
     }
 
+    protected override void CreateSlot()
+    {
+    }
 }
