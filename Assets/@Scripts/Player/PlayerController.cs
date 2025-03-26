@@ -346,6 +346,9 @@ public class PlayerController : MonoBehaviour
         GameObject weapon = WeaponPos.transform.GetChild(0).gameObject;
         Define.WeaponType weaponType = weapon.GetComponent<Weapon>().GetWeaponType();
         Destroy(weapon);
+        if(weapon==null)
+            return Define.WeaponType.None;
+        
         return weaponType;
     }
 

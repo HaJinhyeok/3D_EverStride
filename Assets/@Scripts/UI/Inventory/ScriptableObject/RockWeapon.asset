@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aea2743dac46284b852be876b66adaf, type: 3}
+  m_Name: RockWeapon
+  m_EditorClassIdentifier: 
+  ItemName: "\uB3CC\uBA69\uC774"
+  ItemType: 0
+  WeaponType: 0
+  Price: 0
+  Description: "\uC801\uC5D0\uAC8C \uC57D\uD55C \uB300\uBBF8\uC9C0\uB97C \uC785\uD78C\uB2E4.
+    \uC790\uC6D0\uC744 \uC5BB\uB294\uB370 \uC0AC\uC6A9\uD560 \uC218 \uC788\uB2E4."
+  isStack: 0
+  Icon: {fileID: 0}
+  Prefab: {fileID: 1239048841005256549, guid: 38685c2f6b699864abb9cae88877bf72, type: 3}
