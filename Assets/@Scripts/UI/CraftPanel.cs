@@ -8,9 +8,11 @@ public class CraftPanel : MonoBehaviour
 {
     public GameObject CraftItemSlot;
     public GameObject CraftItemListPanel;
+    public Inventory Inventory;
     public GameObject PreviewSpace;
     // ItemData 리스트를 가져와서 차례로 리스트 채워넣기
     public List<ItemData> CraftItemData = new List<ItemData>();
+    public Text CraftIngredientText;
     public Button CraftButton;
 
     Vector2 _start = new Vector2(-75, 120);
@@ -45,10 +47,11 @@ public class CraftPanel : MonoBehaviour
     {
         for (int i = 0; i < CraftItemData.Count; i++)
         {
-            GameObject craftSlot = Instantiate(CraftItemSlot, Vector2.zero, Quaternion.identity, CraftItemListPanel.transform);
+            GameObject craftSlot = Instantiate(CraftItemSlot, Vector3.zero, Quaternion.Euler(10, 0, 0), CraftItemListPanel.transform);
 
             craftSlot.GetComponent<CraftItemSlot>().ItemData = CraftItemData[i];
-            craftSlot.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
+            //craftSlot.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
+            craftSlot.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
             craftSlot.AddComponent<EventTrigger>();
 
             // 필요한 이벤트
@@ -60,46 +63,91 @@ public class CraftPanel : MonoBehaviour
 
     public void OnClick(GameObject go, PointerEventData eventData)
     {
+        GameObject previewObject;
         currentItem = go.GetComponent<CraftItemSlot>();
-        GameObject previewObject = PreviewSpace.GetComponentInChildren<Item>()?.gameObject;
-        if (previewObject != null)
+        if (PreviewSpace.transform.childCount >= 4)
         {
+            previewObject = PreviewSpace.transform.GetChild(3).gameObject;
             Destroy(previewObject);
         }
-        previewObject = Instantiate(currentItem.ItemData.Prefab, Vector3.zero, Quaternion.identity, PreviewSpace.transform);
+        // 왜 y축으로 20올라간 위치에서 생성되는가 -> previewSpace 자체가 (0,-20,0)에 있기 때문이었던듯
+        previewObject = Instantiate(currentItem.ItemData.Prefab, PreviewSpace.transform);
+        previewObject.transform.localPosition = new Vector3(0, 0.2f, 0);
         previewObject.AddComponent<PreviewObject>();
-        previewObject.layer = 1 << LayerMask.NameToLayer("PreviewObject");
+        previewObject.layer = LayerMask.NameToLayer("PreviewObject");
+
+        CraftIngredientText.text = "";
+        for (int i = 0; i < currentItem.ItemData.Ingredients.Length; i++)
+        {
+            Ingredient ingredient = currentItem.ItemData.Ingredients[i];
+            CraftIngredientText.text += $"{Define.IngredientData[ingredient.type].name}: {ingredient.count}\t";
+        }
     }
 
     private void Awake()
     {
         CreateCraftList();
+        CraftButton.onClick.AddListener(OnCraftButtonClick);
     }
 
     void OnCraftButtonClick()
     {
-        // 필요한 재료가 충분히 있으면
-        if (true)
+        // 필요한 재료가 충분히 있는지 확인
+        // 현재 제작 대상 아이템 + 인벤토리 정보
+
+        if (IsCraftPossible(currentItem.ItemData.Ingredients))
         {
             // 재료 차감해주고
+            UseCraftIngredients(currentItem.ItemData.Ingredients);
             // 아이템 생성 후 inventory 빈 칸에 넣기
+            Inventory.AddItem(currentItem.ItemData.Prefab.GetComponent<Weapon>(), 1);
         }
         // 충분하지 않으면
         else
         {
             // 재료가 부족하다는 문구 출력
-            Debug.Log("Not enough mineral");
+            Debug.Log("Not enough mineral!!!");
+        }
+    }
+
+    bool IsCraftPossible(Ingredient[] ingredients)
+    {
+        for (int i = 0; i < ingredients.Length; i++)
+        {
+            Slot slot = Inventory.FindItemInInventory(new Item(Define.IngredientData[ingredients[i].type]));
+            if (slot == null || slot.Amount < ingredients[i].count)
+            {
+                // 해당 재료가 없거나 재료의 개수가 필요 개수보다 적을 경우
+                return false;
+            }
+        }
+        return true;
+    }
+
+    void UseCraftIngredients(Ingredient[] ingredients)
+    {
+        for (int i = 0; i < ingredients.Length; i++)
+        {
+            Slot slot = Inventory.FindItemInInventory(new Item(Define.IngredientData[ingredients[i].type]));
+            slot.AddAmount(-ingredients[i].count);
         }
     }
 
     private void OnEnable()
     {
         // previewCamera 활성화
+        PreviewSpace.transform.GetChild(0).gameObject.SetActive(true);
     }
 
     private void OnDisable()
     {
-        // previewObject 파괴
+        // previewObject 있으면 파괴
+        if (PreviewSpace.transform.childCount >= 4)
+        {
+            GameObject previewObject = PreviewSpace.transform.GetChild(3).gameObject;
+            Destroy(previewObject);
+        }
         // previewCamera 비활성화
+        PreviewSpace.transform.GetChild(0).gameObject.SetActive(false);
     }
 }

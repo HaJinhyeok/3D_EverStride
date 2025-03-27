@@ -1,13 +1,16 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     public Inventory Inventory;
+    public GameObject CraftPanel;
     public Image Stamina;
     public GameObject WeaponPos;
     public GameObject[] Weapons;
+    public List<ItemData> IngredientData = new List<ItemData>();
 
     [SerializeField] GameObject stepRayUpper;
     [SerializeField] GameObject stepRayLower;
@@ -31,7 +34,6 @@ public class PlayerController : MonoBehaviour
     float _stamina = 100f;
     float _staminaRegenRate = 5f;
 
-    bool _isInventoryOn = false;
     [SerializeField]
     Vector3 _camOffset = new Vector3(0f, 2f, 0f);
 
@@ -104,8 +106,14 @@ public class PlayerController : MonoBehaviour
         _camera.transform.parent = _camAxis;
         _camera.transform.position = new Vector3(0, 0, -3);
 
-        Inventory.gameObject.SetActive(false);
-        _isInventoryOn = false;
+        for (int i = 0; i < IngredientData.Count; i++)
+        {
+            Define.IngredientData.Add(IngredientData[i].IngredientType, IngredientData[i]);
+        }
+        //InventoryOnOff(false);
+        InventoryOnOff(true);
+        CraftPanelOnOff(true);
+
         //WeaponTypeHash = -1; // 맨손
         //WeaponTypeHash = 0; // 돌멩이
         WeaponTypeHash = 1; // 도끼
@@ -115,35 +123,34 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        Jump();
-        Attack();
-        //Zoom();
-        CameraMove();
-
-        RecoverStamina();
-
-        // 대쉬
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !IsDash)
+        if (!GameManager.Instance.IsCraftPanelOn)
         {
-            StartCoroutine(Dash());
+            Jump();
+            Attack();
+            CameraMove();
+
+            // 대쉬
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !IsDash)
+            {
+                StartCoroutine(Dash());
+            }
+
+
+
+            Move();
+            Roll();
         }
 
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            CraftPanelOnOff(GameManager.Instance.IsCraftPanelOn);            
+        }
         if (Input.GetKeyDown(KeyCode.I))
         {
-            if (_isInventoryOn)
-            {
-                Inventory.gameObject.SetActive(false);
-                _isInventoryOn = false;
-            }
-            else
-            {
-                Inventory.gameObject.SetActive(true);
-                _isInventoryOn = true;
-            }
+            InventoryOnOff(GameManager.Instance.IsInventoryOn);
         }
 
-        Move();
-        Roll();
+        RecoverStamina();
     }
 
     private void FixedUpdate()
@@ -332,7 +339,7 @@ public class PlayerController : MonoBehaviour
     public void EquipWeapon(Define.WeaponType type)
     {
         GameObject currentWeapon = WeaponPos.transform.GetChild(0).gameObject;
-        if ( currentWeapon != null)
+        if (currentWeapon != null)
         {
             // 장착해제 해주고 인벤토리로 반환
             // UnequipWeapon();
@@ -346,11 +353,24 @@ public class PlayerController : MonoBehaviour
         GameObject weapon = WeaponPos.transform.GetChild(0).gameObject;
         Define.WeaponType weaponType = weapon.GetComponent<Weapon>().GetWeaponType();
         Destroy(weapon);
-        if(weapon==null)
+        if (weapon == null)
             return Define.WeaponType.None;
-        
+
         return weaponType;
     }
+
+    void CraftPanelOnOff(bool state)
+    {
+        GameManager.Instance.IsCraftPanelOn = !state;
+        CraftPanel.gameObject.SetActive(!state);
+    }
+
+    void InventoryOnOff(bool state)
+    {
+        GameManager.Instance.IsInventoryOn = !state;
+        Inventory.gameObject.SetActive(!state);
+    }
+
 
     // 플레이어가 현재 경사면에 있는지 확인
     //public bool IsOnSlope()

@@ -645,12 +645,12 @@ AnimatorStateMachine:
   - {fileID: -1192206399928828721}
   m_EntryTransitions: []
   m_StateMachineTransitions:
-  - first: {fileID: 3490670444562099485}
-    second:
-    - {fileID: 9078502979403294737}
   - first: {fileID: -467953683935409588}
     second:
     - {fileID: 8900082103696677839}
+  - first: {fileID: 3490670444562099485}
+    second:
+    - {fileID: 9078502979403294737}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: 570, y: -80, z: 0}
   m_EntryPosition: {x: 50, y: 120, z: 0}
@@ -996,7 +996,7 @@ AnimatorController:
     m_Behaviours: []
     m_BlendingMode: 0
     m_SyncedLayerIndex: -1
-    m_DefaultWeight: 0
+    m_DefaultWeight: 1
     m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}

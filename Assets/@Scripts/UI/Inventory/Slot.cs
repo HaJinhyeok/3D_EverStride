@@ -47,7 +47,7 @@ public class Slot : MonoBehaviour
     public void SpawnItem()
     {
         PlayerController pc = FindAnyObjectByType<PlayerController>();
-        Vector3 spawnPos = pc.transform.position + (pc.transform.GetChild(0).forward * 3); // Player GameObject 안의 Knight 찾아서 앞방향
+        Vector3 spawnPos = pc.transform.position + (pc.transform.GetChild(0).forward * 3) + Vector3.up; // Player GameObject 안의 Knight 찾아서 앞방향
         Item item = Instantiate(ItemData.Prefab, spawnPos, Quaternion.identity).GetComponent<Item>();
 
         item.Amount = Amount;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Define
 {
@@ -40,10 +41,20 @@ public class Define
     }
     public enum WeaponType : int
     {
-        None=-1,    // ∏«¡÷∏‘
+        None = -1,    // ∏«¡÷∏‘
         Rock,       // µπ∏Ê¿Ã
         Axe,        // µµ≥¢
         Sword,      // ∞À
     }
+    public enum IngredientType : int
+    {
+        None = -1,
+        Rock,
+        Wood,
+    }
+
+    // Player Initiate«“ ∂ß ∞∞¿Ã √ ±‚»≠
+    public static Dictionary<IngredientType, ItemData> IngredientData = new Dictionary<IngredientType, ItemData>();
+
     #endregion
 }

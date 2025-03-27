@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
+using UnityEditor;
 
 public static class MouseData
 {
@@ -51,6 +52,7 @@ public class Inventory : MonoBehaviour
         slot.IconImage.sprite = isExist ? slot.ItemData.Icon : null;
         slot.IconImage.color = isExist ? new Color(1, 1, 1, 1) : new Color(0, 0, 0, 0); // 불투명 - 투명
         slot.AmountText.text = isExist ? slot.Amount.ToString() : string.Empty;
+        // Debug.Log("OnPostUpdate...");
     }
 
     Vector2 CalculatePosition(int i)
@@ -68,9 +70,12 @@ public class Inventory : MonoBehaviour
             return null;
         }
         GameObject dragImage = new GameObject("DragImage");
+        dragImage.transform.SetParent(transform.parent);
         RectTransform rectTr = dragImage.AddComponent<RectTransform>();
         rectTr.sizeDelta = new Vector2(40, 40);
-        dragImage.transform.SetParent(transform.parent);
+        rectTr.localScale = Vector2.one;
+        rectTr.localEulerAngles = Vector3.zero;
+        //dragImage.transform.SetParent(transform);
         Image image = dragImage.AddComponent<Image>();
 
         image.sprite = _slotUIs[go].ItemData.Icon;
@@ -116,7 +121,9 @@ public class Inventory : MonoBehaviour
     {
         if (MouseData.DragImage == null)
             return;
-        MouseData.DragImage.GetComponent<RectTransform>().position = Input.mousePosition;
+        //EditorApplication.isPaused = true;
+        //MouseData.DragImage.GetComponent<RectTransform>().position = Input.mousePosition;
+        MouseData.DragImage.GetComponent<RectTransform>().localPosition = Input.mousePosition;
     }
 
     public void OnEndDrag(GameObject go)
@@ -183,7 +190,7 @@ public class Inventory : MonoBehaviour
     // 인벤토리 내에 같은 아이템 있는지 검사
     public Slot FindItemInInventory(Item item)
     {
-        return _slots?.FirstOrDefault(slot => slot.ItemData?.name == item.ItemData?.name);
+        return _slots?.FirstOrDefault(slot => slot?.ItemData?.name == item.ItemData?.name);
     }
 
     public Slot GetEmptySlot()
@@ -214,9 +221,10 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < _slots.Length; i++)
         {
-            GameObject go = Instantiate(Slot, Vector3.zero, Quaternion.identity, transform);
+            GameObject go = Instantiate(Slot, transform);
 
-            go.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
+            //go.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
+            go.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
             go.AddComponent<EventTrigger>();
 
             AddEvent(go, EventTriggerType.PointerEnter, delegate { OnEnterSlot(go); });
