@@ -45,6 +45,7 @@ public class Define
         Rock,       // µπ∏Ê¿Ã
         Axe,        // µµ≥¢
         Sword,      // ∞À
+        Pickaxe,
     }
     public enum IngredientType : int
     {

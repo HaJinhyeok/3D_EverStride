@@ -10,12 +10,12 @@ public class PlayerStatemachineBehaviour : StateMachineBehaviour
         float currentTime = stateInfo.normalizedTime;
         bool isNextCombo = animator.GetBool(Define.IsNextCombo);
 
-        if (currentTime >= 0.7 && currentTime <= 0.9 && isNextCombo)
-        {
-            int atkComboCount = animator.GetInteger(Define.AttackComboCount);
-            atkComboCount = atkComboCount < 1 ? ++atkComboCount : 0;
-            animator.SetInteger(Define.AttackComboCount, atkComboCount);
-        }
+        //if (currentTime >= 0.7 && currentTime <= 0.9 && isNextCombo)
+        //{
+        //    int atkComboCount = animator.GetInteger(Define.AttackComboCount);
+        //    atkComboCount = atkComboCount < 1 ? ++atkComboCount : 0;
+        //    animator.SetInteger(Define.AttackComboCount, atkComboCount);
+        //}
         if (currentTime > 0.9)
         {
             animator.SetInteger(Define.AttackComboCount, 0);

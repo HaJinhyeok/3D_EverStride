@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     public GameObject CraftPanel;
     public Image Stamina;
     public GameObject WeaponPos;
-    public GameObject[] Weapons;
+    // public GameObject[] Weapons;
     public List<ItemData> IngredientData = new List<ItemData>();
 
     [SerializeField] GameObject stepRayUpper;
@@ -113,10 +113,13 @@ public class PlayerController : MonoBehaviour
         //InventoryOnOff(false);
         InventoryOnOff(true);
         CraftPanelOnOff(true);
+        GameManager.Instance.LoadResources();
 
         //WeaponTypeHash = -1; // 맨손
         //WeaponTypeHash = 0; // 돌멩이
-        WeaponTypeHash = 1; // 도끼
+        //WeaponTypeHash = 1; // 도끼
+        //WeaponTypeHash = 2; // 검
+        WeaponTypeHash = (int)GetCurrentWeaponType();
 
         //groundLayer = 1 << LayerMask.NameToLayer(Define.GroundTag);
     }
@@ -141,14 +144,40 @@ public class PlayerController : MonoBehaviour
             Roll();
         }
 
-        if(Input.GetKeyDown(KeyCode.T))
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            CraftPanelOnOff(GameManager.Instance.IsCraftPanelOn);            
+            CraftPanelOnOff(GameManager.Instance.IsCraftPanelOn);
         }
         if (Input.GetKeyDown(KeyCode.I))
         {
             InventoryOnOff(GameManager.Instance.IsInventoryOn);
         }
+
+        if(Input.GetKeyDown("1"))
+        {
+            EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<Weapon>());
+        }
+        if (Input.GetKeyDown("2"))
+        {
+            EquipWeapon(GameManager.Instance.Weapons[2].GetComponent<Weapon>());
+        }
+        if (Input.GetKeyDown("3"))
+        {
+            EquipWeapon(GameManager.Instance.Weapons[3].GetComponent<Weapon>());
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            UnequipWeapon();
+        }
+
+        //if(Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    GameManager.Instance.LoadResources();
+        //    for(int i=0;i<GameManager.Instance.Weapons.Length;i++)
+        //    {
+        //        Debug.Log(GameManager.Instance.Weapons[i].GetComponent<Weapon>().ItemData.name);
+        //    }
+        //}
 
         RecoverStamina();
     }
@@ -239,7 +268,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator Dash()
     {
-        if (_stamina >= 20)
+        if (_stamina >= 20 && WeaponTypeHash == -1)
         {
             IsDash = true;
             IsDash = true;
@@ -336,29 +365,56 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    public void EquipWeapon(Define.WeaponType type)
+    public void EquipWeapon(Weapon weapon)
     {
-        GameObject currentWeapon = WeaponPos.transform.GetChild(0).gameObject;
-        if (currentWeapon != null)
+        Slot slot = Inventory.FindItemInInventory(weapon);
+        if (slot == null)
+        {
+            Debug.Log($"인벤토리에 {weapon.ItemData.name}이(가) 없습니다");
+            return;
+        }
+        if (WeaponPos.transform.childCount > 0)
         {
             // 장착해제 해주고 인벤토리로 반환
-            // UnequipWeapon();
+            UnequipWeapon();
         }
-        GameObject weapon = Instantiate(Weapons[(int)type], WeaponPos.transform);
-        WeaponTypeHash = (int)type;
+        slot.UpdateSlot(null, 0);
+        GameObject newWeapon = Instantiate(GameManager.Instance.Weapons[(int)weapon.ItemData.WeaponType], WeaponPos.transform);
+        WeaponTypeHash = (int)weapon.ItemData.WeaponType;
     }
 
     public Define.WeaponType UnequipWeapon()
     {
+        if(WeaponPos.transform.childCount==0)
+        {
+            Debug.Log("무기를 장착하고 있지 않습니다");
+            return Define.WeaponType.None;
+        }
         GameObject weapon = WeaponPos.transform.GetChild(0).gameObject;
-        Define.WeaponType weaponType = weapon.GetComponent<Weapon>().GetWeaponType();
-        Destroy(weapon);
         if (weapon == null)
             return Define.WeaponType.None;
+        Define.WeaponType weaponType = weapon.GetComponent<Weapon>().GetWeaponType();
+        Inventory.AddItem(weapon.GetComponent<Weapon>(), 1);
+        Destroy(weapon);
+        WeaponTypeHash = -1;
 
         return weaponType;
     }
 
+    public Define.WeaponType GetCurrentWeaponType()
+    {
+        if(WeaponPos.transform.childCount==0)
+        {
+            return Define.WeaponType.None;
+        }
+        else
+        {
+            return WeaponPos.transform.GetChild(0).gameObject.GetComponent<Weapon>().ItemData.WeaponType;
+        }
+    }
+    
+
+    #region UI
     void CraftPanelOnOff(bool state)
     {
         GameManager.Instance.IsCraftPanelOn = !state;
@@ -370,7 +426,7 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.IsInventoryOn = !state;
         Inventory.gameObject.SetActive(!state);
     }
-
+    #endregion
 
     // 플레이어가 현재 경사면에 있는지 확인
     //public bool IsOnSlope()

@@ -17,10 +17,5 @@ public class Item : MonoBehaviour
         if (pc == null)
             return;
         pc?.PickUpItem(this, Amount);
-
-        //TmpPlayerController pc = collision.gameObject.GetComponent<TmpPlayerController>();
-        //if (pc == null)
-        //    return;
-        //pc?.PickUpItem(this, Amount);
     }
 }

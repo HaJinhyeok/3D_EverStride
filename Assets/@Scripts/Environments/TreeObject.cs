@@ -5,6 +5,7 @@ public class TreeObject : EnvironmentObject
     public GameObject Wood;
 
     Transform _player;
+    float _radius = 0.5f;
 
     void Start()
     {
@@ -35,9 +36,9 @@ public class TreeObject : EnvironmentObject
     public override void DropItems()
     {
         float randAngle = Random.Range(0, 360f);
-        Vector3 spownPos = new Vector3(Mathf.Cos(randAngle * Mathf.Deg2Rad), 2f, Mathf.Sin(randAngle * Mathf.Deg2Rad)) + transform.position;
+        Vector3 spownPos = new Vector3(Mathf.Cos(randAngle * Mathf.Deg2Rad) * _radius, 2f, Mathf.Sin(randAngle * Mathf.Deg2Rad) * _radius) + transform.position;
         GameObject wood = Instantiate(Wood, spownPos, Quaternion.identity);
-        wood.GetComponent<Rigidbody>().AddForce(new Vector3(spownPos.x, 0, spownPos.z) * 5f);
+        // wood.GetComponent<Rigidbody>().AddForce(new Vector3(spownPos.x, 0, spownPos.z) * 5f);
     }
 
     public override void DropItemsOnDestroy()

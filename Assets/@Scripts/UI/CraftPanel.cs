@@ -112,9 +112,11 @@ public class CraftPanel : MonoBehaviour
 
     bool IsCraftPossible(Ingredient[] ingredients)
     {
+        Item tmpItem = new GameObject("TMP").AddComponent<Item>();
         for (int i = 0; i < ingredients.Length; i++)
         {
-            Slot slot = Inventory.FindItemInInventory(new Item(Define.IngredientData[ingredients[i].type]));
+            tmpItem.ItemData = Define.IngredientData[ingredients[i].type];
+            Slot slot = Inventory.FindItemInInventory(tmpItem);
             if (slot == null || slot.Amount < ingredients[i].count)
             {
                 // 해당 재료가 없거나 재료의 개수가 필요 개수보다 적을 경우
@@ -126,9 +128,11 @@ public class CraftPanel : MonoBehaviour
 
     void UseCraftIngredients(Ingredient[] ingredients)
     {
+        Item tmpItem = new GameObject("TMP").AddComponent<Item>();
         for (int i = 0; i < ingredients.Length; i++)
         {
-            Slot slot = Inventory.FindItemInInventory(new Item(Define.IngredientData[ingredients[i].type]));
+            tmpItem.ItemData = Define.IngredientData[ingredients[i].type];
+            Slot slot = Inventory.FindItemInInventory(tmpItem);
             slot.AddAmount(-ingredients[i].count);
         }
     }
