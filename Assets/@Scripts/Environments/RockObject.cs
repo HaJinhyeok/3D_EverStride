@@ -10,35 +10,14 @@ public class RockObject : EnvironmentObject
     void Start()
     {
         _durability = 50;
-        _player = GameObject.FindGameObjectWithTag(Define.PlayerTag).transform.GetChild(0);
-        //_player = GameObject.FindGameObjectWithTag(Define.PlayerTag).transform;
+        //_player = GameObject.FindGameObjectWithTag(Define.PlayerTag).transform.GetChild(0);        
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        // 웨폰 태그 + 공격 모션일 때
-        if (other.CompareTag(Define.WeaponTag) && _player.GetComponent<Animator>().GetBool(Define.IsAttacking))
-        {
-            _durability -= 10;
-            if (_durability > 0)
-            {
-                DropItems();
-
-            }
-            else
-            {
-                DropItemsOnDestroy();
-                Destroy(gameObject);
-            }
-        }
-    }
-
-    public override void DropItems()
+    public override void DropItem()
     {
         float randAngle = Random.Range(0, 360f);
         Vector3 spownPos = new Vector3(Mathf.Cos(randAngle * Mathf.Deg2Rad) * _radius, 2f, Mathf.Sin(randAngle * Mathf.Deg2Rad) * _radius) + transform.position;
-        GameObject rock = Instantiate(Rock, spownPos, Quaternion.identity);
-        // rock.GetComponent<Rigidbody>().AddForce(new Vector3(spownPos.x, 0, spownPos.z) * 5f);
+        GameObject rock = Instantiate(Rock, spownPos, Quaternion.identity);        
     }
 
     public override void DropItemsOnDestroy()
@@ -46,7 +25,22 @@ public class RockObject : EnvironmentObject
         Debug.Log("Many Rocks Dropped!!!");
         for (int i = 0; i < 3; i++)
         {
-            DropItems();
+            DropItem();
+        }
+    }
+
+    public override void GetDamage(GameObject attacker, float damage, Vector3 hitPos)
+    {
+        _durability -= damage;
+        if (_durability > 0)
+        {
+            DropItem();
+
+        }
+        else
+        {
+            DropItemsOnDestroy();
+            Destroy(gameObject);
         }
     }
 }

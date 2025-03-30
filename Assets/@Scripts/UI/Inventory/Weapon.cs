@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class Weapon : Item
+public class WeaponItem : Item
 {
-    public Weapon() { }
-    public Weapon(ItemData itemData)
+    public WeaponItem() { }
+    public WeaponItem(ItemData itemData)
     {
         ItemData = itemData;
     }

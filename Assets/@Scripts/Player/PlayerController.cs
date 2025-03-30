@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] GameObject stepRayUpper;
     [SerializeField] GameObject stepRayLower;
-    [SerializeField] float stepHeight = 0.3f;
+    //[SerializeField] float stepHeight = 0.3f;
     [SerializeField] float stepSmooth = 0.1f;
 
     Transform _character;
@@ -155,15 +155,15 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetKeyDown("1"))
         {
-            EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<Weapon>());
+            EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<WeaponItem>());
         }
         if (Input.GetKeyDown("2"))
         {
-            EquipWeapon(GameManager.Instance.Weapons[2].GetComponent<Weapon>());
+            EquipWeapon(GameManager.Instance.Weapons[2].GetComponent<WeaponItem>());
         }
         if (Input.GetKeyDown("3"))
         {
-            EquipWeapon(GameManager.Instance.Weapons[3].GetComponent<Weapon>());
+            EquipWeapon(GameManager.Instance.Weapons[3].GetComponent<WeaponItem>());
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -365,7 +365,7 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    public void EquipWeapon(Weapon weapon)
+    public void EquipWeapon(WeaponItem weapon)
     {
         Slot slot = Inventory.FindItemInInventory(weapon);
         if (slot == null)
@@ -393,8 +393,8 @@ public class PlayerController : MonoBehaviour
         GameObject weapon = WeaponPos.transform.GetChild(0).gameObject;
         if (weapon == null)
             return Define.WeaponType.None;
-        Define.WeaponType weaponType = weapon.GetComponent<Weapon>().GetWeaponType();
-        Inventory.AddItem(weapon.GetComponent<Weapon>(), 1);
+        Define.WeaponType weaponType = weapon.GetComponent<WeaponItem>().GetWeaponType();
+        Inventory.AddItem(weapon.GetComponent<WeaponItem>(), 1);
         Destroy(weapon);
         WeaponTypeHash = -1;
 
@@ -409,7 +409,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            return WeaponPos.transform.GetChild(0).gameObject.GetComponent<Weapon>().ItemData.WeaponType;
+            return WeaponPos.transform.GetChild(0).gameObject.GetComponent<WeaponItem>().ItemData.WeaponType;
         }
     }
     

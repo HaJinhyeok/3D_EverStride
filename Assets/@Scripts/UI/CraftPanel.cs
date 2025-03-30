@@ -100,7 +100,7 @@ public class CraftPanel : MonoBehaviour
             // 재료 차감해주고
             UseCraftIngredients(currentItem.ItemData.Ingredients);
             // 아이템 생성 후 inventory 빈 칸에 넣기
-            Inventory.AddItem(currentItem.ItemData.Prefab.GetComponent<Weapon>(), 1);
+            Inventory.AddItem(currentItem.ItemData.Prefab.GetComponent<WeaponItem>(), 1);
         }
         // 충분하지 않으면
         else
@@ -112,7 +112,16 @@ public class CraftPanel : MonoBehaviour
 
     bool IsCraftPossible(Ingredient[] ingredients)
     {
-        Item tmpItem = new GameObject("TMP").AddComponent<Item>();
+        GameObject tmpObject = GameObject.Find("TMP");
+        if (tmpObject == null)
+        {
+            tmpObject = new GameObject("TMP");
+        }
+        Item tmpItem = tmpObject.GetComponent<Item>();
+        if (tmpItem == null)
+        {
+            tmpItem = tmpObject.AddComponent<Item>();
+        }
         for (int i = 0; i < ingredients.Length; i++)
         {
             tmpItem.ItemData = Define.IngredientData[ingredients[i].type];
@@ -128,7 +137,16 @@ public class CraftPanel : MonoBehaviour
 
     void UseCraftIngredients(Ingredient[] ingredients)
     {
-        Item tmpItem = new GameObject("TMP").AddComponent<Item>();
+        GameObject tmpObject = GameObject.Find("TMP");
+        if (tmpObject == null)
+        {
+            tmpObject = new GameObject("TMP");
+        }
+        Item tmpItem = tmpObject.GetComponent<Item>();
+        if (tmpItem == null)
+        {
+            tmpItem = tmpObject.AddComponent<Item>();
+        }
         for (int i = 0; i < ingredients.Length; i++)
         {
             tmpItem.ItemData = Define.IngredientData[ingredients[i].type];

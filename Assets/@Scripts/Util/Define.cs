@@ -41,11 +41,11 @@ public class Define
     }
     public enum WeaponType : int
     {
-        None = -1,    // ∏«¡÷∏‘
-        Rock,       // µπ∏Ê¿Ã
-        Axe,        // µµ≥¢
-        Sword,      // ∞À
-        Pickaxe,
+        None = -1,      // ∏«¡÷∏‘
+        Rock,           // µπ∏Ê¿Ã
+        Axe,            // µµ≥¢
+        Sword,          // ∞À
+        Pickaxe,        // ∞Ó±™¿Ã
     }
     public enum IngredientType : int
     {

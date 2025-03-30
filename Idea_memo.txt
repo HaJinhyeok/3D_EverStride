@@ -14,6 +14,9 @@
 -- Dash 빼는것도 고려
 -- scriptable object에 붙일 아이콘도 필요함
 -- CraftPanel: 마우스 커서 올릴 시 - CraftItemSlot UI 크기 키워서 가시성 확장?
+-- Weapon 종류별로 script 만들어서 EnvironmentObject에 GetDamage주는 거로 합시다? v
+---> 근데 이러니까 막타가 두대씩 들어가서 EnvironmentObject Destroy때 두 번 발생해서 재료 터져나옴;
+-- 추가로, 플레이어가 장착하는 Weapon말고 WeaponItem prefab 따로 만들던가 해서 인벤토리 밖에 버렸을 때를 대비해 주어야 할듯? or 인벤토리 밖에 버려질 때 Instantiate하고 rigidbody 옵션 조절하던가 해줘야겠다
 
 
 
@@ -31,6 +34,7 @@
 
 2주차 - 환경 & 전투
 - 몬스터 AI (기본 공격 패턴)
+-- 오크 같은 거 잡몹 몇 개 사와서 만들어보고, 맵 좀 더 만들 수 있으면 만들어서 평지?느낌에서 보스전도 한번?
 - 무기 시스템 (근접 & 원거리)
 - 기초 건설 시스템 (벽, 바닥 배치)
 - 낮/밤 & 기후 시스템

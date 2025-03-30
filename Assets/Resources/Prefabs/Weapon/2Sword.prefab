@@ -66,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0ceab7f8d8c241546b32498e7fa7b0b5, type: 3}
       propertyPath: m_Name
-      value: SwordWeapon
+      value: 2Sword
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0ceab7f8d8c241546b32498e7fa7b0b5, type: 3}
       propertyPath: m_TagString
@@ -85,6 +85,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0ceab7f8d8c241546b32498e7fa7b0b5, type: 3}
       insertIndex: -1
       addedObject: {fileID: -893105640817905554}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0ceab7f8d8c241546b32498e7fa7b0b5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -4288607834724757397}
   m_SourcePrefab: {fileID: 100100000, guid: 0ceab7f8d8c241546b32498e7fa7b0b5, type: 3}
 --- !u!1 &8140906683856152610 stripped
 GameObject:
@@ -154,3 +157,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemData: {fileID: 11400000, guid: c6e78777b737cce45af15bf4793138df, type: 2}
   Amount: 1
+--- !u!114 &-4288607834724757397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8140906683856152610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0a79d6355c08c4eab746f64f60bb9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
