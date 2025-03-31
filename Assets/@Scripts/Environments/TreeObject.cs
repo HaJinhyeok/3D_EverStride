@@ -29,12 +29,22 @@ public class TreeObject : EnvironmentObject
         }
     }
 
-    public override void GetDamage(GameObject attacker, float damage, Vector3 hitPos)
+    public override void GetDamage(GameObject attacker, float damage, int bonus, Vector3 hitPos)
     {
-        _durability -= damage;
+        _durability -= damage * bonus;
         if (_durability > 0)
         {
-            DropItem();
+            if (bonus > 1)
+            {
+                for (int i = 0; i < bonus; i++)
+                {
+                    DropItem();
+                }
+            }
+            else
+            {
+                DropItem();
+            }
 
         }
         else

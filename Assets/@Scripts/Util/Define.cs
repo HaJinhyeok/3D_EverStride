@@ -15,6 +15,7 @@ public class Define
     public readonly static int Speed = Animator.StringToHash("Speed");
     public readonly static int Roll = Animator.StringToHash("Roll");
     public readonly static int Jump = Animator.StringToHash("Jump");
+    public readonly static int Die = Animator.StringToHash("Die");
     public readonly static int IsDash = Animator.StringToHash("IsDash");
     public readonly static int IsGround = Animator.StringToHash("IsGround");
     public readonly static int IsClimbing = Animator.StringToHash("IsClimbing");
@@ -22,6 +23,7 @@ public class Define
     public readonly static int IsAttacking = Animator.StringToHash("IsAttacking");
     public readonly static int AttackComboCount = Animator.StringToHash("AttackComboCount");
     public readonly static int WeaponTypeHash = Animator.StringToHash("WeaponType");
+    public readonly static int InteractionHash = Animator.StringToHash("IsPossibleInteraction");
     #endregion
 
     #region Tag
@@ -29,6 +31,8 @@ public class Define
     public const string WeaponTag = "Weapon";
     public const string GroundTag = "Ground";
     public const string ClimbableTag = "Climbable";
+    public const string EnemyTag = "Enemy";
+    public const string EnemyHandTag = "EnemyHand";
     #endregion
 
     #region Enum

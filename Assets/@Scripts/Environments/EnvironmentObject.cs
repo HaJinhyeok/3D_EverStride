@@ -8,5 +8,6 @@ public abstract class EnvironmentObject : MonoBehaviour, IDroppable, IDamageable
 
     public abstract void DropItemsOnDestroy();
 
-    public abstract void GetDamage(GameObject attacker, float damage, Vector3 hitPos = default);
+    public abstract void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default);
+    
 }

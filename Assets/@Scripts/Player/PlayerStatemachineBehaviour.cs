@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerStatemachineBehaviour : StateMachineBehaviour
 {
+    bool attackFlag = true;
+
     // attack1
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -10,6 +12,19 @@ public class PlayerStatemachineBehaviour : StateMachineBehaviour
         float currentTime = stateInfo.normalizedTime;
         bool isNextCombo = animator.GetBool(Define.IsNextCombo);
 
+        if (currentTime >= 0.2 && currentTime <= 0.7)
+        {
+            // 애니메이션이 어느 정도 진행된 후에 오브젝트에 닿아야 attack효과 발동
+            if (attackFlag)
+            {
+                animator.SetBool(Define.InteractionHash, true);
+                attackFlag = false;
+            }
+        }
+        else
+        {
+            animator.SetBool(Define.InteractionHash, false);
+        }
         //if (currentTime >= 0.7 && currentTime <= 0.9 && isNextCombo)
         //{
         //    int atkComboCount = animator.GetInteger(Define.AttackComboCount);
@@ -21,6 +36,7 @@ public class PlayerStatemachineBehaviour : StateMachineBehaviour
             animator.SetInteger(Define.AttackComboCount, 0);
             animator.SetBool(Define.IsAttacking, false);
             animator.SetBool(Define.IsNextCombo, false);
+            attackFlag = true;
         }
     }
 

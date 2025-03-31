@@ -17,7 +17,7 @@ public class RockObject : EnvironmentObject
     {
         float randAngle = Random.Range(0, 360f);
         Vector3 spownPos = new Vector3(Mathf.Cos(randAngle * Mathf.Deg2Rad) * _radius, 2f, Mathf.Sin(randAngle * Mathf.Deg2Rad) * _radius) + transform.position;
-        GameObject rock = Instantiate(Rock, spownPos, Quaternion.identity);        
+        GameObject rock = Instantiate(Rock, spownPos, Quaternion.identity);
     }
 
     public override void DropItemsOnDestroy()
@@ -29,12 +29,22 @@ public class RockObject : EnvironmentObject
         }
     }
 
-    public override void GetDamage(GameObject attacker, float damage, Vector3 hitPos)
+    public override void GetDamage(GameObject attacker, float damage, int bonus, Vector3 hitPoint)
     {
-        _durability -= damage;
+        _durability -= damage * bonus;
         if (_durability > 0)
         {
-            DropItem();
+            if (bonus > 1)
+            {
+                for (int i = 0; i < bonus; i++)
+                {
+                    DropItem();
+                }
+            }
+            else
+            {
+                DropItem();
+            }
 
         }
         else

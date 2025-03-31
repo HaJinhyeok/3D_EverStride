@@ -8,6 +8,8 @@ TagManager:
   - Ground
   - Weapon
   - CraftableItem
+  - Enemy
+  - EnemyHand
   layers:
   - Default
   - TransparentFX
@@ -17,8 +19,8 @@ TagManager:
   - UI
   - Ground
   - PreviewObject
-  - 
-  - 
+  - EnemyHand
+  - Player
   - 
   - 
   - 

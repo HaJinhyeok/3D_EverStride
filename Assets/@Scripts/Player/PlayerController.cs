@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
     public Inventory Inventory;
     public GameObject CraftPanel;
@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     float _maxStamina = 100f;
     float _stamina = 100f;
     float _staminaRegenRate = 5f;
+    float _hp = 100f;
 
     [SerializeField]
     Vector3 _camOffset = new Vector3(0f, 2f, 0f);
@@ -114,6 +115,8 @@ public class PlayerController : MonoBehaviour
         InventoryOnOff(true);
         CraftPanelOnOff(true);
         GameManager.Instance.LoadResources();
+        Inventory.UpdateTestWeapons();
+        
 
         //WeaponTypeHash = -1; // 맨손
         //WeaponTypeHash = 0; // 돌멩이
@@ -271,13 +274,11 @@ public class PlayerController : MonoBehaviour
         if (_stamina >= 20 && WeaponTypeHash == -1)
         {
             IsDash = true;
-            IsDash = true;
             float originalSpeed = _speed;
             _speed = _dashSpeed;
             _stamina -= 20;
             yield return new WaitForSeconds(_dashTime);
             _speed = originalSpeed;
-            IsDash = false;
             IsDash = false;
         }
     }
@@ -365,6 +366,7 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    #region Weapon
     public void EquipWeapon(WeaponItem weapon)
     {
         Slot slot = Inventory.FindItemInInventory(weapon);
@@ -412,7 +414,7 @@ public class PlayerController : MonoBehaviour
             return WeaponPos.transform.GetChild(0).gameObject.GetComponent<WeaponItem>().ItemData.WeaponType;
         }
     }
-    
+    #endregion
 
     #region UI
     void CraftPanelOnOff(bool state)
@@ -427,6 +429,16 @@ public class PlayerController : MonoBehaviour
         Inventory.gameObject.SetActive(!state);
     }
     #endregion
+
+    public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
+    {
+        _hp -= damage * bonusDamage;
+        Debug.Log($"Current Player HP: {_hp}, Attacker name: {attacker.name}");
+        if (_hp <= 0)
+        {
+            Debug.Log("Game Over!!!");
+        }
+    }
 
     // 플레이어가 현재 경사면에 있는지 확인
     //public bool IsOnSlope()

@@ -1,0 +1,106 @@
+using UnityEngine;
+
+public class GolemController : MonoBehaviour, IDamageable
+{
+    Animator _animator;
+    Rigidbody _rigidbody;
+    Transform _player;
+
+    float _attackRange = 1f;
+    float _speed = 3f;
+    float _hp = 100;
+    float _atk = 10;
+    [Header("SightRange")]
+    public float sightRange = 15f;
+
+    public float Atk
+    {
+        get { return _atk; }
+    }
+
+    public float Speed
+    {
+        get { return _animator.GetFloat(Define.Speed); }
+        set { _animator.SetFloat(Define.Speed, value); }
+    }
+
+    public bool IsAttacking
+    {
+        get { return _animator.GetBool(Define.IsAttacking); }
+        set { _animator.SetBool(Define.IsAttacking, value); }
+    }
+
+    void Start()
+    {
+        _animator = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody>();
+        _player = GameObject.Find("Player").transform;
+    }
+
+    void FixedUpdate()
+    {
+        Move();
+    }
+
+    void Move()
+    {
+        if (IsAttacking || _hp <= 0)
+        {
+            _rigidbody.linearVelocity = Vector3.zero;
+        }
+        else
+        {
+            // 플레이어가 일정 거리 내에 있으면 움직임
+            if (Vector3.Distance(transform.position, _player.position) < sightRange)
+            {
+                RotateToPlayer();
+                MoveToPlayer();
+                if (Vector3.Distance(transform.position, _player.position) < _attackRange)
+                {
+                    IsAttacking = true;
+                }
+            }
+        }
+        // 위로 떠오르지 않게
+        RaycastHit hitGround;
+        if (Physics.Raycast(transform.position, -transform.up, out hitGround, 5f))
+        {
+            Vector3 currentPos = _rigidbody.position;
+            currentPos.y = hitGround.point.y;
+            _rigidbody.position = currentPos;
+        }
+        Speed = _rigidbody.linearVelocity.sqrMagnitude;
+    }
+
+    void RotateToPlayer()
+    {
+        Vector3 direction = (_player.transform.position - transform.position).normalized;
+        Quaternion rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 5);
+    }
+
+    void MoveToPlayer()
+    {
+        Vector3 movement = Vector3.forward;
+        float currentY = _rigidbody.linearVelocity.y;
+        Vector3 localMovement = transform.TransformDirection(movement).normalized * _speed;
+        _rigidbody.linearVelocity = localMovement + new Vector3(0, currentY, 0);
+    }
+
+    public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
+    {
+        _hp -= damage * bonusDamage;
+        Debug.Log($"Current Golem HP: {_hp}, Attacker name: {attacker.name}");
+        if (_hp <= 0)
+        {
+            Debug.Log("Golem Die");
+            //Destroy(gameObject);
+            _animator.SetTrigger(Define.Die);
+        }
+    }
+
+    public void Die()
+    {
+        Destroy(gameObject, 2f);
+    }
+}

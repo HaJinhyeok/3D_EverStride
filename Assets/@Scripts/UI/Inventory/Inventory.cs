@@ -246,7 +246,16 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         CreateSlot();
+
         AddEvent(gameObject, EventTriggerType.PointerEnter, (baseEvent) => { OnEnterInterface(gameObject); });
         AddEvent(gameObject, EventTriggerType.PointerExit, (baseEvent) => { OnExitInterface(gameObject); });
+    }
+
+    public void UpdateTestWeapons()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            _slots[i].UpdateSlot(GameManager.Instance.Weapons[i + 1].GetComponent<WeaponItem>().ItemData, 1);
+        }
     }
 }
