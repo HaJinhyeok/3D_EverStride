@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour, IDamageable
 {
+    public Scene scene;
     public Inventory Inventory;
     public GameObject CraftPanel;
     public Image Stamina;
@@ -36,13 +38,23 @@ public class PlayerController : MonoBehaviour, IDamageable
     float _hp = 100f;
 
     [SerializeField]
-    Vector3 _camOffset = new Vector3(0f, 2f, 0f);
+    Vector3 _camOffset = new Vector3(0f, 1f, -1f);
 
     //const float RAY_DISTANCE = 2000f;
     //RaycastHit slopeHit;
     //int groundLayer;
 
-    #region Animation
+    public float PlayerHp
+    {
+        get { return _hp; }
+        set
+        {
+            _hp = value;
+
+        }
+    }
+
+    #region Animator
     public float Speed
     {
         get { return _animator.GetFloat(Define.Speed); }
@@ -68,11 +80,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         set { _animator.SetBool(Define.IsClimbing, value); }
     }
 
-    //public bool IsNextCombo
-    //{
-    //    get { return _animator.GetBool(Define.IsNextCombo); }
-    //    set { _animator.SetBool(Define.IsNextCombo, value); }
-    //}
+    public bool IsNextCombo
+    {
+        get { return _animator.GetBool(Define.IsNextCombo); }
+        set { _animator.SetBool(Define.IsNextCombo, value); }
+    }
 
     public bool IsAttacking
     {
@@ -85,15 +97,32 @@ public class PlayerController : MonoBehaviour, IDamageable
         get { return _animator.GetInteger(Define.WeaponTypeHash); }
         set { _animator.SetInteger(Define.WeaponTypeHash, value); }
     }
+
+    //public bool IsCombatMode
+    //{
+    //    get { return _animator.GetBool(Define.IsCombatMode); }
+    //    set { _animator.SetBool(Define.IsCombatMode, value); }
+    //}
     #endregion
 
-    void Start()
+    void Awake()
     {
         // * 컴포넌트
         _character = transform.GetChild(0);
         _animator = _character.GetComponent<Animator>();
         _rigidbody = gameObject.AddComponent<Rigidbody>();
         _rigidbody.freezeRotation = true;
+
+        if (SceneManager.GetActiveScene().name == Define.BossScene)
+        {
+            CraftPanel = null;
+            //IsCombatMode = true;
+            _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
+        }
+        //else
+        //{
+        //    IsCombatMode = false;
+        //}
 
         // * 콜라이더
         CapsuleCollider capsule = gameObject.AddComponent<CapsuleCollider>();
@@ -116,12 +145,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         CraftPanelOnOff(true);
         GameManager.Instance.LoadResources();
         Inventory.UpdateTestWeapons();
-        
 
-        //WeaponTypeHash = -1; // 맨손
-        //WeaponTypeHash = 0; // 돌멩이
-        //WeaponTypeHash = 1; // 도끼
-        //WeaponTypeHash = 2; // 검
+        _hp = Define.PlayerMaxHp;
         WeaponTypeHash = (int)GetCurrentWeaponType();
 
         //groundLayer = 1 << LayerMask.NameToLayer(Define.GroundTag);
@@ -194,7 +219,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     void Move()
     {
         //bool isOnSlope = IsOnSlope();
-        if (Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical))
+        if ((Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical)) && !IsAttacking)
         {
             float h = Input.GetAxis(Define.Horizontal);
             float v = Input.GetAxis(Define.Vertical);
@@ -287,6 +312,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (Input.GetKeyDown(KeyCode.C) && IsGround)
         {
+            _stamina -= 10;
             _animator.SetTrigger(Define.Roll);
         }
     }
@@ -307,7 +333,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         else
         {
-            //IsNextCombo = true;
+            IsNextCombo = true;
         }
     }
     #endregion
@@ -420,7 +446,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     void CraftPanelOnOff(bool state)
     {
         GameManager.Instance.IsCraftPanelOn = !state;
-        CraftPanel.gameObject.SetActive(!state);
+        CraftPanel?.gameObject.SetActive(!state);
     }
 
     void InventoryOnOff(bool state)
@@ -432,12 +458,21 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
     {
-        _hp -= damage * bonusDamage;
-        Debug.Log($"Current Player HP: {_hp}, Attacker name: {attacker.name}");
-        if (_hp <= 0)
+        if(_animator.GetBool(Define.NoDamageMode))
         {
-            Debug.Log("Game Over!!!");
+            Debug.Log("Take No Damage!");
         }
+        else
+        {
+            _hp -= damage * bonusDamage;
+            PlayerHpBar.PlayerHpAction?.Invoke();
+            _animator.SetTrigger(Define.TakeDamage);
+            Debug.Log($"Current Player HP: {_hp}, Attacker name: {attacker.name}");
+            if (_hp <= 0)
+            {
+                Debug.Log("Game Over!!!");
+            }
+        }        
     }
 
     // 플레이어가 현재 경사면에 있는지 확인

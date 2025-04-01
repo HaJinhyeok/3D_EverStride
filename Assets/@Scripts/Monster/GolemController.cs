@@ -6,7 +6,7 @@ public class GolemController : MonoBehaviour, IDamageable
     Rigidbody _rigidbody;
     Transform _player;
 
-    float _attackRange = 1f;
+    float _attackRange = 2f;
     float _speed = 3f;
     float _hp = 100;
     float _atk = 10;
@@ -44,22 +44,23 @@ public class GolemController : MonoBehaviour, IDamageable
 
     void Move()
     {
-        if (IsAttacking || _hp <= 0)
+        if (Vector3.Distance(transform.position, _player.position) < _attackRange || _hp <= 0)
         {
+            IsAttacking = true;
             _rigidbody.linearVelocity = Vector3.zero;
         }
         else
         {
+            IsAttacking = false;
             // 플레이어가 일정 거리 내에 있으면 움직임
             if (Vector3.Distance(transform.position, _player.position) < sightRange)
             {
-                RotateToPlayer();
                 MoveToPlayer();
-                if (Vector3.Distance(transform.position, _player.position) < _attackRange)
-                {
-                    IsAttacking = true;
-                }
             }
+        }
+        if (_hp > 0)
+        {
+            RotateToPlayer();
         }
         // 위로 떠오르지 않게
         RaycastHit hitGround;
@@ -90,6 +91,7 @@ public class GolemController : MonoBehaviour, IDamageable
     public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
     {
         _hp -= damage * bonusDamage;
+        _animator.SetTrigger(Define.TakeDamage);
         Debug.Log($"Current Golem HP: {_hp}, Attacker name: {attacker.name}");
         if (_hp <= 0)
         {

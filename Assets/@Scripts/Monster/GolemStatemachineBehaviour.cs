@@ -9,6 +9,7 @@ public class GolemStatemachineBehaviour : StateMachineBehaviour
         base.OnStateUpdate(animator, stateInfo, layerIndex);
 
         float currentTime = stateInfo.normalizedTime;
+        int comboCount=animator.GetInteger(Define.ComboCount);
 
         if (currentTime >= 0.2 && currentTime <= 0.5)
         {
@@ -24,7 +25,6 @@ public class GolemStatemachineBehaviour : StateMachineBehaviour
         }
         if (currentTime > 0.9)
         {
-            animator.SetBool(Define.IsAttacking, false);
             attackFlag = true;
         }
     }
