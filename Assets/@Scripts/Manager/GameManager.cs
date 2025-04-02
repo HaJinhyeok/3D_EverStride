@@ -44,8 +44,16 @@ public class GameManager : Singleton<GameManager>
         if (Player.WeaponTypeHash == 2)
         {
             Debug.Log(Player.WeaponPos.transform.childCount);
-            Debug.Log(Player.WeaponPos.transform.GetChild(1).gameObject.name);
-            weaponTrail = Player.WeaponPos.transform.GetChild(1).GetChild(0).GetComponent<TrailRenderer>();
+            if (Player.WeaponPos.transform.childCount == 1)
+            {
+                Debug.Log(Player.WeaponPos.transform.GetChild(0).gameObject.name);
+                weaponTrail = Player.WeaponPos.transform.GetChild(0).GetChild(0).GetComponent<TrailRenderer>();
+            }
+            else
+            {
+                Debug.Log(Player.WeaponPos.transform.GetChild(1).gameObject.name);
+                weaponTrail = Player.WeaponPos.transform.GetChild(1).GetChild(0).GetComponent<TrailRenderer>();
+            }
         }
         else
         {
