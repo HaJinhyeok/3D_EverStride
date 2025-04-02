@@ -164,6 +164,10 @@ public class Inventory : MonoBehaviour
 
     void OnRightClick(Slot slot)
     {
+        if(slot.ItemData.WeaponType!=Define.WeaponType.None)
+        {
+            GameManager.Instance.Player.EquipWeapon(slot.ItemData.Prefab.GetComponent<WeaponItem>());
+        }
         UseItem(slot);
     }
 

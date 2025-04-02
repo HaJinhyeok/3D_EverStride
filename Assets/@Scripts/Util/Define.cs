@@ -11,8 +11,9 @@ public class Define
     public const string Vertical = "Vertical";
     #endregion
 
-    #region
+    #region Constants
     public const float PlayerMaxHp = 100f;
+    public const float PlayerRollStamina = 20f;
     #endregion
 
     #region Animator

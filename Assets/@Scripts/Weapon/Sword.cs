@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Sword : Weapon, IAttackable
+public class Sword : Weapon
 {
     void Start()
     {
@@ -15,8 +15,7 @@ public class Sword : Weapon, IAttackable
         {
             DoAttack(other.gameObject, _atk);
             _animator.SetBool(Define.InteractionHash, false);
-        }
-            
+        }            
     }
 
     public override bool DoAttack(GameObject target, float damage, Vector3 hitPos = default)

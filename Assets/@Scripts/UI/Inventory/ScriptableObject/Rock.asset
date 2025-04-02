@@ -15,8 +15,10 @@ MonoBehaviour:
   ItemName: "\uB3CC\uC870\uAC01"
   ItemType: 1
   WeaponType: -1
+  IngredientType: 0
   Price: 0
   Description: "\uB2E4\uC591\uD55C \uC6A9\uB3C4\uB85C \uC4F0\uC774\uB294 \uB3CC\uBA69\uC774"
   isStack: 1
   Icon: {fileID: 21300000, guid: 583675a75bcb2a941ac555b9ccd513a9, type: 3}
-  Prefab: {fileID: 0}
+  Prefab: {fileID: 6532366440061324704, guid: b3e6aabd0922e6a44add1d75d9db4641, type: 3}
+  Ingredients: []

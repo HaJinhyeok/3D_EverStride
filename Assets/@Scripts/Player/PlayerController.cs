@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     float _stamina = 100f;
     float _staminaRegenRate = 5f;
     float _hp = 100f;
+    // 마을맵인지 보스전맵인지 확인
+    bool _isBossRaid;
 
     [SerializeField]
     Vector3 _camOffset = new Vector3(0f, 1f, -1f);
@@ -115,14 +117,16 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (SceneManager.GetActiveScene().name == Define.BossScene)
         {
+            _isBossRaid = true;
             CraftPanel = null;
             //IsCombatMode = true;
             _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
         }
-        //else
-        //{
-        //    IsCombatMode = false;
-        //}
+        else
+        {
+            _isBossRaid = false;
+            //IsCombatMode = false;
+        }
 
         // * 콜라이더
         CapsuleCollider capsule = gameObject.AddComponent<CapsuleCollider>();
@@ -141,9 +145,10 @@ public class PlayerController : MonoBehaviour, IDamageable
             Define.IngredientData.Add(IngredientData[i].IngredientType, IngredientData[i]);
         }
         //InventoryOnOff(false);
-        InventoryOnOff(true);
-        CraftPanelOnOff(true);
+        InventoryOn(false);
+        CraftPanelOn(false);
         GameManager.Instance.LoadResources();
+        GameManager.Instance.OnWeaponChanged.Invoke();
         Inventory.UpdateTestWeapons();
 
         _hp = Define.PlayerMaxHp;
@@ -174,14 +179,14 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            CraftPanelOnOff(GameManager.Instance.IsCraftPanelOn);
+            CraftPanelOn(!GameManager.Instance.IsCraftPanelOn);
         }
         if (Input.GetKeyDown(KeyCode.I))
         {
-            InventoryOnOff(GameManager.Instance.IsInventoryOn);
+            InventoryOn(!GameManager.Instance.IsInventoryOn);
         }
 
-        if(Input.GetKeyDown("1"))
+        if (Input.GetKeyDown("1"))
         {
             EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<WeaponItem>());
         }
@@ -310,10 +315,15 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void Roll()
     {
+        // 구르기는 보스전에서만 사용 가능
+        if (!_isBossRaid) return;
         if (Input.GetKeyDown(KeyCode.C) && IsGround)
         {
-            _stamina -= 10;
-            _animator.SetTrigger(Define.Roll);
+            if (_stamina >= Define.PlayerRollStamina && !_animator.GetBool(Define.NoDamageMode))
+            {
+                _stamina -= Define.PlayerRollStamina;
+                _animator.SetTrigger(Define.Roll);
+            }
         }
     }
 
@@ -330,6 +340,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (IsAttacking == false)
         {
             IsAttacking = true;
+            GameManager.Instance.OnTrailActivate?.Invoke(_animator.GetBool(Define.IsAttacking));
         }
         else
         {
@@ -409,11 +420,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         slot.UpdateSlot(null, 0);
         GameObject newWeapon = Instantiate(GameManager.Instance.Weapons[(int)weapon.ItemData.WeaponType], WeaponPos.transform);
         WeaponTypeHash = (int)weapon.ItemData.WeaponType;
+        GameManager.Instance.OnWeaponChanged?.Invoke();
     }
 
     public Define.WeaponType UnequipWeapon()
     {
-        if(WeaponPos.transform.childCount==0)
+        if (WeaponPos.transform.childCount == 0)
         {
             Debug.Log("무기를 장착하고 있지 않습니다");
             return Define.WeaponType.None;
@@ -431,7 +443,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public Define.WeaponType GetCurrentWeaponType()
     {
-        if(WeaponPos.transform.childCount==0)
+        if (WeaponPos.transform.childCount == 0)
         {
             return Define.WeaponType.None;
         }
@@ -443,22 +455,22 @@ public class PlayerController : MonoBehaviour, IDamageable
     #endregion
 
     #region UI
-    void CraftPanelOnOff(bool state)
+    void CraftPanelOn(bool state)
     {
-        GameManager.Instance.IsCraftPanelOn = !state;
-        CraftPanel?.gameObject.SetActive(!state);
+        GameManager.Instance.IsCraftPanelOn = state;
+        CraftPanel?.gameObject.SetActive(state);
     }
 
-    void InventoryOnOff(bool state)
+    void InventoryOn(bool state)
     {
-        GameManager.Instance.IsInventoryOn = !state;
-        Inventory.gameObject.SetActive(!state);
+        GameManager.Instance.IsInventoryOn = state;
+        Inventory.gameObject.SetActive(state);
     }
     #endregion
 
     public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
     {
-        if(_animator.GetBool(Define.NoDamageMode))
+        if (_animator.GetBool(Define.NoDamageMode))
         {
             Debug.Log("Take No Damage!");
         }
@@ -472,7 +484,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             {
                 Debug.Log("Game Over!!!");
             }
-        }        
+        }
     }
 
     // 플레이어가 현재 경사면에 있는지 확인

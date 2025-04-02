@@ -25,7 +25,7 @@ public class PlayerStatemachineBehaviour : StateMachineBehaviour
         {
             animator.SetBool(Define.InteractionHash, false);
         }
-        if (currentTime >= 0.7 && currentTime <= 0.9 && isNextCombo)
+        if (currentTime >= 0.2 && currentTime <= 0.9 && isNextCombo)
         {
             int atkComboCount = animator.GetInteger(Define.AttackComboCount);
             atkComboCount = atkComboCount < 2 ? ++atkComboCount : 0;
@@ -34,8 +34,9 @@ public class PlayerStatemachineBehaviour : StateMachineBehaviour
         if (currentTime > 0.9)
         {
             animator.SetInteger(Define.AttackComboCount, 0);
-            animator.SetBool(Define.IsAttacking, false);
             animator.SetBool(Define.IsNextCombo, false);
+            animator.SetBool(Define.IsAttacking, false);
+            GameManager.Instance.OnTrailActivate?.Invoke(animator.GetBool(Define.IsAttacking));
             attackFlag = true;
         }
     }
@@ -45,5 +46,6 @@ public class PlayerStatemachineBehaviour : StateMachineBehaviour
         base.OnStateExit(animator, stateInfo, layerIndex);
         animator.SetBool(Define.IsNextCombo, false);
         animator.SetBool(Define.IsAttacking, false);
+        GameManager.Instance.OnTrailActivate?.Invoke(animator.GetBool(Define.IsAttacking));
     }
 }

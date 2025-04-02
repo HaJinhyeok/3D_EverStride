@@ -20,5 +20,5 @@ MonoBehaviour:
   Description: "\uB2E4\uC591\uD55C \uC6A9\uB3C4\uB85C \uC4F0\uC774\uB294 \uB098\uBB34\uC870\uAC01"
   isStack: 1
   Icon: {fileID: 21300000, guid: 65c59ccc59b5690458cb9e5324edc5dc, type: 3}
-  Prefab: {fileID: 4916674916012749688, guid: 3a52b7b5383913e47b444f9d96f968f5, type: 3}
+  Prefab: {fileID: 5396156836683072525, guid: 9e298f0a9227ef64aae152a0878a680c, type: 3}
   Ingredients: []

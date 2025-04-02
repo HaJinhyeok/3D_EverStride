@@ -47,11 +47,12 @@ public class CraftPanel : MonoBehaviour
     {
         for (int i = 0; i < CraftItemData.Count; i++)
         {
-            GameObject craftSlot = Instantiate(CraftItemSlot, Vector3.zero, Quaternion.Euler(10, 0, 0), CraftItemListPanel.transform);
+            GameObject craftSlot = Instantiate(CraftItemSlot, CraftItemListPanel.transform);
 
             craftSlot.GetComponent<CraftItemSlot>().ItemData = CraftItemData[i];
             //craftSlot.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
             craftSlot.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
+            craftSlot.GetComponent<RectTransform>().localEulerAngles = Vector3.zero;
             craftSlot.AddComponent<EventTrigger>();
 
             // 필요한 이벤트
@@ -74,6 +75,8 @@ public class CraftPanel : MonoBehaviour
         previewObject = Instantiate(currentItem.ItemData.Prefab, PreviewSpace.transform);
         previewObject.transform.localPosition = new Vector3(0, 0.2f, 0);
         previewObject.AddComponent<PreviewObject>();
+        if (previewObject.GetComponent<Pickaxe>())
+            previewObject.transform.localEulerAngles = new Vector3(0, 120, 0);
         previewObject.layer = LayerMask.NameToLayer("PreviewObject");
 
         CraftIngredientText.text = "";

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Axe : Weapon, IAttackable
+public class Axe : Weapon
 {
     void Start()
     {

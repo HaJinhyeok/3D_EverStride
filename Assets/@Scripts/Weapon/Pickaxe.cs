@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Pickaxe : Weapon, IAttackable
+public class Pickaxe : Weapon
 {
     void Start()
     {

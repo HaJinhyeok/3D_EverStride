@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class Weapon : MonoBehaviour
+public abstract class Weapon : MonoBehaviour, IAttackable
 {
     protected float _atk;
     protected Transform _player;
