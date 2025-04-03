@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 public class Define
 {
+    #region GameObjects
+    public const string CraftUI = "UI_Craft";
+    #endregion
+
     #region Input
     public const string MouseX = "Mouse X";
     public const string MouseY = "Mouse Y";

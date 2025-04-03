@@ -6,13 +6,12 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour, IDamageable
 {
-    public Scene scene;
+    public Camera CraftCamera;
+    public Camera PreviewCamera;
     public Inventory Inventory;
     public ShortcutInventory Shortcut;
-    public GameObject CraftPanel;
     public Image Stamina;
     public GameObject WeaponPos;
-    // public GameObject[] Weapons;
     public List<ItemData> IngredientData = new List<ItemData>();
 
     [SerializeField] GameObject stepRayUpper;
@@ -119,7 +118,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (SceneManager.GetActiveScene().name == Define.BossScene)
         {
             _isBossRaid = true;
-            CraftPanel = null;
+            CraftCamera = null;
             //IsCombatMode = true;
             _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
         }
@@ -147,7 +146,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         //InventoryOnOff(false);
         InventoryOn(false);
-        CraftPanelOn(false);
+        CraftUIOn(false);
         GameManager.Instance.LoadResources();
         GameManager.Instance.OnWeaponChanged.Invoke();
         Inventory.UpdateTestWeapons();
@@ -178,7 +177,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            CraftPanelOn(!GameManager.Instance.IsCraftPanelOn);
+            CraftUIOn(!GameManager.Instance.IsCraftPanelOn);
         }
         if (Input.GetKeyDown(KeyCode.I))
         {
@@ -461,10 +460,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     #endregion
 
     #region UI
-    void CraftPanelOn(bool state)
+    void CraftUIOn(bool state)
     {
         GameManager.Instance.IsCraftPanelOn = state;
-        CraftPanel?.gameObject.SetActive(state);
+        CraftCamera?.gameObject.SetActive(state);
+        PreviewCamera?.gameObject.SetActive(state);
     }
 
     void InventoryOn(bool state)
