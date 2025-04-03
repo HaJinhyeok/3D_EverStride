@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 {
     public Scene scene;
     public Inventory Inventory;
+    public ShortcutInventory Shortcut;
     public GameObject CraftPanel;
     public Image Stamina;
     public GameObject WeaponPos;
@@ -52,7 +53,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         set
         {
             _hp = value;
-
         }
     }
 
@@ -107,6 +107,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     //}
     #endregion
 
+    // Player Setting On Awake
     void Awake()
     {
         // * 컴포넌트
@@ -171,8 +172,6 @@ public class PlayerController : MonoBehaviour, IDamageable
                 StartCoroutine(Dash());
             }
 
-
-
             Move();
             Roll();
         }
@@ -186,32 +185,14 @@ public class PlayerController : MonoBehaviour, IDamageable
             InventoryOn(!GameManager.Instance.IsInventoryOn);
         }
 
-        if (Input.GetKeyDown("1"))
-        {
-            EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<WeaponItem>());
-        }
-        if (Input.GetKeyDown("2"))
-        {
-            EquipWeapon(GameManager.Instance.Weapons[2].GetComponent<WeaponItem>());
-        }
-        if (Input.GetKeyDown("3"))
-        {
-            EquipWeapon(GameManager.Instance.Weapons[3].GetComponent<WeaponItem>());
-        }
+        // 1~5번 단축키
+        UseShortcut();
+
+        // x를 눌러 무장해제
         if (Input.GetKeyDown(KeyCode.X))
         {
             UnequipWeapon();
         }
-
-        //if(Input.GetKeyDown(KeyCode.Q))
-        //{
-        //    GameManager.Instance.LoadResources();
-        //    for(int i=0;i<GameManager.Instance.Weapons.Length;i++)
-        //    {
-        //        Debug.Log(GameManager.Instance.Weapons[i].GetComponent<Weapon>().ItemData.name);
-        //    }
-        //}
-
         RecoverStamina();
     }
 
@@ -295,7 +276,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             IsGround = false;
             _animator.SetTrigger(Define.Jump);
-            _rigidbody.AddForce(Vector3.up * 300f);
+            _rigidbody.AddForce(Vector3.up * 200f);
         }
     }
 
@@ -383,6 +364,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
+    #region Player Utility
     void RecoverStamina()
     {
         if (!IsDash)
@@ -402,6 +384,30 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
         return false;
     }
+
+    void UseShortcut()
+    {
+        if (Input.GetKeyDown("1"))
+        {
+            EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<WeaponItem>());
+            
+        }
+        if (Input.GetKeyDown("2"))
+        {
+            EquipWeapon(GameManager.Instance.Weapons[2].GetComponent<WeaponItem>());
+        }
+        if (Input.GetKeyDown("3"))
+        {
+            EquipWeapon(GameManager.Instance.Weapons[3].GetComponent<WeaponItem>());
+        }
+        if (Input.GetKeyDown("4"))
+        {
+        }
+        if (Input.GetKeyDown("5"))
+        {
+        }
+    }
+    #endregion
 
     #region Weapon
     public void EquipWeapon(WeaponItem weapon)
@@ -470,6 +476,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
     {
+        if (_hp <= 0) return;
         if (_animator.GetBool(Define.NoDamageMode))
         {
             Debug.Log("Take No Damage!");
@@ -483,6 +490,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (_hp <= 0)
             {
                 Debug.Log("Game Over!!!");
+                _animator.SetTrigger(Define.Die);
             }
         }
     }

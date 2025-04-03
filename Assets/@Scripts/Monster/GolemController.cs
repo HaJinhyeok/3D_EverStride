@@ -8,7 +8,7 @@ public class GolemController : MonoBehaviour, IDamageable
 
     float _attackRange = 2f;
     float _speed = 3f;
-    float _hp = 100;
+    float _hp = 1000;
     float _atk = 10;
     [Header("SightRange")]
     public float sightRange = 15f;
@@ -90,6 +90,7 @@ public class GolemController : MonoBehaviour, IDamageable
 
     public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
     {
+        if (_animator.GetBool(Define.Die)) return;
         _hp -= damage * bonusDamage;
         _animator.SetTrigger(Define.TakeDamage);
         Debug.Log($"Current Golem HP: {_hp}, Attacker name: {attacker.name}");
@@ -97,7 +98,8 @@ public class GolemController : MonoBehaviour, IDamageable
         {
             Debug.Log("Golem Die");
             //Destroy(gameObject);
-            _animator.SetTrigger(Define.Die);
+            _animator.SetBool(Define.Die, true);
+            //_animator.Play("Die");
         }
     }
 

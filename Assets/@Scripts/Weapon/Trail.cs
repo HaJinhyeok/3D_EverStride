@@ -4,7 +4,7 @@ public class Trail : MonoBehaviour
 {
     bool _isActive = false;
 
-    void Start()
+    private void OnEnable()
     {
         _isActive = GameManager.Instance.Player.transform.GetChild(0).GetComponent<Animator>().GetBool(Define.IsAttacking);
     }

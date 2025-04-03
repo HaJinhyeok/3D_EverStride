@@ -5,7 +5,6 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
-using UnityEditor;
 
 public static class MouseData
 {
@@ -18,14 +17,18 @@ public static class MouseData
 public class Inventory : MonoBehaviour
 {
     public GameObject Slot;
+    public ShortcutInventory _shortcutInventory;
 
-    Vector2 _start = new Vector2(-110, 120);    // 인벤토리 생성 시작 위치
-    Vector2 _size = new Vector2(50, 50);        // 슬롯 크기
-    Vector2 _space = new Vector2(5, 5);         // 슬롯 간의 여백
-    int _numberOfColumn = 5;
+    protected Vector2 _start = new Vector2(-110, 150);    // 인벤토리 생성 시작 위치
+    protected Vector2 _size = new Vector2(50, 50);        // 슬롯 크기
+    protected Vector2 _space = new Vector2(5, 5);         // 슬롯 간의 여백
+    protected int _numberOfColumn = 5;
 
-    Slot[] _slots = new Slot[30];
-    Dictionary<GameObject, Slot> _slotUIs = new Dictionary<GameObject, Slot>();
+    Vector2 _shortcutStart = new Vector2(-110, -150);
+
+    Slot[] _slots = new Slot[25];
+    Slot[] _shortcutSlot = new Slot[5];
+    protected Dictionary<GameObject, Slot> _slotUIs = new Dictionary<GameObject, Slot>();
 
     public Action<ItemData> OnUseItem;
 
@@ -63,6 +66,14 @@ public class Inventory : MonoBehaviour
         return new Vector3(x, y, 0);
     }
 
+    Vector2 CalculateShortcutPosition(int i)
+    {
+        float x = _shortcutStart.x + ((_space.x + _size.x) * (i % _numberOfColumn));
+        float y = _shortcutStart.y + (-(_space.y + _size.y) * (i / _numberOfColumn));
+
+        return new Vector3(x, y, 0);
+    }
+
     GameObject CreateDragImage(GameObject go)
     {
         if (_slotUIs[go].ItemData == null)
@@ -83,7 +94,7 @@ public class Inventory : MonoBehaviour
         return dragImage;
     }
 
-    void AddEvent(GameObject go, EventTriggerType type, UnityAction<BaseEventData> action)
+    protected void AddEvent(GameObject go, EventTriggerType type, UnityAction<BaseEventData> action)
     {
         var trigger = go.GetComponent<EventTrigger>();
         if (!trigger)
@@ -95,7 +106,7 @@ public class Inventory : MonoBehaviour
         trigger.triggers.Add(eventTrigger);
     }
 
-    public void OnEnterInterface(GameObject go)
+    public virtual void OnEnterInterface(GameObject go)
     {
         MouseData.MouseOverInventory = go.GetComponent<Inventory>();
     }
@@ -244,6 +255,28 @@ public class Inventory : MonoBehaviour
             _slots[i].OnPostUpdate += OnPostUpdate;
             _slotUIs.Add(go, _slots[i]);
             go.name = "Slot : " + i;
+        }
+        for (int i = 0; i < _shortcutSlot.Length; i++)
+        {
+            GameObject go = Instantiate(Slot, transform);
+
+            //go.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
+            go.GetComponent<RectTransform>().localPosition = CalculateShortcutPosition(i);
+            go.AddComponent<EventTrigger>();
+
+            AddEvent(go, EventTriggerType.PointerEnter, delegate { OnEnterSlot(go); });
+            AddEvent(go, EventTriggerType.PointerExit, delegate { OnEnterSlot(go); });
+
+            AddEvent(go, EventTriggerType.BeginDrag, delegate { OnStartDrag(go); });
+            AddEvent(go, EventTriggerType.EndDrag, delegate { OnEndDrag(go); });
+
+            AddEvent(go, EventTriggerType.Drag, delegate { OnDrag(go); });
+            AddEvent(go, EventTriggerType.PointerClick, (data) => { OnClick(go, (PointerEventData)data); });
+
+            _slots[i] = go.GetComponent<Slot>();
+            _slots[i].OnPostUpdate += OnPostUpdate;
+            _slotUIs.Add(go, _slots[i]);
+            go.name = "SrhotcutSlot : " + i;
         }
     }
 

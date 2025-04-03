@@ -12,7 +12,7 @@ public class Define
     #endregion
 
     #region Constants
-    public const float PlayerMaxHp = 100f;
+    public const float PlayerMaxHp = 30f;
     public const float PlayerRollStamina = 20f;
     #endregion
 

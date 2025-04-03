@@ -10,7 +10,7 @@ public class PlayerRollStateMachine : StateMachineBehaviour
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateUpdate(animator, stateInfo, layerIndex);
-        if(stateInfo.normalizedTime>0.7f)
+        if (stateInfo.normalizedTime > 0.7f)
         {
             animator.SetBool(Define.NoDamageMode, false);
         }
