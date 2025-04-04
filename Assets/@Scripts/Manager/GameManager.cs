@@ -10,6 +10,9 @@ public class GameManager : Singleton<GameManager>
     public Action OnWeaponChanged;
     public Action<bool> OnTrailActivate;
 
+    // 씬 넘어갈 때 플레이어 스폰 위치 확인용?
+    public Define.GameState GameState = Define.GameState.Default;
+
     public PlayerController Player
     {
         get { return player; }

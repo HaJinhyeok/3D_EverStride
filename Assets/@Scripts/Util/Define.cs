@@ -70,6 +70,13 @@ public class Define
         Sword,          // °Ë
         Pickaxe,        // °î±ªÀÌ
     }
+
+    public enum GameState : int
+    {
+        Default = 0,
+        PlayerDie,
+    }
+
     public enum IngredientType : int
     {
         None = -1,

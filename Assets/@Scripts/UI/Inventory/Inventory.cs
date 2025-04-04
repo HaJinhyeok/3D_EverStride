@@ -17,7 +17,7 @@ public static class MouseData
 public class Inventory : MonoBehaviour
 {
     public GameObject Slot;
-    public ShortcutInventory _shortcutInventory;
+    public ShortcutInventory ShortcutInventory;
 
     protected Vector2 _start = new Vector2(-110, 150);    // 인벤토리 생성 시작 위치
     protected Vector2 _size = new Vector2(50, 50);        // 슬롯 크기
@@ -27,7 +27,7 @@ public class Inventory : MonoBehaviour
     Vector2 _shortcutStart = new Vector2(-110, -150);
 
     Slot[] _slots = new Slot[25];
-    Slot[] _shortcutSlot = new Slot[5];
+    Slot[] _shortcutSlots = new Slot[5];
     protected Dictionary<GameObject, Slot> _slotUIs = new Dictionary<GameObject, Slot>();
 
     public Action<ItemData> OnUseItem;
@@ -55,7 +55,6 @@ public class Inventory : MonoBehaviour
         slot.IconImage.sprite = isExist ? slot.ItemData.Icon : null;
         slot.IconImage.color = isExist ? new Color(1, 1, 1, 1) : new Color(0, 0, 0, 0); // 불투명 - 투명
         slot.AmountText.text = isExist ? slot.Amount.ToString() : string.Empty;
-        // Debug.Log("OnPostUpdate...");
     }
 
     Vector2 CalculatePosition(int i)
@@ -133,8 +132,8 @@ public class Inventory : MonoBehaviour
         if (MouseData.DragImage == null)
             return;
         //EditorApplication.isPaused = true;
-        //MouseData.DragImage.GetComponent<RectTransform>().position = Input.mousePosition;
-        MouseData.DragImage.GetComponent<RectTransform>().localPosition = Input.mousePosition;
+        MouseData.DragImage.GetComponent<RectTransform>().position = Input.mousePosition;
+        //MouseData.DragImage.GetComponent<RectTransform>().localPosition = Input.mousePosition;
     }
 
     public void OnEndDrag(GameObject go)
@@ -150,6 +149,7 @@ public class Inventory : MonoBehaviour
         {
             Slot mouseHoverSlot = MouseData.MouseOverInventory._slotUIs[MouseData.SlotHoveredOver];
             SwapItems(_slotUIs[go], mouseHoverSlot);
+            ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
         }
     }
 
@@ -163,22 +163,33 @@ public class Inventory : MonoBehaviour
         slotA.UpdateSlot(tempData, tempAmount);
     }
 
+    // 슬롯의 아이템 사용하기
     public void UseItem(Slot slot)
     {
         if (slot.ItemData == null || slot.Amount <= 0)
         {
-            ItemData itemData = slot.ItemData;
-            slot.UpdateSlot(slot.ItemData, slot.Amount - 1);
-            OnUseItem?.Invoke(itemData);
+            return;
+        }
+        ItemData itemData = slot.ItemData;
+        slot.UpdateSlot(slot.ItemData, slot.Amount - 1);
+        OnUseItem?.Invoke(itemData);
+    }
+
+    // idx 번째 슬롯의 아이템 사용하기
+    public void UseItem(int idx)
+    {
+        if(idx>=25)
+        {
+            ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
         }
     }
 
     void OnRightClick(Slot slot)
     {
-        if(slot.ItemData.WeaponType!=Define.WeaponType.None)
-        {
-            GameManager.Instance.Player.EquipWeapon(slot.ItemData.Prefab.GetComponent<WeaponItem>());
-        }
+        //if(slot.ItemData.WeaponType!=Define.WeaponType.None)
+        //{
+        //    GameManager.Instance.Player.EquipWeapon(slot.ItemData.Prefab.GetComponent<WeaponItem>());
+        //}
         UseItem(slot);
     }
 
@@ -256,7 +267,7 @@ public class Inventory : MonoBehaviour
             _slotUIs.Add(go, _slots[i]);
             go.name = "Slot : " + i;
         }
-        for (int i = 0; i < _shortcutSlot.Length; i++)
+        for (int i = 0; i < _shortcutSlots.Length; i++)
         {
             GameObject go = Instantiate(Slot, transform);
 
@@ -273,9 +284,9 @@ public class Inventory : MonoBehaviour
             AddEvent(go, EventTriggerType.Drag, delegate { OnDrag(go); });
             AddEvent(go, EventTriggerType.PointerClick, (data) => { OnClick(go, (PointerEventData)data); });
 
-            _slots[i] = go.GetComponent<Slot>();
-            _slots[i].OnPostUpdate += OnPostUpdate;
-            _slotUIs.Add(go, _slots[i]);
+            _shortcutSlots[i] = go.GetComponent<Slot>();
+            _shortcutSlots[i].OnPostUpdate += OnPostUpdate;
+            _slotUIs.Add(go, _shortcutSlots[i]);
             go.name = "SrhotcutSlot : " + i;
         }
     }
@@ -292,7 +303,8 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < 3; i++)
         {
-            _slots[i].UpdateSlot(GameManager.Instance.Weapons[i + 1].GetComponent<WeaponItem>().ItemData, 1);
+            _shortcutSlots[i].UpdateSlot(GameManager.Instance.Weapons[i + 1].GetComponent<WeaponItem>().ItemData, 1);
         }
+        ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
     }
 }

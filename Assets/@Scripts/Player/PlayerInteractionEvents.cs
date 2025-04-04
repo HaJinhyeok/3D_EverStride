@@ -6,7 +6,6 @@ public class PlayerInteractionEvents : MonoBehaviour
 
     void Start()
     {
-        //animator = GameManager.Instance.Player.GetComponentInChildren<Animator>();
         animator = GetComponent<Animator>();
     }
 
@@ -18,5 +17,10 @@ public class PlayerInteractionEvents : MonoBehaviour
     public void OffInteractionHash()
     {
         animator.SetBool(Define.InteractionHash, false);
+    }
+
+    public void OffIsAttacking()
+    {
+        animator.SetBool(Define.IsAttacking, false);
     }
 }

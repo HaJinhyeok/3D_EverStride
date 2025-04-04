@@ -16,7 +16,7 @@ public class Slot : MonoBehaviour
     public Slot(ItemData itemData, int amount) => UpdateSlot(itemData, amount);
     public void AddAmount(int amount) => UpdateSlot(ItemData, Amount += amount);
 
-    private void Start()
+    private void Awake()
     {
         IconImage.color = new Color(0, 0, 0, 0);
         AmountText.text = string.Empty;

@@ -8,7 +8,7 @@ public class GolemController : MonoBehaviour, IDamageable
 
     float _attackRange = 2f;
     float _speed = 3f;
-    float _hp = 1000;
+    float _hp = 10;
     float _atk = 10;
     [Header("SightRange")]
     public float sightRange = 15f;
@@ -106,5 +106,6 @@ public class GolemController : MonoBehaviour, IDamageable
     public void Die()
     {
         Destroy(gameObject, 2f);
+        ResultPanel.ResultPanelAction?.Invoke(true);
     }
 }

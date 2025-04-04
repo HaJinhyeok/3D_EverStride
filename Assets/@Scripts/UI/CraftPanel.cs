@@ -158,21 +158,21 @@ public class CraftPanel : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        // previewCamera 활성화
-        PreviewSpace.transform.GetChild(0).gameObject.SetActive(true);
-    }
+    //private void OnEnable()
+    //{
+    //    // previewCamera 활성화
+    //    PreviewSpace.transform.GetChild(0).gameObject.SetActive(true);
+    //}
 
-    private void OnDisable()
-    {
-        // previewObject 있으면 파괴
-        if (PreviewSpace.transform.childCount >= 4)
-        {
-            GameObject previewObject = PreviewSpace.transform.GetChild(3).gameObject;
-            Destroy(previewObject);
-        }
-        // previewCamera 비활성화
-        PreviewSpace.transform.GetChild(0).gameObject.SetActive(false);
-    }
+    //private void OnDisable()
+    //{
+    //    // previewObject 있으면 파괴
+    //    if (PreviewSpace?.transform.childCount >= 4)
+    //    {
+    //        GameObject previewObject = PreviewSpace.transform.GetChild(3).gameObject;
+    //        Destroy(previewObject);
+    //    }
+    //    // previewCamera 비활성화
+    //    PreviewSpace.transform.GetChild(0).gameObject.SetActive(false);
+    //}
 }

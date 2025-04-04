@@ -26,11 +26,12 @@ public class PlayerController : MonoBehaviour, IDamageable
     Camera _camera;
     Transform _camAxis;
     float _camSpeed = 8f;
+    float _rotationSpeed = 10f;
     float _mouseX = 0f;
     float _mouseY = 4f;
     float _wheel = -10f;
     float _speed = 5f;
-    float _dashSpeed = 15f;
+    float _dashSpeed = 10f;
     float _dashTime = 1f;
     float _maxStamina = 100f;
     float _stamina = 100f;
@@ -119,6 +120,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             _isBossRaid = true;
             CraftCamera = null;
+            PreviewCamera = null;
             //IsCombatMode = true;
             _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
         }
@@ -142,7 +144,8 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         for (int i = 0; i < IngredientData.Count; i++)
         {
-            Define.IngredientData.Add(IngredientData[i].IngredientType, IngredientData[i]);
+            if (!Define.IngredientData.ContainsKey(IngredientData[i].IngredientType))
+                Define.IngredientData.Add(IngredientData[i].IngredientType, IngredientData[i]);
         }
         //InventoryOnOff(false);
         InventoryOn(false);
@@ -222,7 +225,16 @@ public class PlayerController : MonoBehaviour, IDamageable
             _rigidbody.linearVelocity = localMovement.normalized * _speed + new Vector3(0, velY, 0);
             //_rigidbody.linearVelocity = localMovement.normalized * _speed + tmpGravity;
 
-            _character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), 5 * Time.deltaTime);
+            _character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
+        }
+        else if ((Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical)) && IsAttacking)
+        {
+            float h = Input.GetAxis(Define.Horizontal);
+            float v = Input.GetAxis(Define.Vertical);
+
+            transform.rotation = Quaternion.Euler(new Vector3(0, _camAxis.rotation.y + _mouseX, 0) * _camSpeed);
+            //Vector3 movement = new Vector3(h, 0, v);
+            //_character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
         }
         else
         {
@@ -303,6 +315,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             {
                 _stamina -= Define.PlayerRollStamina;
                 _animator.SetTrigger(Define.Roll);
+                _animator.SetBool(Define.IsAttacking, false);
             }
         }
     }
@@ -316,6 +329,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         bool isUIClick = UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
         bool isLeftMouseDown = Input.GetMouseButtonDown(0);
         if (isLeftMouseDown == false || isUIClick)
+            return;
+        if (!IsGround)
             return;
         if (IsAttacking == false)
         {
@@ -388,44 +403,58 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (Input.GetKeyDown("1"))
         {
-            EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<WeaponItem>());
-            
+            //EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<WeaponItem>());
+            EquipWeapon(Shortcut.UseShortcutItem(0), 0);
         }
         if (Input.GetKeyDown("2"))
         {
-            EquipWeapon(GameManager.Instance.Weapons[2].GetComponent<WeaponItem>());
+            EquipWeapon(Shortcut.UseShortcutItem(1), 1);
         }
         if (Input.GetKeyDown("3"))
         {
-            EquipWeapon(GameManager.Instance.Weapons[3].GetComponent<WeaponItem>());
+            EquipWeapon(Shortcut.UseShortcutItem(2), 2);
         }
         if (Input.GetKeyDown("4"))
         {
+            EquipWeapon(Shortcut.UseShortcutItem(3), 3);
         }
         if (Input.GetKeyDown("5"))
         {
+            EquipWeapon(Shortcut.UseShortcutItem(4), 4);
         }
     }
     #endregion
 
     #region Weapon
-    public void EquipWeapon(WeaponItem weapon)
+    public void EquipWeapon(Slot currentSlot, int idx)
     {
-        Slot slot = Inventory.FindItemInInventory(weapon);
-        if (slot == null)
-        {
-            Debug.Log($"인벤토리에 {weapon.ItemData.name}이(가) 없습니다");
+        //Slot slot = Inventory.FindItemInInventory(weapon);
+        //if (slot == null)
+        //{
+        //    Debug.Log($"인벤토리에 {weapon.ItemData.name}이(가) 없습니다");
+        //    return;
+        //}
+        if (currentSlot.ItemData == null)
             return;
-        }
-        if (WeaponPos.transform.childCount > 0)
+        // 장비 아이템일 경우
+        if (currentSlot.ItemData.ItemType == Define.ItemType.Equipment)
         {
-            // 장착해제 해주고 인벤토리로 반환
-            UnequipWeapon();
+            if (WeaponPos.transform.childCount > 0)
+            {
+                // 장착해제
+                UnequipWeapon();
+            }
+            GameObject newWeapon = Instantiate(GameManager.Instance.Weapons[(int)currentSlot.ItemData.WeaponType], WeaponPos.transform);
+            WeaponTypeHash = (int)currentSlot.ItemData.WeaponType;
+            GameManager.Instance.OnWeaponChanged?.Invoke();
         }
-        slot.UpdateSlot(null, 0);
-        GameObject newWeapon = Instantiate(GameManager.Instance.Weapons[(int)weapon.ItemData.WeaponType], WeaponPos.transform);
-        WeaponTypeHash = (int)weapon.ItemData.WeaponType;
-        GameManager.Instance.OnWeaponChanged?.Invoke();
+        // 소비 및 재료 아이템일 경우
+        else if (currentSlot.ItemData.ItemType == Define.ItemType.Countable)
+        {
+            Debug.Log("할 동작이 없습니다");
+        }
+
+        //slot.UpdateSlot(null, 0);
     }
 
     public Define.WeaponType UnequipWeapon()
@@ -439,9 +468,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (weapon == null)
             return Define.WeaponType.None;
         Define.WeaponType weaponType = weapon.GetComponent<WeaponItem>().GetWeaponType();
-        Inventory.AddItem(weapon.GetComponent<WeaponItem>(), 1);
+        //Inventory.AddItem(weapon.GetComponent<WeaponItem>(), 1);
         Destroy(weapon);
+        // 맨손
         WeaponTypeHash = -1;
+        GameManager.Instance.OnWeaponChanged?.Invoke();
 
         return weaponType;
     }
@@ -490,6 +521,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (_hp <= 0)
             {
                 Debug.Log("Game Over!!!");
+                ResultPanel.ResultPanelAction?.Invoke(false);
                 _animator.SetTrigger(Define.Die);
             }
         }

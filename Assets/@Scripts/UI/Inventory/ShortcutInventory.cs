@@ -25,7 +25,7 @@ public class ShortcutInventory : Inventory
         {
             GameObject go = Instantiate(Slot, transform);
 
-            go.GetComponent<RectTransform>().localPosition = CalculatePosition(i);            
+            go.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
             // 이벤트 트리거는 일단 보류
             //go.AddComponent<EventTrigger>();
 
@@ -33,11 +33,23 @@ public class ShortcutInventory : Inventory
             //AddEvent(go, EventTriggerType.Drag, delegate { OnDrag(go); });
             //AddEvent(go, EventTriggerType.EndDrag, delegate { OnEndDrag(go); });
 
-            ShortcutSlot[i]=go.GetComponent<Slot>();
+            ShortcutSlot[i] = go.GetComponent<Slot>();
             ShortcutSlot[i].OnPostUpdate += OnPostUpdate;
-            _slotUIs.Add(go,ShortcutSlot[i]);
+            _slotUIs.Add(go, ShortcutSlot[i]);
             go.name = "ShortcutSlot : " + i;
         }
+    }
+    public void UpdateShortcutInventory(Slot[] shortcutSlots)
+    {
+        for (int i = 0; i < ShortcutSlot.Length; i++)
+        {
+            ShortcutSlot[i].UpdateSlot(shortcutSlots[i].ItemData, shortcutSlots[i].Amount);
+        }
+    }
+
+    public Slot UseShortcutItem(int idx)
+    {
+        return ShortcutSlot[idx];
     }
 
     private void Awake()
