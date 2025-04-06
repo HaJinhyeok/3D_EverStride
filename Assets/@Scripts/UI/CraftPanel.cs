@@ -95,6 +95,9 @@ public class CraftPanel : MonoBehaviour
 
     void OnCraftButtonClick()
     {
+        if (currentItem == null)
+            return;
+
         // 필요한 재료가 충분히 있는지 확인
         // 현재 제작 대상 아이템 + 인벤토리 정보
 

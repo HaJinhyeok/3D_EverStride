@@ -2,9 +2,15 @@
 
 << 추가할 내용 >>
 *** UI + 소드 트레일 ***
+- 소드 트레일 수정
+- 팝업 경고문
+- CraftPanel 크기만큼 클릭이 안됨 v
+- 보스가 맞는 모션 중인데 플레이어 피가 닳아버리는 현상
+
+
 - Craft창 + preview image만 UI 따로 정하고, 나머지는 UI 따로 설정하면 드래그문제 다시 해결되지 않을까 v
 
--- BossScene으로 넘어가서 한 대 맞고 확인해보면, 플레이어 체력바 이미지가 갑자기 null이 되어버림
+-- BossScene으로 넘어가서 한 대 맞고 확인해보면, 플레이어 체력바 이미지가 갑자기 null이 되어버림 v -> 해결: Scene 넘어갈때 Action빼주어야함!(Singleton이 아니라면)
 
 -- Player Sword Combo 공격 제대로 안됨 수정 필요 v
 -- 맨손 상태에서 주먹질 애니메이션 추가하기 v -> 콤보???는 일단 보류
@@ -21,7 +27,7 @@
 build_building_01_a
 build_building_02_a
 wood_tiled_01_n.tif
--- 플레이어 레이드에서 콤보 마지막 공격 시, 모션 제대로 하기도 전에 isAttacking false되어 이동 가능해지는 현상 -> 그 전 공격 state가 exit되며 OnStateExit를 호출해버려 그런듯
+-- 플레이어 레이드에서 콤보 마지막 공격 시, 모션 제대로 하기도 전에 isAttacking false되어 이동 가능해지는 현상 -> 그 전 공격 state가 exit되며 OnStateExit를 호출해버려 그런듯 v 이것도 나름 Animation Event 꼼수로해결
 
 < ShortcutInventory >
 - shotcut: 우하단, 해당 단축키 숫자 버튼 클릭 시 아이템 빠른 사용 가능 / inventory 상속 받기?
@@ -34,7 +40,7 @@ wood_tiled_01_n.tif
 -- 일반에서는 광질 및 도끼질 모션
 -- 보스전에서는 검 사용 시 콤보 공격, 곡괭이나 도끼는 내려찍기 공격
 
-- 보스는 공격 3단콤보까지 존재(왼손 - 오른손 - 양손)
+- 보스는 공격 3단콤보까지 존재(왼손 - 오른손 - 양손) v
 
 - 보스는 기본 골렘, 에셋 스토어 오크, 인간형 하나?
 

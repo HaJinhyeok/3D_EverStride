@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 {
     public Camera CraftCamera;
     public Camera PreviewCamera;
+    public GameObject CraftPanel;
     public Inventory Inventory;
     public ShortcutInventory Shortcut;
     public Image Stamina;
@@ -162,20 +163,26 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        if (!GameManager.Instance.IsCraftPanelOn)
+        Jump();
+        Attack();
+        Move();
+        Roll();
+
+        // 대쉬
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !IsDash)
         {
-            Jump();
-            Attack();
+            StartCoroutine(Dash());
+        }
+
+        // x를 눌러 무장해제
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            UnequipWeapon();
+        }
+        // ui 켜지면 카메라 정신사납지 않게 가만히
+        if (!GameManager.Instance.IsUIOn)
+        {
             CameraMove();
-
-            // 대쉬
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !IsDash)
-            {
-                StartCoroutine(Dash());
-            }
-
-            Move();
-            Roll();
         }
 
         if (Input.GetKeyDown(KeyCode.T))
@@ -186,15 +193,9 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             InventoryOn(!GameManager.Instance.IsInventoryOn);
         }
-
         // 1~5번 단축키
         UseShortcut();
-
-        // x를 눌러 무장해제
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            UnequipWeapon();
-        }
+        // 스태미나 회복
         RecoverStamina();
     }
 
@@ -494,13 +495,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     void CraftUIOn(bool state)
     {
         GameManager.Instance.IsCraftPanelOn = state;
+        GameManager.Instance.IsUIOn = state;
         CraftCamera?.gameObject.SetActive(state);
+        CraftPanel?.SetActive(state);
         PreviewCamera?.gameObject.SetActive(state);
     }
 
     void InventoryOn(bool state)
     {
         GameManager.Instance.IsInventoryOn = state;
+        GameManager.Instance.IsUIOn = state;
         Inventory.gameObject.SetActive(state);
     }
     #endregion

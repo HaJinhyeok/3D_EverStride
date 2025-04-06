@@ -17,17 +17,14 @@ public class PlayerHpBar : MonoBehaviour
         PlayerHpText.text = $"{GameManager.Instance.Player.PlayerHp} / {Define.PlayerMaxHp}";
     }
 
-    private void Update()
-    {
-        if(PlayerHpImage==null)
-        {
-            Debug.Log("개버그네 시발 왜사라짐");
-        }
-    }
-
     void OnPlayerHpChanged()
     {
-        PlayerHpImage.fillAmount = GameManager.Instance.Player.PlayerHp / Define.PlayerMaxHp;
         PlayerHpText.text = $"{GameManager.Instance.Player.PlayerHp} / {Define.PlayerMaxHp}";
+        PlayerHpImage.fillAmount = GameManager.Instance.Player.PlayerHp / Define.PlayerMaxHp;
+    }
+
+    private void OnDisable()
+    {
+        PlayerHpAction -= OnPlayerHpChanged;
     }
 }

@@ -18,6 +18,12 @@ public class GameManager : Singleton<GameManager>
         get { return player; }
     }
 
+    public bool IsUIOn
+    {
+        get;
+        set;
+    }
+
     public bool IsCraftPanelOn
     {
         get;

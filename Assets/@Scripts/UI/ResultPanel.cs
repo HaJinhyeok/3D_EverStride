@@ -16,6 +16,11 @@ public class ResultPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        GameManager.Instance.IsUIOn = true;
+    }
+
     void OnResultButtonClick()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(Define.GameScene);
@@ -34,5 +39,11 @@ public class ResultPanel : MonoBehaviour
             ResultText.text = "You Died...";
         }
         gameObject.SetActive(true);
+    }
+
+    private void OnDisable()
+    {
+        ResultPanelAction -= ResultPanelOn;
+        GameManager.Instance.IsUIOn = false;
     }
 }
