@@ -145,6 +145,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         _camera.transform.parent = _camAxis;
         //_camera.transform.localPosition = Vector3.zero;
         _camera.transform.localPosition = new Vector3(0, 0, -3);
+        ConversationCamera.gameObject.SetActive(false);
 
         // * ±× ¿Ü
         _npcMask = LayerMask.GetMask(Define.NPCMask);
@@ -451,14 +452,14 @@ public class PlayerController : MonoBehaviour, IDamageable
             ConversationCamera.gameObject.SetActive(true);
             GameObject.Find(Define.GameUI).SetActive(false);
             GameManager.Instance.IsConversating = true;
-            ConversationPanel.OnConversationStart(Define.NPCHello);
+            ConversationPanel.OnConversationStart(Define.NPC_Quest_Golem);
         }
     }
 
     void LookNPC(Vector3 pos)
     {
         transform.position = pos - new Vector3(0, 0, -3);
-        transform.rotation = Quaternion.LookRotation(pos - transform.position);
+        _character.rotation = Quaternion.LookRotation(pos - transform.position);
     }
     #endregion
 

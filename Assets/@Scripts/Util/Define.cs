@@ -112,6 +112,16 @@ public class Define
     #endregion
 
     #region NPCtalking
-    public const string NPCHello = "안녕? 만나서 반가워.";
+    public readonly static string[] NPC_Quest_Wood = {
+        "안녕? 날씨가 참 좋아, 그렇지?",
+            "\n슬슬 날씨가 추워질 것 같은데," +
+            "\n뗄감으로 쓸 나무조각 좀 모아다주겠어?" };
+    public readonly static string[] NPC_Quest_Golem = {
+        "안녕? 만나서 반가워.",
+        "\n골렘 몬스터가 나타났는데,\n네가 좀 처치해줄 수 있을까?" +
+            "\n푸른 포탈을 사용하면 골렘을 처치하러 갈 수 있어." };
+
+    public readonly static string[] NPC_TOO_BAD = { "이런...유감이군." };
+    public readonly static string[] NPC_GOOD = { "좋아! 잘 부탁해!" };
     #endregion
 }

@@ -10,11 +10,10 @@ public class ConversationPanel : MonoBehaviour
     public Button NoButton;
     public Camera ConversationCamera;
     public Text ConversationText;
-    public static Action<string> OnConversationStart;
+    public static Action<string[]> OnConversationStart;
 
     Text _npcName;
     GameObject _gameUI;
-    string _currentComment = Define.NPCHello;
 
     void Start()
     {
@@ -24,44 +23,57 @@ public class ConversationPanel : MonoBehaviour
         ConversationText.text = "";
         OnConversationStart += ConversationStart;
 
-        YesButton.onClick.AddListener(OnYesButtonClick);
-        NoButton.onClick.AddListener(OnNoButtonClick);
+        YesButton.onClick.AddListener(() => StartCoroutine(OnYesButtonClick()));
+        NoButton.onClick.AddListener(() => StartCoroutine(OnNoButtonClick()));
+        YesButton.gameObject.SetActive(false);
+        NoButton.gameObject.SetActive(false);
     }
 
-    void ConversationStart(string comment)
+    void ConversationStart(string[] comment)
     {
-        StartCoroutine(CoWriteComment(comment));
+        NPC.GetComponent<Animator>().SetTrigger(Define.NPCSuggest);
+        StartCoroutine(CoWriteComment(comment, true));
     }
 
-    void OnYesButtonClick()
+    IEnumerator OnYesButtonClick()
     {
         NPC.GetComponent<Animator>().SetTrigger(Define.NPCPointing);
+        yield return StartCoroutine(CoWriteComment(Define.NPC_GOOD, false));
         // 퀘스트 수락 후 카메라 종료
         ConversationCamera.gameObject.SetActive(false);
         GameManager.Instance.IsConversating = false;
         _gameUI.SetActive(true);
     }
 
-    void OnNoButtonClick()
+    IEnumerator OnNoButtonClick()
     {
         NPC.GetComponent<Animator>().SetTrigger(Define.NPCWhy);
+        yield return StartCoroutine(CoWriteComment(Define.NPC_TOO_BAD, false));
         // 그냥 카메라 종료
         ConversationCamera.gameObject.SetActive(false);
         GameManager.Instance.IsConversating = false;
         _gameUI.SetActive(true);
     }
 
-    IEnumerator CoWriteComment(string comment)
+    IEnumerator CoWriteComment(string[] comment, bool buttonOn)
     {
-        foreach (char ch in comment.ToCharArray())
+        ConversationText.text = "";
+        for (int i = 0; i < comment.Length; i++)
         {
-            ConversationText.text += ch;
-            yield return new WaitForSeconds(0.1f);
+            foreach (char ch in comment[i].ToCharArray())
+            {
+                ConversationText.text += ch;
+                yield return new WaitForSeconds(0.1f);
+            }
+            yield return new WaitUntil(() => (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.G)));
         }
+
+        YesButton.gameObject.SetActive(buttonOn);
+        NoButton.gameObject.SetActive(buttonOn);
     }
 
     private void OnDestroy()
     {
-        OnConversationStart-= ConversationStart;
+        OnConversationStart -= ConversationStart;
     }
 }
