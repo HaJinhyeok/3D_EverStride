@@ -43,7 +43,11 @@ public class ResultPanel : MonoBehaviour
 
     private void OnDisable()
     {
-        ResultPanelAction -= ResultPanelOn;
         GameManager.Instance.IsUIOn = false;
+    }
+
+    private void OnDestroy()
+    {
+        ResultPanelAction -= ResultPanelOn;
     }
 }

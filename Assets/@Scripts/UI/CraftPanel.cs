@@ -113,6 +113,7 @@ public class CraftPanel : MonoBehaviour
         {
             // 재료가 부족하다는 문구 출력
             Debug.Log("Not enough mineral!!!");
+            UI_Warning.Instance.WarningEffect(Define.NotEnoughMineral);
         }
     }
 

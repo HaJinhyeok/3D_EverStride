@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class Define
 {
     #region GameObjects
+    public const string GameUI = "UI_Game";
     public const string CraftUI = "UI_Craft";
     #endregion
 
@@ -16,7 +17,7 @@ public class Define
     #endregion
 
     #region Constants
-    public const float PlayerMaxHp = 30f;
+    public const float PlayerMaxHp = 300f;
     public const float PlayerRollStamina = 20f;
     #endregion
 
@@ -38,6 +39,13 @@ public class Define
 
     public readonly static int AttackComboCount = Animator.StringToHash("AttackComboCount");
     public readonly static int ComboCount = Animator.StringToHash("ComboCount");
+
+    // NPC animator
+    public readonly static int NPCHey = Animator.StringToHash("Hey");
+    public readonly static int NPCWhy = Animator.StringToHash("Why");
+    public readonly static int NPCClapping = Animator.StringToHash("Clapping");
+    public readonly static int NPCPointing = Animator.StringToHash("Pointing");
+    public readonly static int NPCSuggest = Animator.StringToHash("Suggest");
     #endregion
 
     #region Path
@@ -52,6 +60,10 @@ public class Define
     public const string ClimbableTag = "Climbable";
     public const string EnemyTag = "Enemy";
     public const string EnemyHandTag = "EnemyHand";
+    #endregion
+
+    #region Layer
+    public const string NPCMask = "NPC";
     #endregion
 
     #region Enum
@@ -92,5 +104,14 @@ public class Define
     #region Scene
     public const string GameScene = "Game";
     public const string BossScene = "GameBoss";
+    #endregion
+
+    #region Warning
+    public const string NotEnoughMineral = "재료가 부족합니다";
+    public const string NotReadyBoss = "아직 준비 중입니다";
+    #endregion
+
+    #region NPCtalking
+    public const string NPCHello = "안녕? 만나서 반가워.";
     #endregion
 }

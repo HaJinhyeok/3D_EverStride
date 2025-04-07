@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 {
     public Camera CraftCamera;
     public Camera PreviewCamera;
+    public Camera ConversationCamera;
     public GameObject CraftPanel;
     public Inventory Inventory;
     public ShortcutInventory Shortcut;
@@ -23,10 +24,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     Transform _character;
     Animator _animator;
     Rigidbody _rigidbody;
-
     Camera _camera;
     Transform _camAxis;
-    float _camSpeed = 8f;
+    LayerMask _npcMask;
+
+    float _camSpeed = 6f;
     float _rotationSpeed = 10f;
     float _mouseX = 0f;
     float _mouseY = 4f;
@@ -141,8 +143,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         _camera = Camera.main;
         _camAxis = new GameObject("CamAxis").transform;
         _camera.transform.parent = _camAxis;
-        _camera.transform.position = new Vector3(0, 0, -3);
+        //_camera.transform.localPosition = Vector3.zero;
+        _camera.transform.localPosition = new Vector3(0, 0, -3);
 
+        // * 그 외
+        _npcMask = LayerMask.GetMask(Define.NPCMask);
         for (int i = 0; i < IngredientData.Count; i++)
         {
             if (!Define.IngredientData.ContainsKey(IngredientData[i].IngredientType))
@@ -152,7 +157,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         InventoryOn(false);
         CraftUIOn(false);
         GameManager.Instance.LoadResources();
-        GameManager.Instance.OnWeaponChanged.Invoke();
+        //GameManager.Instance.OnWeaponChanged.Invoke();
         Inventory.UpdateTestWeapons();
 
         _hp = Define.PlayerMaxHp;
@@ -163,38 +168,45 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        Jump();
-        Attack();
-        Move();
-        Roll();
+        // 대화 중엔 움직임 불가능
+        if(!GameManager.Instance.IsConversating)
+        {
+            Jump();
+            Attack();
+            Move();
+            Roll();
 
-        // 대쉬
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !IsDash)
-        {
-            StartCoroutine(Dash());
-        }
+            InteractNPC();
 
-        // x를 눌러 무장해제
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            UnequipWeapon();
-        }
-        // ui 켜지면 카메라 정신사납지 않게 가만히
-        if (!GameManager.Instance.IsUIOn)
-        {
-            CameraMove();
-        }
+            // 대쉬
+            if (Input.GetKeyDown(KeyCode.LeftShift) && !IsDash)
+            {
+                StartCoroutine(Dash());
+            }
 
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            CraftUIOn(!GameManager.Instance.IsCraftPanelOn);
+            // x를 눌러 무장해제
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                UnequipWeapon();
+            }
+            // ui 켜지면 카메라 정신사납지 않게 가만히
+            if (!GameManager.Instance.IsUIOn)
+            {
+                CameraMove();
+            }
+
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                CraftUIOn(!GameManager.Instance.IsCraftPanelOn);
+            }
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                InventoryOn(!GameManager.Instance.IsInventoryOn);
+            }
+            // 1~5번 단축키
+            UseShortcut();
         }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            InventoryOn(!GameManager.Instance.IsInventoryOn);
-        }
-        // 1~5번 단축키
-        UseShortcut();
+        
         // 스태미나 회복
         RecoverStamina();
     }
@@ -336,11 +348,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (IsAttacking == false)
         {
             IsAttacking = true;
-            GameManager.Instance.OnTrailActivate?.Invoke(_animator.GetBool(Define.IsAttacking));
+            GameManager.Instance.OnTrailActivate?.Invoke(true);
         }
         else
         {
             IsNextCombo = true;
+            GameManager.Instance.OnTrailActivate?.Invoke(true);
         }
     }
     #endregion
@@ -380,6 +393,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
 
     #region Player Utility
+
+
     void RecoverStamina()
     {
         if (!IsDash)
@@ -423,6 +438,27 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             EquipWeapon(Shortcut.UseShortcutItem(4), 4);
         }
+    }
+
+    void InteractNPC()
+    {
+        if(Input.GetKeyDown(KeyCode.G)&&GameManager.Instance.IsNPCInteracive)
+        {
+            Collider[] NPC= Physics.OverlapSphere(transform.position, 2f, _npcMask);
+            NPC[0].transform.rotation = Quaternion.LookRotation(transform.position - NPC[0].transform.position);
+            LookNPC(NPC[0].transform.position);
+            // 대화용 카메라 ON
+            ConversationCamera.gameObject.SetActive(true);
+            GameObject.Find(Define.GameUI).SetActive(false);
+            GameManager.Instance.IsConversating = true;
+            ConversationPanel.OnConversationStart(Define.NPCHello);
+        }
+    }
+
+    void LookNPC(Vector3 pos)
+    {
+        transform.position = pos - new Vector3(0, 0, -3);
+        transform.rotation = Quaternion.LookRotation(pos - transform.position);
     }
     #endregion
 
@@ -494,6 +530,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     #region UI
     void CraftUIOn(bool state)
     {
+        if (CraftPanel == null)
+            return;
         GameManager.Instance.IsCraftPanelOn = state;
         GameManager.Instance.IsUIOn = state;
         CraftCamera?.gameObject.SetActive(state);
@@ -524,8 +562,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             Debug.Log($"Current Player HP: {_hp}, Attacker name: {attacker.name}");
             if (_hp <= 0)
             {
-                Debug.Log("Game Over!!!");
-                ResultPanel.ResultPanelAction?.Invoke(false);
                 _animator.SetTrigger(Define.Die);
             }
         }

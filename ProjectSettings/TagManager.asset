@@ -10,6 +10,8 @@ TagManager:
   - CraftableItem
   - Enemy
   - EnemyHand
+  - Fire
+  - Floor
   layers:
   - Default
   - TransparentFX
@@ -22,8 +24,8 @@ TagManager:
   - EnemyHand
   - Player
   - CraftUI
-  - 
-  - 
+  - NPC
+  - NPCUI
   - 
   - 
   - 

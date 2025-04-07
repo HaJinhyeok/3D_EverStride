@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9203076044359009170}
   - component: {fileID: 627051402635280735}
+  - component: {fileID: 7200187107423241022}
   m_Layer: 0
   m_Name: SwordTrail
   m_TagString: Untagged
@@ -78,7 +79,7 @@ TrailRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Time: 0.5
-  m_PreviewTimeScale: 1
+  m_PreviewTimeScale: 0
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -87,7 +88,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.5277786
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -148,6 +149,18 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &7200187107423241022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2027339517138139509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b0908286988c5a46bce290a3c477236, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8951791216397407603
 PrefabInstance:
   m_ObjectHideFlags: 0

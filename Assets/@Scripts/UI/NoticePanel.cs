@@ -24,7 +24,14 @@ public class NoticePanel : MonoBehaviour
 
     void OnRaidStartButtonClick()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(_raidSceneName);
+        if(string.IsNullOrEmpty(_raidSceneName))
+        {
+            UI_Warning.Instance.WarningEffect(Define.NotReadyBoss);
+        }
+        else
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(_raidSceneName);
+        }
     }
 
     void OnNoticePanel(string raidText, string raidScene)

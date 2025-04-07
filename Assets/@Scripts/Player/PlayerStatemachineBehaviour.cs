@@ -26,7 +26,7 @@ public class PlayerStatemachineBehaviour : StateMachineBehaviour
                 //{
                 //    Debug.Log("HelloUpdate on " + currentTime);
                 //}
-                GameManager.Instance.OnTrailActivate?.Invoke(animator.GetBool(Define.IsAttacking));
+                GameManager.Instance.OnTrailActivate?.Invoke(false);
             }            
         }
     }
@@ -40,6 +40,6 @@ public class PlayerStatemachineBehaviour : StateMachineBehaviour
         //{
         //    Debug.Log($"Exit of {animator.GetCurrentAnimatorStateInfo(0).IsName("SwordCombo3")} at {stateInfo.normalizedTime}");
         //}
-        GameManager.Instance.OnTrailActivate?.Invoke(animator.GetBool(Define.IsAttacking));
+        GameManager.Instance.OnTrailActivate?.Invoke(false);
     }
 }

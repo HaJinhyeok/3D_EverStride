@@ -7,6 +7,9 @@ public class GameManager : Singleton<GameManager>
     PlayerController player;
     TrailRenderer weaponTrail;
 
+    bool _isNPCInteractive = false;
+    bool _isConversating = false;
+
     public Action OnWeaponChanged;
     public Action<bool> OnTrailActivate;
 
@@ -16,6 +19,18 @@ public class GameManager : Singleton<GameManager>
     public PlayerController Player
     {
         get { return player; }
+    }
+
+    public bool IsNPCInteracive
+    {
+        get { return _isNPCInteractive; }
+        set { _isNPCInteractive = value; }
+    }
+
+    public bool IsConversating
+    {
+        get { return _isConversating; }
+        set { _isConversating = value; }
     }
 
     public bool IsUIOn

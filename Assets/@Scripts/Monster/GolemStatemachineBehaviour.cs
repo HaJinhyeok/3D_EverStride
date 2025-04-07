@@ -29,4 +29,9 @@ public class GolemStatemachineBehaviour : StateMachineBehaviour
             animator.SetBool(Define.IsAttacking, false);
         }
     }
+
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        animator.SetBool(Define.InteractionHash, false);
+    }
 }

@@ -7,5 +7,6 @@ public class PlayerDieEvent : MonoBehaviour
     {
         Debug.Log("You Died...");
         // 게임 오버 UI 및 리스폰 버튼
+        ResultPanel.ResultPanelAction?.Invoke(false);
     }
 }
