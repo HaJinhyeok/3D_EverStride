@@ -4,7 +4,7 @@ public class NPCController : MonoBehaviour
 {
     public GameObject InteractionPanel;
 
-    float _sightDistance = 10f;
+    float _sightDistance = 7f;
     float _interactionDistance = 2f;
     float _rotationSpeed = 5f;
     bool _isWatching = false;

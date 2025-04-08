@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public Camera PreviewCamera;
     public Camera ConversationCamera;
     public GameObject CraftPanel;
+    public GameObject ConversationPanelObejct;
     public Inventory Inventory;
     public ShortcutInventory Shortcut;
     public Image Stamina;
@@ -39,7 +40,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     float _maxStamina = 100f;
     float _stamina = 100f;
     float _staminaRegenRate = 5f;
-    float _hp = 100f;
+    float _hp;
     // 마을맵인지 보스전맵인지 확인
     bool _isBossRaid;
 
@@ -124,6 +125,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             _isBossRaid = true;
             CraftCamera = null;
             PreviewCamera = null;
+            ConversationCamera = null;
             //IsCombatMode = true;
             _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
         }
@@ -145,7 +147,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         _camera.transform.parent = _camAxis;
         //_camera.transform.localPosition = Vector3.zero;
         _camera.transform.localPosition = new Vector3(0, 0, -3);
-        ConversationCamera.gameObject.SetActive(false);
+        ConversationCamera?.gameObject.SetActive(false);
 
         // * 그 외
         _npcMask = LayerMask.GetMask(Define.NPCMask);
@@ -158,7 +160,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         InventoryOn(false);
         CraftUIOn(false);
         GameManager.Instance.LoadResources();
-        //GameManager.Instance.OnWeaponChanged.Invoke();
+        // 보스전에서 칼로 놀다가 마을 복귀 후 주먹질 할때 에러 막기용
+        GameManager.Instance.OnWeaponChanged.Invoke();
         Inventory.UpdateTestWeapons();
 
         _hp = Define.PlayerMaxHp;
@@ -170,7 +173,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private void Update()
     {
         // 대화 중엔 움직임 불가능
-        if(!GameManager.Instance.IsConversating)
+        if (!GameManager.Instance.IsConversating)
         {
             Jump();
             Attack();
@@ -207,7 +210,14 @@ public class PlayerController : MonoBehaviour, IDamageable
             // 1~5번 단축키
             UseShortcut();
         }
-        
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                ConversationPanel.OnConversationExit?.Invoke();
+            }
+        }
+
         // 스태미나 회복
         RecoverStamina();
     }
@@ -443,16 +453,51 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void InteractNPC()
     {
-        if(Input.GetKeyDown(KeyCode.G)&&GameManager.Instance.IsNPCInteracive)
+        if (Input.GetKeyDown(KeyCode.G) && GameManager.Instance.IsNPCInteracive)
         {
-            Collider[] NPC= Physics.OverlapSphere(transform.position, 2f, _npcMask);
+            Collider[] NPC = Physics.OverlapSphere(transform.position, 2f, _npcMask);
             NPC[0].transform.rotation = Quaternion.LookRotation(transform.position - NPC[0].transform.position);
             LookNPC(NPC[0].transform.position);
             // 대화용 카메라 ON
             ConversationCamera.gameObject.SetActive(true);
+            ConversationPanelObejct.gameObject.SetActive(true);
             GameObject.Find(Define.GameUI).SetActive(false);
             GameManager.Instance.IsConversating = true;
-            ConversationPanel.OnConversationStart(Define.NPC_Quest_Golem);
+
+            // 퀘스트 없으면 새로 주고
+            if (GameManager.Instance.QuestDictionary.Count == 0)
+            {
+                int rnd = Random.Range(0, 2);
+                if (rnd == 0)
+                {
+                    ConversationPanel.OnConversationStart(Define.NPC_Quest_Wood, true, true);
+                }
+                else
+                {
+                    ConversationPanel.OnConversationStart(Define.NPC_Quest_Golem, true, true);
+                }
+            }
+            else
+            {
+                bool isDone = false;
+                foreach (KeyValuePair<Define.QuestName, Quest> quest in GameManager.Instance.QuestDictionary)
+                {
+                    // 완료된 퀘스트가 있으면
+                    if (quest.Value.isComlete)
+                    {
+                        isDone = true;
+                        break;
+                    }
+                }
+                if (isDone)
+                {
+                    ConversationPanel.OnConversationStart(Define.NPC_QUEST_COMPLETE, true, false);
+                }
+                else
+                {
+                    ConversationPanel.OnConversationStart(Define.NPC_QUEST_ING, false, false);
+                }
+            }
         }
     }
 

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GolemController : MonoBehaviour, IDamageable
@@ -8,11 +10,12 @@ public class GolemController : MonoBehaviour, IDamageable
 
     float _attackRange = 2f;
     float _speed = 3f;
-    float _hp = 1000;
+    float _hp;
     float _atk = 10;
     [Header("SightRange")]
     public float sightRange = 15f;
 
+    #region Animator
     public float Atk
     {
         get { return _atk; }
@@ -29,12 +32,19 @@ public class GolemController : MonoBehaviour, IDamageable
         get { return _animator.GetBool(Define.IsAttacking); }
         set { _animator.SetBool(Define.IsAttacking, value); }
     }
+    #endregion
+
+    public float Hp
+    {
+        get { return _hp; }
+    }
 
     void Start()
     {
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody>();
         _player = GameObject.Find("Player").transform;
+        _hp = Define.GolemMaxHp;
     }
 
     void FixedUpdate()
@@ -92,6 +102,7 @@ public class GolemController : MonoBehaviour, IDamageable
     {
         if (_animator.GetBool(Define.Die)) return;
         _hp -= damage * bonusDamage;
+        BossHpBar.BossHpAction?.Invoke();
         _animator.SetTrigger(Define.TakeDamage);
         _animator.SetBool(Define.InteractionHash, false);
         Debug.Log($"Current Golem HP: {_hp}, Attacker name: {attacker.name}");
@@ -108,5 +119,12 @@ public class GolemController : MonoBehaviour, IDamageable
     {
         Destroy(gameObject, 2f);
         ResultPanel.ResultPanelAction?.Invoke(true);
+        foreach (KeyValuePair<Define.QuestName, Quest> quest in GameManager.Instance.QuestDictionary)
+        {
+            if (quest.Value.name == Define.QuestName.Golem)
+            {
+                quest.Value.AddNum(1);
+            }
+        }
     }
 }

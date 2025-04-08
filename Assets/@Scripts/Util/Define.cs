@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class Define
 {
@@ -17,8 +18,10 @@ public class Define
     #endregion
 
     #region Constants
-    public const float PlayerMaxHp = 300f;
+    public const float PlayerMaxHp = 100f;
     public const float PlayerRollStamina = 20f;
+
+    public const float GolemMaxHp = 200f;
     #endregion
 
     #region Animator
@@ -50,6 +53,7 @@ public class Define
 
     #region Path
     public const string WeaponPath = "Prefabs/Weapon";
+    public const string IngredientPath = "Prefabs/Ingredient";
     public const string BossRaidAnimatorPath = "Animator/BossRaidAnimator";
     #endregion
 
@@ -96,6 +100,12 @@ public class Define
         Wood,
     }
 
+    public enum QuestName
+    {
+        Wood,
+        Golem,
+    }
+
     // Player Initiate할 때 같이 초기화
     public static Dictionary<IngredientType, ItemData> IngredientData = new Dictionary<IngredientType, ItemData>();
 
@@ -109,6 +119,7 @@ public class Define
     #region Warning
     public const string NotEnoughMineral = "재료가 부족합니다";
     public const string NotReadyBoss = "아직 준비 중입니다";
+    public const string DuplicatedQuest = "이미 진행 중인 퀘스트입니다";
     #endregion
 
     #region NPCtalking
@@ -123,5 +134,14 @@ public class Define
 
     public readonly static string[] NPC_TOO_BAD = { "이런...유감이군." };
     public readonly static string[] NPC_GOOD = { "좋아! 잘 부탁해!" };
+    public readonly static string[] NPC_QUEST_ING = { "아직 퀘스트를 완료하지 못했구나." };
+    public readonly static string[] NPC_QUEST_COMPLETE = { "퀘스트를 완료했구나!\n좋아, 보상을 줄게." };
+    public readonly static string[] NPC_BYE = { "다음에 또 보자구." };
     #endregion
+
+    #region QuestContext
+    public const string GolemQuest = "골렘 처치";
+    public const string WoodQuest = "나무조각 획득";
+    #endregion
+
 }

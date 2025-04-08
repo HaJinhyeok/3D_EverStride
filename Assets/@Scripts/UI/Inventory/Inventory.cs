@@ -93,6 +93,7 @@ public class Inventory : MonoBehaviour
         return dragImage;
     }
 
+    #region Events
     protected void AddEvent(GameObject go, EventTriggerType type, UnityAction<BaseEventData> action)
     {
         var trigger = go.GetComponent<EventTrigger>();
@@ -153,37 +154,6 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void SwapItems(Slot slotA, Slot slotB)
-    {
-        if (slotA == slotB)
-            return;
-        ItemData tempData = slotB.ItemData;
-        int tempAmount = slotB.Amount;
-        slotB.UpdateSlot(slotA.ItemData, slotA.Amount);
-        slotA.UpdateSlot(tempData, tempAmount);
-    }
-
-    // 슬롯의 아이템 사용하기
-    public void UseItem(Slot slot)
-    {
-        if (slot.ItemData == null || slot.Amount <= 0)
-        {
-            return;
-        }
-        ItemData itemData = slot.ItemData;
-        slot.UpdateSlot(slot.ItemData, slot.Amount - 1);
-        OnUseItem?.Invoke(itemData);
-    }
-
-    // idx 번째 슬롯의 아이템 사용하기
-    public void UseItem(int idx)
-    {
-        if(idx>=25)
-        {
-            ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
-        }
-    }
-
     void OnRightClick(Slot slot)
     {
         //if(slot.ItemData.WeaponType!=Define.WeaponType.None)
@@ -212,6 +182,38 @@ public class Inventory : MonoBehaviour
             OnRightClick(slot);
         }
     }
+    #endregion
+
+    public void SwapItems(Slot slotA, Slot slotB)
+    {
+        if (slotA == slotB)
+            return;
+        ItemData tempData = slotB.ItemData;
+        int tempAmount = slotB.Amount;
+        slotB.UpdateSlot(slotA.ItemData, slotA.Amount);
+        slotA.UpdateSlot(tempData, tempAmount);
+    }
+
+    // 슬롯의 아이템 사용하기
+    public void UseItem(Slot slot)
+    {
+        if (slot.ItemData == null || slot.Amount <= 0)
+        {
+            return;
+        }
+        ItemData itemData = slot.ItemData;
+        slot.UpdateSlot(slot.ItemData, slot.Amount - 1);
+        OnUseItem?.Invoke(itemData);
+    }
+
+    // idx 번째 슬롯의 아이템 사용하기
+    public void UseItem(int idx)
+    {
+        if (idx >= 25)
+        {
+            ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
+        }
+    }
 
     // 인벤토리 내에 같은 아이템 있는지 검사
     public Slot FindItemInInventory(Item item)
@@ -227,6 +229,10 @@ public class Inventory : MonoBehaviour
     // 아이템 추가하는 함수
     public bool AddItem(Item item, int amount)
     {
+        if (GameManager.Instance.QuestDictionary.ContainsKey(Define.QuestName.Wood) && item.ItemData.IngredientType == Define.IngredientType.Wood)
+        {
+            GameManager.Instance.QuestDictionary[Define.QuestName.Wood].AddNum(amount);
+        }
         Slot slot = FindItemInInventory(item);
         if (!item.ItemData.isStack || slot == null)
         {
