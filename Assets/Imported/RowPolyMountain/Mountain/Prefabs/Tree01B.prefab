@@ -156,3 +156,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Wood: {fileID: 5396156836683072525, guid: 9e298f0a9227ef64aae152a0878a680c, type: 3}
+  HitEffect: {fileID: 100002, guid: 0722cf6f9e53957449e9ee5879d460e2, type: 3}

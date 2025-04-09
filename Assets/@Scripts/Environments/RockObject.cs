@@ -3,14 +3,13 @@ using UnityEngine;
 public class RockObject : EnvironmentObject
 {
     public GameObject Rock;
+    public GameObject HitEffect;
 
-    Transform _player;
     float _radius = 0.5f;
 
     void Start()
     {
         _durability = 50;
-        //_player = GameObject.FindGameObjectWithTag(Define.PlayerTag).transform.GetChild(0);        
     }
 
     public override void DropItem()
@@ -29,9 +28,10 @@ public class RockObject : EnvironmentObject
         }
     }
 
-    public override void GetDamage(GameObject attacker, float damage, int bonus, Vector3 hitPoint)
+    public override void GetDamage(GameObject attacker, float damage, int bonus, Vector3 hitPos)
     {
         _durability -= damage * bonus;
+        Instantiate(HitEffect, hitPos, Quaternion.Euler(transform.TransformDirection(Vector3.back)));
         if (_durability > 0)
         {
             if (bonus > 1)

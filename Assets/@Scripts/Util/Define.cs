@@ -20,6 +20,7 @@ public class Define
     #region Constants
     public const float PlayerMaxHp = 100f;
     public const float PlayerRollStamina = 20f;
+    public const float PotionHealing = 20f;
 
     public const float GolemMaxHp = 200f;
     #endregion
@@ -29,6 +30,8 @@ public class Define
     public readonly static int Roll = Animator.StringToHash("Roll");
     public readonly static int Jump = Animator.StringToHash("Jump");
     public readonly static int Die = Animator.StringToHash("Die");
+    public readonly static int Drink = Animator.StringToHash("Drink");
+
     public readonly static int IsDash = Animator.StringToHash("IsDash");
     public readonly static int IsGround = Animator.StringToHash("IsGround");
     public readonly static int IsClimbing = Animator.StringToHash("IsClimbing");
@@ -54,6 +57,7 @@ public class Define
     #region Path
     public const string WeaponPath = "Prefabs/Weapon";
     public const string IngredientPath = "Prefabs/Ingredient";
+    public const string ConsumptionPath = "Prefabs/Consumption";
     public const string BossRaidAnimatorPath = "Animator/BossRaidAnimator";
     #endregion
 
@@ -112,6 +116,7 @@ public class Define
     #endregion
 
     #region Scene
+    public const string MainScene = "Main";
     public const string GameScene = "Game";
     public const string BossScene = "GameBoss";
     #endregion
@@ -120,6 +125,7 @@ public class Define
     public const string NotEnoughMineral = "재료가 부족합니다";
     public const string NotReadyBoss = "아직 준비 중입니다";
     public const string DuplicatedQuest = "이미 진행 중인 퀘스트입니다";
+    public const string AlreadyFullHP = "체력이 이미 가득 찼습니다";
     #endregion
 
     #region NPCtalking

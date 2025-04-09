@@ -36,12 +36,10 @@ public class GameManager : Singleton<GameManager>
 
     bool _isNPCInteractive = false;
     bool _isConversating = false;
+    bool _isPaused = false;
 
     public Action OnWeaponChanged;
     public Action<bool> OnTrailActivate;
-
-    // 씬 넘어갈 때 플레이어 스폰 위치 확인용?
-    public Define.GameState GameState = Define.GameState.Default;
 
     //public List<Quest> Quests = new List<Quest>();
     public Dictionary<Define.QuestName, Quest> QuestDictionary = new Dictionary<Define.QuestName, Quest>();
@@ -52,6 +50,13 @@ public class GameManager : Singleton<GameManager>
     }
 
     #region Boolean
+
+    public bool IsPaused
+    {
+        get { return _isPaused; }
+        set {  _isPaused = value; }
+    }
+
     public bool IsNPCInteracive
     {
         get { return _isNPCInteractive; }
@@ -84,6 +89,7 @@ public class GameManager : Singleton<GameManager>
 
     public GameObject[] Weapons;
     public GameObject[] Ingredients;
+    public GameObject[] ConsumptionItems;
     // 웨폰 데이터 넣으면 Weapons의 인덱스를 알려줄 수 있도록 딕셔너리...?
     public Dictionary<ItemData, int> WeaponsMap;
 
@@ -91,6 +97,7 @@ public class GameManager : Singleton<GameManager>
     {
         Weapons = Resources.LoadAll<GameObject>(Define.WeaponPath);
         Ingredients = Resources.LoadAll<GameObject>(Define.IngredientPath);
+        ConsumptionItems = Resources.LoadAll<GameObject>(Define.ConsumptionPath);
 
         player = GameObject.Find("Player").GetComponent<PlayerController>();
         OnWeaponChanged += GetWeaponTrail;

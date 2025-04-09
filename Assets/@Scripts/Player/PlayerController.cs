@@ -11,10 +11,13 @@ public class PlayerController : MonoBehaviour, IDamageable
     public Camera ConversationCamera;
     public GameObject CraftPanel;
     public GameObject ConversationPanelObejct;
+    public GameObject PausePanel;
     public Inventory Inventory;
     public ShortcutInventory Shortcut;
     public Image Stamina;
     public GameObject WeaponPos;
+    public GameObject ItemPos;
+
     public List<ItemData> IngredientData = new List<ItemData>();
 
     [SerializeField] GameObject stepRayUpper;
@@ -172,8 +175,10 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void Update()
     {
+        GamePause();
+
         // 대화 중엔 움직임 불가능
-        if (!GameManager.Instance.IsConversating)
+        if (!GameManager.Instance.IsConversating && !GameManager.Instance.IsPaused)
         {
             Jump();
             Attack();
@@ -395,16 +400,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
     #endregion
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag(Define.GroundTag))
-        {
-            IsGround = true;
-        }
-    }
-
     #region Player Utility
-
 
     void RecoverStamina()
     {
@@ -534,7 +530,26 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 소비 및 재료 아이템일 경우
         else if (currentSlot.ItemData.ItemType == Define.ItemType.Countable)
         {
-            Debug.Log("할 동작이 없습니다");
+            if(currentSlot.ItemData.ItemName=="포션")
+            {
+                // 포션 사용 및 포션 먹는 애니메이션
+                if(_hp>=Define.PlayerMaxHp)
+                {
+                    UI_Warning.Instance.WarningEffect(Define.AlreadyFullHP);
+                }
+                else
+                {
+                    _hp = Mathf.Min(Define.PlayerMaxHp, _hp + Define.PotionHealing);
+                    PlayerHpBar.PlayerHpAction?.Invoke();
+                    _animator.SetTrigger(Define.Drink);
+                    GameObject comsumption = Instantiate(GameManager.Instance.ConsumptionItems[0], ItemPos.transform);
+                    // 포션 마시는 애니메이션 후 없애는 이벤트도 넣어줘야함
+                }
+            }
+            else
+            {
+                Debug.Log("할 동작이 없습니다");
+            }
         }
 
         //slot.UpdateSlot(null, 0);
@@ -571,6 +586,16 @@ public class PlayerController : MonoBehaviour, IDamageable
             return WeaponPos.transform.GetChild(0).gameObject.GetComponent<WeaponItem>().ItemData.WeaponType;
         }
     }
+
+    public void OnFinishItemUse()
+    {
+        if (ItemPos.transform.childCount == 0)
+            return;
+        else
+        {
+            Destroy(ItemPos.transform.GetChild(0).gameObject);
+        }
+    }
     #endregion
 
     #region UI
@@ -593,6 +618,14 @@ public class PlayerController : MonoBehaviour, IDamageable
     }
     #endregion
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag(Define.GroundTag))
+        {
+            IsGround = true;
+        }
+    }
+
     public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
     {
         if (_hp <= 0) return;
@@ -610,6 +643,17 @@ public class PlayerController : MonoBehaviour, IDamageable
             {
                 _animator.SetTrigger(Define.Die);
             }
+        }
+    }
+
+    public void GamePause()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            bool isPause = GameManager.Instance.IsPaused;
+            GameManager.Instance.IsPaused = !isPause;
+            PausePanel.SetActive(!isPause);
+            Time.timeScale = 1f - Time.timeScale;
         }
     }
 

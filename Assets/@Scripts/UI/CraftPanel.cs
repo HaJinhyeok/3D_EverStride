@@ -15,8 +15,8 @@ public class CraftPanel : MonoBehaviour
     public Text CraftIngredientText;
     public Button CraftButton;
 
-    Vector2 _start = new Vector2(-75, 120);
-    Vector2 _size = new Vector2(140, 50);
+    Vector2 _start = new Vector2(-65, 120);
+    Vector2 _size = new Vector2(120, 50);
     Vector2 _space = new Vector2(10, 10);
     int _numberOfColumn = 2;
 
@@ -83,7 +83,7 @@ public class CraftPanel : MonoBehaviour
         for (int i = 0; i < currentItem.ItemData.Ingredients.Length; i++)
         {
             Ingredient ingredient = currentItem.ItemData.Ingredients[i];
-            CraftIngredientText.text += $"{Define.IngredientData[ingredient.type].name}: {ingredient.count}\t";
+            CraftIngredientText.text += $"{Define.IngredientData[ingredient.type].ItemName}: {ingredient.count}\t";
         }
     }
 

@@ -9,11 +9,12 @@ public class Axe : Weapon
 
     private void OnTriggerEnter(Collider other)
     {
-        // 추후에 여유가 된다면, 히트포인트에 이펙트 넣어도 괜찮을듯
         // 공격 중이고, 모션이 약간 진행된 상태여야 공격 판정
         if (!other.GetComponent<PlayerController>() && _animator.GetBool(Define.IsAttacking) && _animator.GetBool(Define.InteractionHash))
         {
-            DoAttack(other.gameObject, _atk);
+            //RaycastHit raycastHit;
+            //Physics.Raycast(transform.position,(other.transform.position - transform.position).normalized,1f,)
+            DoAttack(other.gameObject, _atk, this.transform.position);
             _animator.SetBool(Define.InteractionHash, false);
         }
     }
@@ -25,9 +26,9 @@ public class Axe : Weapon
 
         // 나무에게는 추가 대미지
         if (target.GetComponent<TreeObject>())
-            damageable.GetDamage(gameObject, damage, 2);
+            damageable.GetDamage(gameObject, damage, 2, hitPos);
         else
-            damageable.GetDamage(gameObject, damage);
+            damageable.GetDamage(gameObject, damage, 1, hitPos);
         return true;
     }
 }

@@ -12,6 +12,7 @@ public class ConversationPanel : MonoBehaviour
     public Button ExitButton;
     public Camera ConversationCamera;
     public Text ConversationText;
+    public Text NpcName;
     //public GameObject QuestPanel;
 
     public static Action<string[], bool, bool> OnConversationStart;
@@ -20,13 +21,11 @@ public class ConversationPanel : MonoBehaviour
     public Quest CompletedQuest;
 
     string[] _currentContext;
-    Text _npcName;
     GameObject _gameUI;
 
     void Start()
     {
-        _npcName = GetComponentInChildren<Text>();
-        _npcName.text = NPC.name;
+        NpcName.text = NPC.name;
         _gameUI = GameObject.Find(Define.GameUI);
         CompletedQuest = null;
         ConversationText.text = "";

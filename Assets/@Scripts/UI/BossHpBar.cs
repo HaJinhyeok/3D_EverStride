@@ -21,7 +21,6 @@ public class BossHpBar : MonoBehaviour
     void OnBossHpChanged()
     {
         BossHpImage.fillAmount = _boss.GetComponent<GolemController>().Hp / Define.GolemMaxHp;
-
     }
 
     private void OnDestroy()

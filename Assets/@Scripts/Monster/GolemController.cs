@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GolemController : MonoBehaviour, IDamageable
 {
+    public GameObject HitEffect;
+
     Animator _animator;
     Rigidbody _rigidbody;
     Transform _player;
@@ -61,9 +63,9 @@ public class GolemController : MonoBehaviour, IDamageable
         }
         else
         {
-            IsAttacking = false;
+            //IsAttacking = false;
             // 플레이어가 일정 거리 내에 있으면 움직임
-            if (Vector3.Distance(transform.position, _player.position) < sightRange)
+            if (Vector3.Distance(transform.position, _player.position) < sightRange && !IsAttacking)
             {
                 MoveToPlayer();
             }
@@ -102,6 +104,7 @@ public class GolemController : MonoBehaviour, IDamageable
     {
         if (_animator.GetBool(Define.Die)) return;
         _hp -= damage * bonusDamage;
+        Instantiate(HitEffect, hitPos, Quaternion.Euler(transform.TransformDirection(Vector3.back)));
         BossHpBar.BossHpAction?.Invoke();
         _animator.SetTrigger(Define.TakeDamage);
         _animator.SetBool(Define.InteractionHash, false);
@@ -109,9 +112,7 @@ public class GolemController : MonoBehaviour, IDamageable
         if (_hp <= 0)
         {
             Debug.Log("Golem Die");
-            //Destroy(gameObject);
             _animator.SetBool(Define.Die, true);
-            //_animator.Play("Die");
         }
     }
 
