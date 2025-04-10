@@ -5,7 +5,7 @@ public class OrcController : BossController
 {
     void Start()
     {
-        _attackRange = 1f;
+        _attackRange = 1.5f;
         _speed = 4f;
         _hp = Define.OrcMaxHp;
     }

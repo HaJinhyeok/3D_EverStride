@@ -26,7 +26,7 @@ public class Define
     public const float OrcMaxHp = 150f;
     #endregion
 
-    #region Animator
+    #region Animator Parameter
     public readonly static int Speed = Animator.StringToHash("Speed");
     public readonly static int Roll = Animator.StringToHash("Roll");
     public readonly static int Jump = Animator.StringToHash("Jump");
@@ -134,14 +134,24 @@ public class Define
     #endregion
 
     #region NPCtalking
-    public readonly static string[] NPC_Quest_Wood = {
+    public readonly static string[] NPC_Quest_Wood = 
+        {
         "안녕? 날씨가 참 좋아, 그렇지?",
             "\n슬슬 날씨가 추워질 것 같은데," +
-            "\n뗄감으로 쓸 나무조각 좀 모아다주겠어?" };
-    public readonly static string[] NPC_Quest_Golem = {
+            "\n뗄감으로 쓸 나무조각 좀 모아다주겠어?" 
+    };
+    public readonly static string[] NPC_Quest_Golem = 
+        {
         "안녕? 만나서 반가워.",
         "\n골렘 몬스터가 나타났는데,\n네가 좀 처치해줄 수 있을까?" +
-            "\n푸른 포탈을 사용하면 골렘을 처치하러 갈 수 있어." };
+            "\n푸른 포탈을 사용하면 골렘을 처치하러 갈 수 있어." 
+    };
+    public readonly static string[] NPC_Quest_Orc =
+    {
+        "안녕! 시간 괜찮을까?",
+        "\n못생긴 오크가 나타나서 사람들을 괴롭히는데,\n아주 골칫거리야."+
+            "\n초록 포탈을 타면 오크를 잡으러 갈 수 있어! 도와줄래?"
+    };
 
     public readonly static string[] NPC_TOO_BAD = { "이런...유감이군." };
     public readonly static string[] NPC_GOOD = { "좋아! 잘 부탁해!" };
