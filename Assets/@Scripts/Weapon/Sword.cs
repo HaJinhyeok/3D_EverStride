@@ -23,7 +23,7 @@ public class Sword : Weapon
         if (damageable == null) return false;
 
         // 몬스터에게는 추가 대미지
-        if (target.GetComponent<GolemController>())
+        if (target.GetComponent<BossController>())
             damageable.GetDamage(gameObject, damage, 2, hitPos);
         else
             damageable.GetDamage(gameObject, damage, 1, hitPos);

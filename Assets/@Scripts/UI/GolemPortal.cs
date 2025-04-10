@@ -11,7 +11,7 @@ public class GolemPortal : MonoBehaviour
         if(other.CompareTag(Define.PlayerTag))
         {
             NoticePanelObject.SetActive(true);
-            NoticePanel.NoticePanelAction?.Invoke(_golemTetxt, Define.BossScene);
+            NoticePanel.NoticePanelAction?.Invoke(_golemTetxt, Define.GolemScene);
         }
     }
 

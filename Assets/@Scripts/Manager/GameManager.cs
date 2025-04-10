@@ -41,7 +41,6 @@ public class GameManager : Singleton<GameManager>
     public Action OnWeaponChanged;
     public Action<bool> OnTrailActivate;
 
-    //public List<Quest> Quests = new List<Quest>();
     public Dictionary<Define.QuestName, Quest> QuestDictionary = new Dictionary<Define.QuestName, Quest>();
 
     public PlayerController Player
@@ -54,7 +53,7 @@ public class GameManager : Singleton<GameManager>
     public bool IsPaused
     {
         get { return _isPaused; }
-        set {  _isPaused = value; }
+        set { _isPaused = value; }
     }
 
     public bool IsNPCInteracive
@@ -90,8 +89,42 @@ public class GameManager : Singleton<GameManager>
     public GameObject[] Weapons;
     public GameObject[] Ingredients;
     public GameObject[] ConsumptionItems;
+
+    // Inventory 아이템 정보 저장
+    public Slot[] InventorySlots;
+    public Slot[] ShortcutInventorySlots;
+    GameObject Slot;
+
     // 웨폰 데이터 넣으면 Weapons의 인덱스를 알려줄 수 있도록 딕셔너리...?
-    public Dictionary<ItemData, int> WeaponsMap;
+    //public Dictionary<ItemData, int> WeaponsMap;
+
+    private void Awake()
+    {
+        Slot = Resources.Load<GameObject>(Define.SlotPath);
+        if (InventorySlots == null)
+            InventorySlots = new Slot[25];
+        if (ShortcutInventorySlots == null)
+            ShortcutInventorySlots = new Slot[5];
+        for (int i = 0; i < InventorySlots.Length; i++)
+        {
+            GameObject go = Instantiate(Slot, transform);
+
+
+            InventorySlots[i] = go.GetComponent<Slot>();
+            //InventorySlots[i].OnPostUpdate += OnPostUpdate;
+            go.name = "Slot : " + i;
+        }
+        for (int i = 0; i < ShortcutInventorySlots.Length; i++)
+        {
+            GameObject go = Instantiate(Slot, transform);
+
+
+
+            ShortcutInventorySlots[i] = go.GetComponent<Slot>();
+            //ShortcutInventorySlots[i].OnPostUpdate += OnPostUpdate;
+            go.name = "SrhotcutSlot : " + i;
+        }
+    }
 
     public void LoadResources()
     {
@@ -102,6 +135,26 @@ public class GameManager : Singleton<GameManager>
         player = GameObject.Find("Player").GetComponent<PlayerController>();
         OnWeaponChanged += GetWeaponTrail;
         OnTrailActivate += ActivateWeaponTrail;
+    }
+
+    //public void LoadInventory()
+    //{
+    //    Inventory inventory=GameObject.Find("Inventory").AddComponent<Inventory>();
+    //    inventory = Inventory;
+    //    ShortcutInventory shortcut= GameObject.Find("ShortcutInventory").AddComponent<ShortcutInventory>();
+    //    shortcut = ShortcutInventory;
+    //}
+
+    public void SaveInventory(Slot[] slots, Slot[] shortcutSlots)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            InventorySlots[i].UpdateSlot(slots[i]?.ItemData, slots[i]?.Amount ?? 0);
+        }
+        for (int i = 0; i < shortcutSlots.Length; i++)
+        {
+            ShortcutInventorySlots[i].UpdateSlot(shortcutSlots[i]?.ItemData, shortcutSlots[i]?.Amount ?? 0);
+        }
     }
 
     public void GetWeaponTrail()

@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class GolemStatemachineBehaviour : StateMachineBehaviour
 {
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateEnter(animator, stateInfo, layerIndex);
+        animator.SetBool(Define.IsCombo, false);
+    }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateUpdate(animator, stateInfo, layerIndex);
@@ -9,9 +14,9 @@ public class GolemStatemachineBehaviour : StateMachineBehaviour
         float currentTime = stateInfo.normalizedTime;
         int comboCount = animator.GetInteger(Define.ComboCount);
 
-        if (currentTime > 0.9)
+        if (currentTime > 0.9&&animator.GetBool(Define.IsAttacking))
         {
-            animator.SetBool(Define.IsAttacking, false);
+            animator.SetBool(Define.IsCombo, true);
         }
     }
 
@@ -19,5 +24,6 @@ public class GolemStatemachineBehaviour : StateMachineBehaviour
     {
         animator.SetBool(Define.InteractionHash, false);
         animator.SetBool(Define.IsAttacking, false);
+        animator.SetBool(Define.IsCombo, false);
     }
 }

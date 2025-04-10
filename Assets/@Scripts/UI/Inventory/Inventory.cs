@@ -28,6 +28,7 @@ public class Inventory : MonoBehaviour
 
     Slot[] _slots = new Slot[25];
     Slot[] _shortcutSlots = new Slot[5];
+
     protected Dictionary<GameObject, Slot> _slotUIs = new Dictionary<GameObject, Slot>();
 
     public Action<ItemData> OnUseItem;
@@ -218,7 +219,11 @@ public class Inventory : MonoBehaviour
     // 인벤토리 내에 같은 아이템 있는지 검사
     public Slot FindItemInInventory(Item item)
     {
-        return _slots?.FirstOrDefault(slot => slot?.ItemData?.name == item.ItemData?.name);
+        Slot slot = _slots?.FirstOrDefault(slot => slot?.ItemData?.name == item.ItemData?.name);
+        if (slot == null)
+            slot = _shortcutSlots?.FirstOrDefault(slot => slot?.ItemData?.name == item.ItemData?.name);
+        return slot;
+        // return _slots?.FirstOrDefault(slot => slot?.ItemData?.name == item.ItemData?.name);
     }
 
     public Slot GetEmptySlot()
@@ -246,6 +251,7 @@ public class Inventory : MonoBehaviour
         {
             slot.AddAmount(amount);
         }
+        ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
         return true;
     }
 
@@ -300,6 +306,7 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         CreateSlot();
+        //UpdateInventory(GameManager.Instance.InventorySlots, GameManager.Instance.ShortcutInventorySlots);
 
         AddEvent(gameObject, EventTriggerType.PointerEnter, (baseEvent) => { OnEnterInterface(gameObject); });
         AddEvent(gameObject, EventTriggerType.PointerExit, (baseEvent) => { OnExitInterface(gameObject); });
@@ -311,6 +318,25 @@ public class Inventory : MonoBehaviour
         {
             _shortcutSlots[i].UpdateSlot(GameManager.Instance.Weapons[i + 1].GetComponent<WeaponItem>().ItemData, 1);
         }
+        // test용 포션
+        //_shortcutSlots[3].UpdateSlot(GameManager.Instance.ConsumptionItems[0].GetComponent<Item>().ItemData, 2);
         ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
+    }
+
+    public void UpdateInventory(Slot[] slots, Slot[] shortcutSlots)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            _slots[i].UpdateSlot(slots[i]?.ItemData, slots[i]?.Amount ?? 0);
+        }
+        for (int i = 0; i < shortcutSlots.Length; i++)
+        {
+            _shortcutSlots[i].UpdateSlot(shortcutSlots[i]?.ItemData, shortcutSlots[i]?.Amount ?? 0);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.Instance.SaveInventory(_slots, _shortcutSlots);
     }
 }

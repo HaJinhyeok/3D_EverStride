@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public GameObject CraftPanel;
     public GameObject ConversationPanelObejct;
     public GameObject PausePanel;
+    public GameObject GameUI;
     public Inventory Inventory;
     public ShortcutInventory Shortcut;
     public Image Stamina;
@@ -60,6 +61,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         set
         {
             _hp = value;
+            PlayerHpBar.PlayerHpAction?.Invoke();
         }
     }
 
@@ -123,7 +125,12 @@ public class PlayerController : MonoBehaviour, IDamageable
         _rigidbody = gameObject.AddComponent<Rigidbody>();
         _rigidbody.freezeRotation = true;
 
-        if (SceneManager.GetActiveScene().name == Define.BossScene)
+        if (SceneManager.GetActiveScene().name == Define.GameScene)
+        {
+            _isBossRaid = false;
+            //IsCombatMode = false;
+        }
+        else
         {
             _isBossRaid = true;
             CraftCamera = null;
@@ -131,11 +138,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             ConversationCamera = null;
             //IsCombatMode = true;
             _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
-        }
-        else
-        {
-            _isBossRaid = false;
-            //IsCombatMode = false;
         }
 
         // * 콜라이더
@@ -160,12 +162,14 @@ public class PlayerController : MonoBehaviour, IDamageable
                 Define.IngredientData.Add(IngredientData[i].IngredientType, IngredientData[i]);
         }
         //InventoryOnOff(false);
+        GameManager.Instance.LoadResources();
+        //GameManager.Instance.LoadInventory();
+
         InventoryOn(false);
         CraftUIOn(false);
-        GameManager.Instance.LoadResources();
+
         // 보스전에서 칼로 놀다가 마을 복귀 후 주먹질 할때 에러 막기용
         GameManager.Instance.OnWeaponChanged.Invoke();
-        Inventory.UpdateTestWeapons();
 
         _hp = Define.PlayerMaxHp;
         WeaponTypeHash = (int)GetCurrentWeaponType();
@@ -173,9 +177,18 @@ public class PlayerController : MonoBehaviour, IDamageable
         //groundLayer = 1 << LayerMask.NameToLayer(Define.GroundTag);
     }
 
+    private void Start()
+    {
+        Inventory.UpdateInventory(GameManager.Instance.InventorySlots, GameManager.Instance.ShortcutInventorySlots);
+        Shortcut.UpdateShortcutInventory(GameManager.Instance.ShortcutInventorySlots);
+        Inventory.UpdateTestWeapons();
+    }
+
     private void Update()
     {
         GamePause();
+        if (ItemPos.transform.childCount > 0)
+            Debug.Log(ItemPos.transform.GetChild(0).name);
 
         // 대화 중엔 움직임 불가능
         if (!GameManager.Instance.IsConversating && !GameManager.Instance.IsPaused)
@@ -530,19 +543,19 @@ public class PlayerController : MonoBehaviour, IDamageable
         // 소비 및 재료 아이템일 경우
         else if (currentSlot.ItemData.ItemType == Define.ItemType.Countable)
         {
-            if(currentSlot.ItemData.ItemName=="포션")
+            if (currentSlot.ItemData.ItemName == "포션")
             {
                 // 포션 사용 및 포션 먹는 애니메이션
-                if(_hp>=Define.PlayerMaxHp)
+                if (_hp >= Define.PlayerMaxHp)
                 {
                     UI_Warning.Instance.WarningEffect(Define.AlreadyFullHP);
                 }
                 else
                 {
-                    _hp = Mathf.Min(Define.PlayerMaxHp, _hp + Define.PotionHealing);
-                    PlayerHpBar.PlayerHpAction?.Invoke();
                     _animator.SetTrigger(Define.Drink);
-                    GameObject comsumption = Instantiate(GameManager.Instance.ConsumptionItems[0], ItemPos.transform);
+                    GameObject gameObject = Instantiate(GameManager.Instance.ConsumptionItems[0], ItemPos.transform);
+                    gameObject.GetComponent<Collider>().isTrigger = true;
+                    Debug.Log($"Drink {gameObject.name}!");
                     // 포션 마시는 애니메이션 후 없애는 이벤트도 넣어줘야함
                 }
             }
@@ -587,15 +600,15 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
-    public void OnFinishItemUse()
-    {
-        if (ItemPos.transform.childCount == 0)
-            return;
-        else
-        {
-            Destroy(ItemPos.transform.GetChild(0).gameObject);
-        }
-    }
+    //public void OnFinishItemUse()
+    //{
+    //    if (ItemPos.transform.childCount == 0)
+    //        return;
+    //    else
+    //    {
+    //        Destroy(ItemPos.transform.GetChild(0).gameObject);
+    //    }
+    //}
     #endregion
 
     #region UI
@@ -608,6 +621,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         CraftCamera?.gameObject.SetActive(state);
         CraftPanel?.SetActive(state);
         PreviewCamera?.gameObject.SetActive(state);
+        GameUI?.SetActive(!state);
     }
 
     void InventoryOn(bool state)
@@ -648,7 +662,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public void GamePause()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             bool isPause = GameManager.Instance.IsPaused;
             GameManager.Instance.IsPaused = !isPause;

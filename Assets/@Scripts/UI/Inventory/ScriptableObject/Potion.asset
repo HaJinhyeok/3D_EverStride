@@ -20,7 +20,7 @@ MonoBehaviour:
   Description: "\uCCB4\uB825\uC744 20 \uD68C\uBCF5\uC2DC\uCF1C\uC900\uB2E4."
   isStack: 1
   Icon: {fileID: 21300000, guid: fb38af54312632d47bc615bfe636f9a4, type: 3}
-  Prefab: {fileID: 0}
+  Prefab: {fileID: 5558870673312317488, guid: 5951f0b6e8b6a3e45894ddc1fc4821ef, type: 3}
   Ingredients:
   - type: 1
     count: 5

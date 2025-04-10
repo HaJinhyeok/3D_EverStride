@@ -43,7 +43,7 @@ public class ShortcutInventory : Inventory
     {
         for (int i = 0; i < ShortcutSlot.Length; i++)
         {
-            ShortcutSlot[i].UpdateSlot(shortcutSlots[i].ItemData, shortcutSlots[i].Amount);
+            ShortcutSlot[i].UpdateSlot(shortcutSlots[i]?.ItemData, shortcutSlots[i]?.Amount ?? 0);
         }
     }
 
@@ -59,5 +59,10 @@ public class ShortcutInventory : Inventory
 
         AddEvent(gameObject, EventTriggerType.PointerEnter, (baseEvent) => { OnEnterInterface(gameObject); });
         AddEvent(gameObject, EventTriggerType.PointerExit, (baseEvent) => { OnExitInterface(gameObject); });
+    }
+
+    private void OnDestroy()
+    {
+        
     }
 }

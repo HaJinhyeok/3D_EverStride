@@ -23,6 +23,7 @@ public class Define
     public const float PotionHealing = 20f;
 
     public const float GolemMaxHp = 200f;
+    public const float OrcMaxHp = 150f;
     #endregion
 
     #region Animator
@@ -40,6 +41,7 @@ public class Define
     public readonly static int WeaponTypeHash = Animator.StringToHash("WeaponType");
     public readonly static int InteractionHash = Animator.StringToHash("IsPossibleInteraction");
     public readonly static int IsCombatMode = Animator.StringToHash("IsCombatMode");
+    public readonly static int IsCombo = Animator.StringToHash("IsCombo");
     public readonly static int TakeDamage = Animator.StringToHash("TakeDamage");
     public readonly static int NoDamageMode = Animator.StringToHash("NoDamageMode");
 
@@ -55,6 +57,7 @@ public class Define
     #endregion
 
     #region Path
+    public const string SlotPath = "Prefabs/Slot";
     public const string WeaponPath = "Prefabs/Weapon";
     public const string IngredientPath = "Prefabs/Ingredient";
     public const string ConsumptionPath = "Prefabs/Consumption";
@@ -108,6 +111,7 @@ public class Define
     {
         Wood,
         Golem,
+        Orc,
     }
 
     // Player Initiate할 때 같이 초기화
@@ -118,7 +122,8 @@ public class Define
     #region Scene
     public const string MainScene = "Main";
     public const string GameScene = "Game";
-    public const string BossScene = "GameBoss";
+    public const string GolemScene = "GameGolem";
+    public const string OrcScene = "GameOrc";
     #endregion
 
     #region Warning
