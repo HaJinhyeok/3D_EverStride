@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aea2743dac46284b852be876b66adaf, type: 3}
+  m_Name: HammerWeapon
+  m_EditorClassIdentifier: 
+  ItemName: "\uB9DD\uCE58"
+  ItemType: 0
+  WeaponType: 4
+  IngredientType: -1
+  Price: 0
+  Description: "\uC801\uC5D0\uAC8C \uC57D\uD55C \uB300\uBBF8\uC9C0\uB97C \uC785\uD790
+    \uC218 \uC788\uB2E4. \uC81C\uC791\uC5D0 \uC0AC\uC6A9\uB41C\uB2E4."
+  isStack: 0
+  Icon: {fileID: 21300000, guid: f6293f20fd85aa143bead12afd67ebbb, type: 3}
+  Prefab: {fileID: 7496841629275462251, guid: 7adc1759ad6fed64681540199bb069e4, type: 3}
+  Ingredients:
+  - type: 2
+    count: 1
+  - type: 1
+    count: 3

@@ -92,6 +92,7 @@ public class Define
         Axe,            // µµ³¢
         Sword,          // °Ë
         Pickaxe,        // °î±ªÀÌ
+        Hammer,         // ¸ÁÄ¡
     }
 
     public enum GameState : int
@@ -105,6 +106,7 @@ public class Define
         None = -1,
         Rock,
         Wood,
+        Ingot,
     }
 
     public enum QuestName
