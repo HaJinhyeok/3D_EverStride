@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AxeWeapon
   m_EditorClassIdentifier: 
   ItemName: "\uB3C4\uB07C"
-  ItemType: 0
+  ItemType: 1
   WeaponType: 1
   IngredientType: -1
   Price: 0
@@ -23,7 +23,7 @@ MonoBehaviour:
   Icon: {fileID: 21300000, guid: 2937cf9382bb064449f7aae87309b1ad, type: 3}
   Prefab: {fileID: 1002768511823307596, guid: bb0d874594ddd2d43933e4a08ae38f2e, type: 3}
   Ingredients:
-  - type: 0
-    count: 5
+  - type: 2
+    count: 2
   - type: 1
-    count: 5
+    count: 4

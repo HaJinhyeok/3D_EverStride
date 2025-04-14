@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SwordWeapon
   m_EditorClassIdentifier: 
   ItemName: "\uAC80"
-  ItemType: 0
+  ItemType: 1
   WeaponType: 2
   IngredientType: -1
   Price: 0
@@ -24,7 +24,7 @@ MonoBehaviour:
   Icon: {fileID: 21300000, guid: 9314e5e726849aa45b93855a3a84a311, type: 3}
   Prefab: {fileID: 8140906683856152610, guid: 55fadcbab80428e43a6f1c230a56402f, type: 3}
   Ingredients:
-  - type: 0
-    count: 10
+  - type: 2
+    count: 5
   - type: 1
     count: 2

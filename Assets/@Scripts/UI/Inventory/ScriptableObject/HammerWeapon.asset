@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HammerWeapon
   m_EditorClassIdentifier: 
   ItemName: "\uB9DD\uCE58"
-  ItemType: 0
+  ItemType: 1
   WeaponType: 4
   IngredientType: -1
   Price: 0

@@ -146,6 +146,7 @@ public class Inventory : MonoBehaviour
         if (MouseData.MouseOverInventory == null)
         {
             _slotUIs[go].SpawnItem();
+            ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
         }
         else if (MouseData.SlotHoveredOver)
         {
@@ -312,17 +313,6 @@ public class Inventory : MonoBehaviour
         AddEvent(gameObject, EventTriggerType.PointerExit, (baseEvent) => { OnExitInterface(gameObject); });
     }
 
-    public void UpdateTestWeapons()
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            _shortcutSlots[i].UpdateSlot(GameManager.Instance.Weapons[i + 1].GetComponent<WeaponItem>().ItemData, 1);
-        }
-        // test용 포션
-        //_shortcutSlots[3].UpdateSlot(GameManager.Instance.ConsumptionItems[0].GetComponent<Item>().ItemData, 2);
-        ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
-    }
-
     public void UpdateInventory(Slot[] slots, Slot[] shortcutSlots)
     {
         for (int i = 0; i < slots.Length; i++)
@@ -339,4 +329,27 @@ public class Inventory : MonoBehaviour
     {
         GameManager.Instance.SaveInventory(_slots, _shortcutSlots);
     }
+
+    #region Test Code
+    public void UpdateTestWeapons()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            _shortcutSlots[i].UpdateSlot(GameManager.Instance.Weapons[i + 1].GetComponent<WeaponItem>().ItemData, 1);
+        }
+        // test용 포션
+        //_shortcutSlots[3].UpdateSlot(GameManager.Instance.ConsumptionItems[0].GetComponent<Item>().ItemData, 2);
+        ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
+    }
+
+    public void UpdateTestIngredients()
+    {
+        for(int i=0;i<GameManager.Instance.Ingredients.Length;i++)
+        {
+            _slots[5 + i].UpdateSlot(GameManager.Instance.Ingredients[i].GetComponent<Item>().ItemData, 10);
+        }
+        
+    }
+
+    #endregion
 }

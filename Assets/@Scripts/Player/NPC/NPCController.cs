@@ -20,17 +20,21 @@ public class NPCController : MonoBehaviour
     void Update()
     {
         float distance = Vector3.Distance(transform.position, _player.transform.position);
-        if ( distance< _interactionDistance)
+        if(!GameManager.Instance.IsPossibleCraft)
         {
-            // 상호작용 활성화
-            InteractionPanel.SetActive(true);
-            GameManager.Instance.IsNPCInteracive = true;
+            if (distance < _interactionDistance)
+            {
+                // 상호작용 활성화
+                InteractionPanel.SetActive(true);
+                GameManager.Instance.IsNPCInteracive = true;
+            }
+            else
+            {
+                InteractionPanel.SetActive(false);
+                GameManager.Instance.IsNPCInteracive = false;
+            }
         }
-        else
-        {
-            InteractionPanel.SetActive(false);
-            GameManager.Instance.IsNPCInteracive = false;
-        }
+        
         if (distance < _sightDistance)
         {
             if (!_isWatching)

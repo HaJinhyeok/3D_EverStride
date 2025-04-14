@@ -29,12 +29,24 @@ public class Quest
     }
 }
 
+public struct PlayerEquipment
+{
+    public Define.EquipmentType helmet;
+    public Define.EquipmentType chest;
+    public Define.EquipmentType shoulders;
+    public Define.EquipmentType gloves;
+    public Define.EquipmentType pants;
+    public Define.EquipmentType boots;
+}
+
+
 public class GameManager : Singleton<GameManager>
 {
     PlayerController player;
     TrailRenderer weaponTrail;
 
     bool _isNPCInteractive = false;
+    bool _isPossibleCraft = false;
     bool _isConversating = false;
     bool _isPaused = false;
 
@@ -62,6 +74,12 @@ public class GameManager : Singleton<GameManager>
         set { _isNPCInteractive = value; }
     }
 
+    public bool IsPossibleCraft
+    {
+        get { return _isPossibleCraft; }
+        set { _isPossibleCraft = value; }
+    }
+
     public bool IsConversating
     {
         get { return _isConversating; }
@@ -81,8 +99,8 @@ public class GameManager : Singleton<GameManager>
     }
     public bool IsInventoryOn
     {
-        get { return IsCraftPanelOn; }
-        set { IsCraftPanelOn = value; }
+        get;
+        set;
     }
     #endregion
 
@@ -94,6 +112,9 @@ public class GameManager : Singleton<GameManager>
     public Slot[] InventorySlots;
     public Slot[] ShortcutInventorySlots;
     GameObject Slot;
+
+    // Equipment 정보 저장
+    public PlayerEquipment PlayerEquipment;
 
     // 웨폰 데이터 넣으면 Weapons의 인덱스를 알려줄 수 있도록 딕셔너리...?
     //public Dictionary<ItemData, int> WeaponsMap;
@@ -135,6 +156,15 @@ public class GameManager : Singleton<GameManager>
         player = GameObject.Find("Player").GetComponent<PlayerController>();
         OnWeaponChanged += GetWeaponTrail;
         OnTrailActivate += ActivateWeaponTrail;
+
+        // starter base equipment
+        PlayerEquipment.chest = Define.EquipmentType.None;
+        PlayerEquipment.pants = Define.EquipmentType.None;
+        PlayerEquipment.boots = Define.EquipmentType.None;
+        // no base equipment
+        PlayerEquipment.helmet = Define.EquipmentType.None;
+        PlayerEquipment.shoulders = Define.EquipmentType.None;
+        PlayerEquipment.gloves = Define.EquipmentType.None;
     }
 
     //public void LoadInventory()

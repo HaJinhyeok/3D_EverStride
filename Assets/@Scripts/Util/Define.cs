@@ -38,10 +38,12 @@ public class Define
     public readonly static int IsClimbing = Animator.StringToHash("IsClimbing");
     public readonly static int IsNextCombo = Animator.StringToHash("IsNextCombo");
     public readonly static int IsAttacking = Animator.StringToHash("IsAttacking");
-    public readonly static int WeaponTypeHash = Animator.StringToHash("WeaponType");
-    public readonly static int InteractionHash = Animator.StringToHash("IsPossibleInteraction");
     public readonly static int IsCombatMode = Animator.StringToHash("IsCombatMode");
     public readonly static int IsCombo = Animator.StringToHash("IsCombo");
+    public readonly static int IsCrafting = Animator.StringToHash("IsCrafting");
+
+    public readonly static int WeaponTypeHash = Animator.StringToHash("WeaponType");
+    public readonly static int InteractionHash = Animator.StringToHash("IsPossibleInteraction");
     public readonly static int TakeDamage = Animator.StringToHash("TakeDamage");
     public readonly static int NoDamageMode = Animator.StringToHash("NoDamageMode");
 
@@ -80,10 +82,10 @@ public class Define
     #region Enum
     public enum ItemType : int
     {
-        None = -1,
-        Equipment, // 장비
-        Countable, // 소비
-        Etc,
+        Etc = -1,
+        Equipment,  // 장비
+        Weapon,     // 무기
+        Countable,  // 소비
     }
     public enum WeaponType : int
     {
@@ -109,11 +111,19 @@ public class Define
         Ingot,
     }
 
+    public enum EquipmentType : int
+    {
+        None,
+        Base,
+        Iron,
+    }
+
     public enum QuestName
     {
         Wood,
         Golem,
         Orc,
+        Villain,
     }
 
     // Player Initiate할 때 같이 초기화
@@ -133,6 +143,7 @@ public class Define
     public const string NotReadyBoss = "아직 준비 중입니다";
     public const string DuplicatedQuest = "이미 진행 중인 퀘스트입니다";
     public const string AlreadyFullHP = "체력이 이미 가득 찼습니다";
+    public const string DontDiscardEquipments = "장비 아이템은 버릴 수 없습니다";
     #endregion
 
     #region NPCtalking

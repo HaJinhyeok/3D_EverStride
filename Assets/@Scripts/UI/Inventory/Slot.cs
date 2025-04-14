@@ -46,6 +46,12 @@ public class Slot : MonoBehaviour
     // 인벤토리에서 아이템을 꺼낼 때
     public void SpawnItem()
     {
+        // 일단 장비 아이템은 버리지 못하도록
+        if(ItemData.ItemType==Define.ItemType.Equipment)
+        {
+            UI_Warning.Instance.WarningEffect(Define.DontDiscardEquipments);
+            return;
+        }
         PlayerController pc = FindAnyObjectByType<PlayerController>();
         Vector3 spawnPos = pc.transform.position + (pc.transform.GetChild(0).forward * 3) + Vector3.up; // Player GameObject 안의 Knight 찾아서 앞방향
         Item item = Instantiate(ItemData.Prefab, spawnPos, Quaternion.identity).GetComponent<Item>();

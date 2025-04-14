@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rock
   m_EditorClassIdentifier: 
   ItemName: "\uB3CC\uC870\uAC01"
-  ItemType: 1
+  ItemType: 2
   WeaponType: -1
   IngredientType: 0
   Price: 0

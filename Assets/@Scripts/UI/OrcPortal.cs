@@ -11,7 +11,7 @@ public class OrcPortal : MonoBehaviour
         if (other.CompareTag(Define.PlayerTag))
         {
             NoticePanelObject.SetActive(true);
-            NoticePanel.NoticePanelAction?.Invoke(_orcText, "");
+            NoticePanel.NoticePanelAction?.Invoke(_orcText, Define.OrcScene);
         }
     }
 

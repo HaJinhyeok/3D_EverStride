@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Potion
   m_EditorClassIdentifier: 
   ItemName: "\uD3EC\uC158"
-  ItemType: 1
+  ItemType: 2
   WeaponType: -1
   IngredientType: -1
   Price: 0
@@ -23,4 +23,4 @@ MonoBehaviour:
   Prefab: {fileID: 5558870673312317488, guid: 5951f0b6e8b6a3e45894ddc1fc4821ef, type: 3}
   Ingredients:
   - type: 1
-    count: 5
+    count: 3

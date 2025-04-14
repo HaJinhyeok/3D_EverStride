@@ -6,10 +6,8 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour, IDamageable
 {
-    public Camera CraftCamera;
-    public Camera PreviewCamera;
     public Camera ConversationCamera;
-    public GameObject CraftPanel;
+
     public GameObject ConversationPanelObejct;
     public GameObject PausePanel;
     public GameObject GameUI;
@@ -48,8 +46,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     // 마을맵인지 보스전맵인지 확인
     bool _isBossRaid;
 
-    [SerializeField]
-    Vector3 _camOffset = new Vector3(0f, 1f, -1f);
+    Vector3 _camOffset = new Vector3(1f, 0.5f, -3f);
+    Vector3 _conversationOffSet = new Vector3(0, 0, 3f);
 
     //const float RAY_DISTANCE = 2000f;
     //RaycastHit slopeHit;
@@ -133,8 +131,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         else
         {
             _isBossRaid = true;
-            CraftCamera = null;
-            PreviewCamera = null;
             ConversationCamera = null;
             //IsCombatMode = true;
             _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
@@ -151,7 +147,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         _camAxis = new GameObject("CamAxis").transform;
         _camera.transform.parent = _camAxis;
         //_camera.transform.localPosition = Vector3.zero;
-        _camera.transform.localPosition = new Vector3(0, 0, -3);
+        _camera.transform.localPosition = _camOffset;
         ConversationCamera?.gameObject.SetActive(false);
 
         // * 그 외
@@ -166,7 +162,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         //GameManager.Instance.LoadInventory();
 
         InventoryOn(false);
-        CraftUIOn(false);
+        //CraftUIOn(false);
 
         // 보스전에서 칼로 놀다가 마을 복귀 후 주먹질 할때 에러 막기용
         GameManager.Instance.OnWeaponChanged.Invoke();
@@ -182,16 +178,15 @@ public class PlayerController : MonoBehaviour, IDamageable
         Inventory.UpdateInventory(GameManager.Instance.InventorySlots, GameManager.Instance.ShortcutInventorySlots);
         Shortcut.UpdateShortcutInventory(GameManager.Instance.ShortcutInventorySlots);
         Inventory.UpdateTestWeapons();
+        Inventory.UpdateTestIngredients();
     }
 
     private void Update()
     {
         GamePause();
-        if (ItemPos.transform.childCount > 0)
-            Debug.Log(ItemPos.transform.GetChild(0).name);
-
+        
         // 대화 중엔 움직임 불가능
-        if (!GameManager.Instance.IsConversating && !GameManager.Instance.IsPaused)
+        if (!GameManager.Instance.IsConversating && !GameManager.Instance.IsPaused && !_animator.GetBool(Define.IsCrafting))
         {
             Jump();
             Attack();
@@ -212,18 +207,19 @@ public class PlayerController : MonoBehaviour, IDamageable
                 UnequipWeapon();
             }
             // ui 켜지면 카메라 정신사납지 않게 가만히
-            if (!GameManager.Instance.IsUIOn)
+            if (!GameManager.Instance.IsInventoryOn)
             {
                 CameraMove();
             }
 
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                CraftUIOn(!GameManager.Instance.IsCraftPanelOn);
-            }
+            //if (Input.GetKeyDown(KeyCode.T))
+            //{
+            //    CraftUIOn(!GameManager.Instance.IsCraftPanelOn);
+            //}
             if (Input.GetKeyDown(KeyCode.I))
             {
                 InventoryOn(!GameManager.Instance.IsInventoryOn);
+                Debug.Log($"IsUIOn: {GameManager.Instance.IsUIOn}");
             }
             // 1~5번 단축키
             UseShortcut();
@@ -285,7 +281,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         Speed = _rigidbody.linearVelocity.sqrMagnitude;
-        _camAxis.position = transform.position + _camOffset;
+        //_camAxis.position = transform.position + _camOffset;
+        _camAxis.position = transform.position+Vector3.up;
         _character.eulerAngles = new Vector3(0, _character.eulerAngles.y, 0);
     }
     void stepClimb()
@@ -466,7 +463,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             Collider[] NPC = Physics.OverlapSphere(transform.position, 2f, _npcMask);
             NPC[0].transform.rotation = Quaternion.LookRotation(transform.position - NPC[0].transform.position);
-            LookNPC(NPC[0].transform.position);
+            LookNPC(NPC[0].transform.position, _conversationOffSet);
             // 대화용 카메라 ON
             ConversationCamera.gameObject.SetActive(true);
             ConversationPanelObejct.gameObject.SetActive(true);
@@ -510,10 +507,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
     }
 
-    void LookNPC(Vector3 pos)
+    public void LookNPC(Vector3 lookPos, Vector3 offset)
     {
-        transform.position = pos - new Vector3(0, 0, -3);
-        _character.rotation = Quaternion.LookRotation(pos - transform.position);
+        transform.position = lookPos + offset;
+        _character.rotation = Quaternion.LookRotation(lookPos - transform.position);
     }
     #endregion
 
@@ -529,7 +526,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (currentSlot.ItemData == null)
             return;
         // 장비 아이템일 경우
-        if (currentSlot.ItemData.ItemType == Define.ItemType.Equipment)
+        if (currentSlot.ItemData.ItemType == Define.ItemType.Weapon)
         {
             if (WeaponPos.transform.childCount > 0)
             {
@@ -563,6 +560,11 @@ public class PlayerController : MonoBehaviour, IDamageable
             {
                 Debug.Log("할 동작이 없습니다");
             }
+        }
+        // 장비 아이템일 경우
+        else if(currentSlot.ItemData.ItemType==Define.ItemType.Equipment)
+        {
+            // GameManager에서 현재 플레이어의 장비 장착 상태 확인 후 업그레이드 가능하면 장착시켜줌
         }
 
         //slot.UpdateSlot(null, 0);
@@ -612,17 +614,17 @@ public class PlayerController : MonoBehaviour, IDamageable
     #endregion
 
     #region UI
-    void CraftUIOn(bool state)
-    {
-        if (CraftPanel == null)
-            return;
-        GameManager.Instance.IsCraftPanelOn = state;
-        GameManager.Instance.IsUIOn = state;
-        CraftCamera?.gameObject.SetActive(state);
-        CraftPanel?.SetActive(state);
-        PreviewCamera?.gameObject.SetActive(state);
-        GameUI?.SetActive(!state);
-    }
+    //void CraftUIOn(bool state)
+    //{
+    //    if (CraftPanel == null)
+    //        return;
+    //    GameManager.Instance.IsCraftPanelOn = state;
+    //    GameManager.Instance.IsUIOn = state;
+    //    CraftCamera?.gameObject.SetActive(state);
+    //    CraftPanel?.SetActive(state);
+    //    PreviewCamera?.gameObject.SetActive(state);
+    //    GameUI?.SetActive(!state);
+    //}
 
     void InventoryOn(bool state)
     {

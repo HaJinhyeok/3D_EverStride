@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/@Scenes/GameGolem.unity
     guid: 8dcf44d495e5fc64a9e57a7bf288510b
+  - enabled: 1
+    path: Assets/@Scenes/GameOrc.unity
+    guid: a18b40f3b49302b40a27d85a078af8c2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
   m_UseUCBPForAssetBundles: 0

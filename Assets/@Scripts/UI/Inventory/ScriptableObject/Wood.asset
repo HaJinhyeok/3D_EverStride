@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Wood
   m_EditorClassIdentifier: 
   ItemName: "\uB098\uBB34\uC870\uAC01"
-  ItemType: 1
+  ItemType: 2
   WeaponType: -1
   IngredientType: 1
   Price: 0

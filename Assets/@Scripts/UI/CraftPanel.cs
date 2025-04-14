@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using System.Collections;
 
 public class CraftPanel : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class CraftPanel : MonoBehaviour
     public List<ItemData> CraftItemData = new List<ItemData>();
     public Text CraftIngredientText;
     public Button CraftButton;
+    public CraftTable CraftTable;
 
     Vector2 _start = new Vector2(-65, 120);
     Vector2 _size = new Vector2(120, 50);
@@ -75,6 +77,9 @@ public class CraftPanel : MonoBehaviour
         previewObject = Instantiate(currentItem.ItemData.Prefab, PreviewSpace.transform);
         previewObject.transform.localPosition = new Vector3(0, 0.2f, 0);
         previewObject.AddComponent<PreviewObject>();
+        previewObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        if (previewObject.GetComponent<Item>().ItemData.ItemName == "주괴")
+            previewObject.transform.localPosition = Vector3.zero;
         if (previewObject.GetComponent<Pickaxe>())
             previewObject.transform.localEulerAngles = new Vector3(0, 120, 0);
         previewObject.layer = LayerMask.NameToLayer("PreviewObject");
@@ -97,7 +102,8 @@ public class CraftPanel : MonoBehaviour
     {
         if (currentItem == null)
             return;
-
+        if (GameManager.Instance.Player.transform.GetChild(0).GetComponent<Animator>().GetBool(Define.IsCrafting))
+            return;
         // 필요한 재료가 충분히 있는지 확인
         // 현재 제작 대상 아이템 + 인벤토리 정보
 
@@ -105,8 +111,10 @@ public class CraftPanel : MonoBehaviour
         {
             // 재료 차감해주고
             UseCraftIngredients(currentItem.ItemData.Ingredients);
+            // CraftTime만큼 망치질 coroutine
+            CraftTable.OnCraftAction?.Invoke(currentItem.ItemData,5f);
             // 아이템 생성 후 inventory 빈 칸에 넣기
-            Inventory.AddItem(currentItem.ItemData.Prefab.GetComponent<WeaponItem>(), 1);
+            Inventory.AddItem(currentItem.ItemData.Prefab.GetComponent<Item>(), 1);
         }
         // 충분하지 않으면
         else
@@ -160,7 +168,7 @@ public class CraftPanel : MonoBehaviour
             Slot slot = Inventory.FindItemInInventory(tmpItem);
             slot.AddAmount(-ingredients[i].count);
         }
-    }
+    }    
 
     //private void OnEnable()
     //{
