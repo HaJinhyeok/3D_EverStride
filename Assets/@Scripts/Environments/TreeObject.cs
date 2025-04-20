@@ -10,6 +10,7 @@ public class TreeObject : EnvironmentObject
     void Start()
     {
         _durability = 50;
+        _audioSource = GetComponent<AudioSource>();
     }
 
     public override void DropItem()
@@ -32,6 +33,7 @@ public class TreeObject : EnvironmentObject
     {
         _durability -= damage * bonus;
         Instantiate(HitEffect, hitPos, Quaternion.Euler(transform.TransformDirection(Vector3.back)));
+        _audioSource.Play();
         if (_durability > 0)
         {
             if (bonus > 1)
@@ -45,7 +47,6 @@ public class TreeObject : EnvironmentObject
             {
                 DropItem();
             }
-
         }
         else
         {

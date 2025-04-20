@@ -31,12 +31,12 @@ public class Quest
 
 public struct PlayerEquipment
 {
-    public Define.EquipmentType helmet;
-    public Define.EquipmentType chest;
-    public Define.EquipmentType shoulders;
-    public Define.EquipmentType gloves;
-    public Define.EquipmentType pants;
-    public Define.EquipmentType boots;
+    public Define.EquipmentStatus helmet;
+    public Define.EquipmentStatus chest;
+    public Define.EquipmentStatus shoulders;
+    public Define.EquipmentStatus gloves;
+    public Define.EquipmentStatus pants;
+    public Define.EquipmentStatus boots;
 }
 
 
@@ -49,6 +49,7 @@ public class GameManager : Singleton<GameManager>
     bool _isPossibleCraft = false;
     bool _isConversating = false;
     bool _isPaused = false;
+    bool _isUiOn = false;
 
     public Action OnWeaponChanged;
     public Action<bool> OnTrailActivate;
@@ -60,7 +61,7 @@ public class GameManager : Singleton<GameManager>
         get { return player; }
     }
 
-    #region Boolean
+    #region Booleaa Flags
 
     public bool IsPaused
     {
@@ -88,8 +89,8 @@ public class GameManager : Singleton<GameManager>
 
     public bool IsUIOn
     {
-        get;
-        set;
+        get { return _isUiOn; }
+        set { _isUiOn=value; }
     }
 
     public bool IsCraftPanelOn
@@ -107,6 +108,7 @@ public class GameManager : Singleton<GameManager>
     public GameObject[] Weapons;
     public GameObject[] Ingredients;
     public GameObject[] ConsumptionItems;
+    public GameObject PreviewCharacter;
 
     // Inventory 아이템 정보 저장
     public Slot[] InventorySlots;
@@ -145,6 +147,14 @@ public class GameManager : Singleton<GameManager>
             //ShortcutInventorySlots[i].OnPostUpdate += OnPostUpdate;
             go.name = "SrhotcutSlot : " + i;
         }
+        // starter base equipment
+        PlayerEquipment.chest = Define.EquipmentStatus.Base;
+        PlayerEquipment.pants = Define.EquipmentStatus.Base;
+        PlayerEquipment.boots = Define.EquipmentStatus.Base;
+        // no base equipment
+        PlayerEquipment.helmet = Define.EquipmentStatus.None;
+        PlayerEquipment.shoulders = Define.EquipmentStatus.None;
+        PlayerEquipment.gloves = Define.EquipmentStatus.None;
     }
 
     public void LoadResources()
@@ -152,19 +162,11 @@ public class GameManager : Singleton<GameManager>
         Weapons = Resources.LoadAll<GameObject>(Define.WeaponPath);
         Ingredients = Resources.LoadAll<GameObject>(Define.IngredientPath);
         ConsumptionItems = Resources.LoadAll<GameObject>(Define.ConsumptionPath);
+        PreviewCharacter = Resources.Load<GameObject>(Define.PreviewCharacter);
 
         player = GameObject.Find("Player").GetComponent<PlayerController>();
         OnWeaponChanged += GetWeaponTrail;
         OnTrailActivate += ActivateWeaponTrail;
-
-        // starter base equipment
-        PlayerEquipment.chest = Define.EquipmentType.None;
-        PlayerEquipment.pants = Define.EquipmentType.None;
-        PlayerEquipment.boots = Define.EquipmentType.None;
-        // no base equipment
-        PlayerEquipment.helmet = Define.EquipmentType.None;
-        PlayerEquipment.shoulders = Define.EquipmentType.None;
-        PlayerEquipment.gloves = Define.EquipmentType.None;
     }
 
     //public void LoadInventory()
@@ -175,6 +177,7 @@ public class GameManager : Singleton<GameManager>
     //    shortcut = ShortcutInventory;
     //}
 
+    // 인벤토리에 있는 아이템 상황 저장
     public void SaveInventory(Slot[] slots, Slot[] shortcutSlots)
     {
         for (int i = 0; i < slots.Length; i++)
@@ -187,6 +190,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    // 트레일 이펙트 여부 확인
     public void GetWeaponTrail()
     {
         if (Player.WeaponTypeHash == 2)

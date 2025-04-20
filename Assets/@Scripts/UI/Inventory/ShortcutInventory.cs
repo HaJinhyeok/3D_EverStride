@@ -47,10 +47,10 @@ public class ShortcutInventory : Inventory
         }
     }
 
-    public Slot UseShortcutItem(int idx)
-    {
-        return ShortcutSlot[idx];
-    }
+    //public Slot UseShortcutItem(int idx)
+    //{
+    //    return ShortcutSlot[idx];
+    //}
 
     private void Awake()
     {

@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,7 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour, IDamageable
 {
+    Client Client;
     public Camera ConversationCamera;
 
     public GameObject ConversationPanelObejct;
@@ -16,19 +18,22 @@ public class PlayerController : MonoBehaviour, IDamageable
     public Image Stamina;
     public GameObject WeaponPos;
     public GameObject ItemPos;
+    public GameObject BaseClothes;
+    public GameObject PlateClothes;
 
     public List<ItemData> IngredientData = new List<ItemData>();
 
-    [SerializeField] GameObject stepRayUpper;
-    [SerializeField] GameObject stepRayLower;
+    public GameObject stepRayUpper;
+    public GameObject stepRayLower;
     //[SerializeField] float stepHeight = 0.3f;
-    [SerializeField] float stepSmooth = 0.1f;
+    float stepSmooth = 0.1f;
 
     Transform _character;
     Animator _animator;
     Rigidbody _rigidbody;
     Camera _camera;
     Transform _camAxis;
+    AudioSource _audioSource;
     LayerMask _npcMask;
 
     float _camSpeed = 6f;
@@ -122,6 +127,8 @@ public class PlayerController : MonoBehaviour, IDamageable
         _animator = _character.GetComponent<Animator>();
         _rigidbody = gameObject.AddComponent<Rigidbody>();
         _rigidbody.freezeRotation = true;
+        _audioSource = GetComponent<AudioSource>();
+        Client = GameObject.Find("TestClient").GetComponentInChildren<Client>();
 
         if (SceneManager.GetActiveScene().name == Define.GameScene)
         {
@@ -144,7 +151,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         // * 카메라
         _camera = Camera.main;
-        _camAxis = new GameObject("CamAxis").transform;
+        _camAxis = new GameObject(Define.CamAxis).transform;
         _camera.transform.parent = _camAxis;
         //_camera.transform.localPosition = Vector3.zero;
         _camera.transform.localPosition = _camOffset;
@@ -179,12 +186,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         Shortcut.UpdateShortcutInventory(GameManager.Instance.ShortcutInventorySlots);
         Inventory.UpdateTestWeapons();
         Inventory.UpdateTestIngredients();
+        PlayerClothesSetting();
     }
 
     private void Update()
     {
         GamePause();
-        
+
         // 대화 중엔 움직임 불가능
         if (!GameManager.Instance.IsConversating && !GameManager.Instance.IsPaused && !_animator.GetBool(Define.IsCrafting))
         {
@@ -207,19 +215,15 @@ public class PlayerController : MonoBehaviour, IDamageable
                 UnequipWeapon();
             }
             // ui 켜지면 카메라 정신사납지 않게 가만히
-            if (!GameManager.Instance.IsInventoryOn)
+            if (!GameManager.Instance.IsInventoryOn&&!GameManager.Instance.IsUIOn)
             {
                 CameraMove();
             }
 
-            //if (Input.GetKeyDown(KeyCode.T))
-            //{
-            //    CraftUIOn(!GameManager.Instance.IsCraftPanelOn);
-            //}
             if (Input.GetKeyDown(KeyCode.I))
             {
                 InventoryOn(!GameManager.Instance.IsInventoryOn);
-                Debug.Log($"IsUIOn: {GameManager.Instance.IsUIOn}");
+                // Debug.Log($"IsUIOn: {GameManager.Instance.IsUIOn}");
             }
             // 1~5번 단축키
             UseShortcut();
@@ -245,45 +249,56 @@ public class PlayerController : MonoBehaviour, IDamageable
     void Move()
     {
         //bool isOnSlope = IsOnSlope();
-        if ((Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical)) && !IsAttacking)
+        if ((Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical)))
         {
-            float h = Input.GetAxis(Define.Horizontal);
-            float v = Input.GetAxis(Define.Vertical);
+            if (!_audioSource.isPlaying)
+                _audioSource.Play();
+            if(!IsAttacking)
+            {
+                float h = Input.GetAxis(Define.Horizontal);
+                float v = Input.GetAxis(Define.Vertical);
 
-            Vector3 movement = new Vector3(h, 0, v);
-            float velY = _rigidbody.linearVelocity.y;
-            transform.rotation = Quaternion.Euler(new Vector3(0, _camAxis.rotation.y + _mouseX, 0) * _camSpeed);
+                Vector3 movement = new Vector3(h, 0, v);
+                float velY = _rigidbody.linearVelocity.y;
+                transform.rotation = Quaternion.Euler(new Vector3(0, _camAxis.rotation.y + _mouseX, 0) * _camSpeed);
 
-            // local 방향에서 world 방향으로 바꿔주는 역할???
-            Vector3 localMovement = transform.TransformDirection(movement);
+                // local 방향에서 world 방향으로 바꿔주는 역할???
+                Vector3 localMovement = transform.TransformDirection(movement);
 
-            //localMovement = isOnSlope ? ProjectDirectionToSlope(localMovement) : localMovement;
-            // Vector3 tmpGravity = isOnSlope ? Vector3.zero : Vector3.up * _rigidbody.linearVelocity.y;
+                //localMovement = isOnSlope ? ProjectDirectionToSlope(localMovement) : localMovement;
+                // Vector3 tmpGravity = isOnSlope ? Vector3.zero : Vector3.up * _rigidbody.linearVelocity.y;
 
-            _rigidbody.linearVelocity = localMovement.normalized * _speed + new Vector3(0, velY, 0);
-            //_rigidbody.linearVelocity = localMovement.normalized * _speed + tmpGravity;
+                _rigidbody.linearVelocity = localMovement.normalized * _speed + new Vector3(0, velY, 0);
+                //_rigidbody.linearVelocity = localMovement.normalized * _speed + tmpGravity;
 
-            _character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
-        }
-        else if ((Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical)) && IsAttacking)
-        {
-            float h = Input.GetAxis(Define.Horizontal);
-            float v = Input.GetAxis(Define.Vertical);
+                _character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
 
-            transform.rotation = Quaternion.Euler(new Vector3(0, _camAxis.rotation.y + _mouseX, 0) * _camSpeed);
-            //Vector3 movement = new Vector3(h, 0, v);
-            //_character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
+                // player 위치 좌표 IOCP 서버로 전송
+                Client.SendMessageToServer($"{transform.position.x} {transform.position.y} {transform.position.z}");
+            }
+            else
+            {
+                float h = Input.GetAxis(Define.Horizontal);
+                float v = Input.GetAxis(Define.Vertical);
+
+                transform.rotation = Quaternion.Euler(new Vector3(0, _camAxis.rotation.y + _mouseX, 0) * _camSpeed);
+                //Vector3 movement = new Vector3(h, 0, v);
+                //_character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
+
+            }
         }
         else
         {
             // 속도 0으로 만들어주기
             _rigidbody.linearVelocity = new Vector3(0, _rigidbody.linearVelocity.y, 0);
+            _audioSource.Stop();
         }
 
         Speed = _rigidbody.linearVelocity.sqrMagnitude;
         //_camAxis.position = transform.position + _camOffset;
-        _camAxis.position = transform.position+Vector3.up;
+        _camAxis.position = transform.position + Vector3.up;
         _character.eulerAngles = new Vector3(0, _character.eulerAngles.y, 0);
+
     }
     void stepClimb()
     {
@@ -436,24 +451,23 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (Input.GetKeyDown("1"))
         {
-            //EquipWeapon(GameManager.Instance.Weapons[1].GetComponent<WeaponItem>());
-            EquipWeapon(Shortcut.UseShortcutItem(0), 0);
+            EquipItem(Inventory.UseShortcutItem(0));
         }
         if (Input.GetKeyDown("2"))
         {
-            EquipWeapon(Shortcut.UseShortcutItem(1), 1);
+            EquipItem(Inventory.UseShortcutItem(1));
         }
         if (Input.GetKeyDown("3"))
         {
-            EquipWeapon(Shortcut.UseShortcutItem(2), 2);
+            EquipItem(Inventory.UseShortcutItem(2));
         }
         if (Input.GetKeyDown("4"))
         {
-            EquipWeapon(Shortcut.UseShortcutItem(3), 3);
+            EquipItem(Inventory.UseShortcutItem(3));
         }
         if (Input.GetKeyDown("5"))
         {
-            EquipWeapon(Shortcut.UseShortcutItem(4), 4);
+            EquipItem(Inventory.UseShortcutItem(4));
         }
     }
 
@@ -467,7 +481,8 @@ public class PlayerController : MonoBehaviour, IDamageable
             // 대화용 카메라 ON
             ConversationCamera.gameObject.SetActive(true);
             ConversationPanelObejct.gameObject.SetActive(true);
-            GameObject.Find(Define.GameUI).SetActive(false);
+            //GameObject.Find(Define.GameUI).SetActive(false);
+            GameUI.SetActive(false);
             GameManager.Instance.IsConversating = true;
 
             // 퀘스트 없으면 새로 주고
@@ -515,17 +530,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     #endregion
 
     #region Weapon
-    public void EquipWeapon(Slot currentSlot, int idx)
+    public void EquipItem(Slot currentSlot)
     {
-        //Slot slot = Inventory.FindItemInInventory(weapon);
-        //if (slot == null)
-        //{
-        //    Debug.Log($"인벤토리에 {weapon.ItemData.name}이(가) 없습니다");
-        //    return;
-        //}
         if (currentSlot.ItemData == null)
             return;
-        // 장비 아이템일 경우
+        // 무기 아이템일 경우
         if (currentSlot.ItemData.ItemType == Define.ItemType.Weapon)
         {
             if (WeaponPos.transform.childCount > 0)
@@ -553,7 +562,6 @@ public class PlayerController : MonoBehaviour, IDamageable
                     GameObject gameObject = Instantiate(GameManager.Instance.ConsumptionItems[0], ItemPos.transform);
                     gameObject.GetComponent<Collider>().isTrigger = true;
                     Debug.Log($"Drink {gameObject.name}!");
-                    // 포션 마시는 애니메이션 후 없애는 이벤트도 넣어줘야함
                 }
             }
             else
@@ -562,9 +570,9 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
         }
         // 장비 아이템일 경우
-        else if(currentSlot.ItemData.ItemType==Define.ItemType.Equipment)
+        else if (currentSlot.ItemData.ItemType == Define.ItemType.Equipment)
         {
-            // GameManager에서 현재 플레이어의 장비 장착 상태 확인 후 업그레이드 가능하면 장착시켜줌
+            Inventory.UseItem(currentSlot);
         }
 
         //slot.UpdateSlot(null, 0);
@@ -614,18 +622,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     #endregion
 
     #region UI
-    //void CraftUIOn(bool state)
-    //{
-    //    if (CraftPanel == null)
-    //        return;
-    //    GameManager.Instance.IsCraftPanelOn = state;
-    //    GameManager.Instance.IsUIOn = state;
-    //    CraftCamera?.gameObject.SetActive(state);
-    //    CraftPanel?.SetActive(state);
-    //    PreviewCamera?.gameObject.SetActive(state);
-    //    GameUI?.SetActive(!state);
-    //}
-
     void InventoryOn(bool state)
     {
         GameManager.Instance.IsInventoryOn = state;
@@ -633,6 +629,102 @@ public class PlayerController : MonoBehaviour, IDamageable
         Inventory.gameObject.SetActive(state);
     }
     #endregion
+
+    void PlayerClothesSetting()
+    {
+        Transform[] baseClothes=BaseClothes.GetComponentsInChildren<Transform>();
+        Transform[] plateClothes = PlateClothes.GetComponentsInChildren<Transform>();
+        switch(GameManager.Instance.PlayerEquipment.helmet)
+        {
+            case Define.EquipmentStatus.None:
+                plateClothes[4].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Base:
+                break;
+            case Define.EquipmentStatus.Iron:
+                plateClothes[4].gameObject.SetActive(true);
+                break;
+            default:
+                break;
+        }
+        switch (GameManager.Instance.PlayerEquipment.chest)
+        {
+            case Define.EquipmentStatus.None:
+                baseClothes[2].gameObject.SetActive(false);
+                plateClothes[2].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Base:
+                baseClothes[2].gameObject.SetActive(true);
+                plateClothes[2].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Iron:
+                baseClothes[2].gameObject.SetActive(false);
+                plateClothes[2].gameObject.SetActive(true);
+                break;
+            default:
+                break;
+        }
+        switch (GameManager.Instance.PlayerEquipment.shoulders)
+        {
+            case Define.EquipmentStatus.None:
+                plateClothes[6].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Base:
+                break;
+            case Define.EquipmentStatus.Iron:
+                plateClothes[6].gameObject.SetActive(true);
+                break;
+            default:
+                break;
+        }
+        switch (GameManager.Instance.PlayerEquipment.gloves)
+        {
+            case Define.EquipmentStatus.None:
+                plateClothes[3].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Base:
+                break;
+            case Define.EquipmentStatus.Iron:
+                plateClothes[3].gameObject.SetActive(true);
+                break;
+            default:
+                break;
+        }
+        switch (GameManager.Instance.PlayerEquipment.pants)
+        {
+            case Define.EquipmentStatus.None:
+                baseClothes[3].gameObject.SetActive(true);
+                plateClothes[5].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Base:
+                baseClothes[3].gameObject.SetActive(true);
+                plateClothes[5].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Iron:
+                baseClothes[3].gameObject.SetActive(false);
+                plateClothes[5].gameObject.SetActive(true);
+                break;
+            default:
+                break;
+        }
+        switch (GameManager.Instance.PlayerEquipment.boots)
+        {
+            case Define.EquipmentStatus.None:
+                baseClothes[1].gameObject.SetActive(false);
+                plateClothes[1].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Base:
+                baseClothes[1].gameObject.SetActive(true);
+                plateClothes[1].gameObject.SetActive(false);
+                break;
+            case Define.EquipmentStatus.Iron:
+                baseClothes[1].gameObject.SetActive(false);
+                plateClothes[1].gameObject.SetActive(true);
+                break;
+            default:
+                break;
+        }
+    }
 
     private void OnCollisionEnter(Collision collision)
     {

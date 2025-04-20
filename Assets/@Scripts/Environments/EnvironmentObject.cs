@@ -3,6 +3,7 @@ using UnityEngine;
 public abstract class EnvironmentObject : MonoBehaviour, IDroppable, IDamageable
 {
     protected float _durability;
+    protected AudioSource _audioSource;
 
     public abstract void DropItem();
 

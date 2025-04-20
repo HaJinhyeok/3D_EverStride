@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 469752006060220129}
   - component: {fileID: 7534762258953480010}
-  m_Layer: 0
+  - component: {fileID: 1144351749650776387}
+  m_Layer: 30
   m_Name: PlateSet1_Pants
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,3 +145,17 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.4951734, y: -0.021778248, z: -0.00007315725}
     m_Extent: {x: 0.5072493, y: 0.16250014, z: 0.23951918}
   m_DirtyAABB: 0
+--- !u!114 &1144351749650776387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5847271956381549266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffb16c062d97d8a4696a6a3ebba8b8fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemData: {fileID: 11400000, guid: a95b72a47dc56634383d81bc6e1fef32, type: 2}
+  Amount: 1

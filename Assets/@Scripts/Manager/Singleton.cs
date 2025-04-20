@@ -33,6 +33,15 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
+    private void OnApplicationQuit()
+    {
+        GameObject gameObject = GameObject.Find("@Managers");
+        if (gameObject != null)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     private void Awake()
     {
         Initialize();

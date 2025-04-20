@@ -14,6 +14,7 @@ public class CraftTable : MonoBehaviour
     public static Action<ItemData, float> OnCraftAction;
 
     Transform _player;
+    Transform _camAxis;
     Animator _playerAnimator;
     Vector3 _craftOffset = new Vector3(-1.5f, 0, 0);
     float _interactionDistance = 3f;
@@ -21,6 +22,7 @@ public class CraftTable : MonoBehaviour
     void Start()
     {
         _player = GameManager.Instance.Player.transform;
+        _camAxis = GameObject.Find(Define.CamAxis).transform;
         _playerAnimator = _player.GetChild(0).GetComponent<Animator>();
         OnCraftAction += StartCrafting;
         CraftUIOn(false);
@@ -38,7 +40,8 @@ public class CraftTable : MonoBehaviour
         {
             InteractionPanel.SetActive(false);
             GameManager.Instance.IsPossibleCraft = false;
-            CraftUIOn(false);
+            if (GameManager.Instance.IsCraftPanelOn)
+                CraftUIOn(false);
         }
 
         if (Input.GetKeyDown(KeyCode.G) && GameManager.Instance.IsPossibleCraft && !GameManager.Instance.Player.transform.GetChild(0).GetComponent<Animator>().GetBool(Define.IsCrafting))
@@ -75,6 +78,7 @@ public class CraftTable : MonoBehaviour
         GameObject currentWeapon = null;
         Transform position = GameManager.Instance.Player.WeaponPos.transform;
         _playerAnimator.SetBool(Define.IsCrafting, true);
+        _camAxis.rotation = Quaternion.Euler(15f, -10f, 0f);
         if (position.childCount > 0)
         {
             currentWeapon = position.GetChild(0).gameObject;
@@ -87,5 +91,10 @@ public class CraftTable : MonoBehaviour
         _playerAnimator.SetBool(Define.IsCrafting, false);
         Destroy(hammer);
         currentWeapon?.SetActive(true);
+    }
+
+    public void PreviewCameraSetting(int layer)
+    {
+        PreviewCamera.cullingMask = layer;
     }
 }

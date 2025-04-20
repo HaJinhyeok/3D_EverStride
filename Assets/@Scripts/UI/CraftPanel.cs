@@ -73,13 +73,46 @@ public class CraftPanel : MonoBehaviour
             previewObject = PreviewSpace.transform.GetChild(3).gameObject;
             Destroy(previewObject);
         }
-        // 왜 y축으로 20올라간 위치에서 생성되는가 -> previewSpace 자체가 (0,-20,0)에 있기 때문이었던듯
-        previewObject = Instantiate(currentItem.ItemData.Prefab, PreviewSpace.transform);
-        previewObject.transform.localPosition = new Vector3(0, 0.2f, 0);
+        // 장비 아이템일 경우, 프리뷰캐릭터를 생성하고 해당 부위의 레이어값만 렌더링 레이어에 넣어준다
+        if (currentItem.ItemData.ItemType == Define.ItemType.Equipment)
+        {
+            previewObject = Instantiate(GameManager.Instance.PreviewCharacter, PreviewSpace.transform);
+            CraftTable.PreviewCameraSetting(1 << LayerMask.NameToLayer("PreviewObject") | 1 << currentItem.ItemData.Prefab.layer);
+            switch (currentItem.ItemData.Prefab.layer)
+            {
+                case (int)Define.EquipmentType.Helmet:
+                    previewObject.transform.localPosition = new Vector3(0f, -1.5f, 0f);
+                    break;
+                case (int)Define.EquipmentType.Chest:
+                    previewObject.transform.localPosition = new Vector3(0f, -1f, 1f);
+                    break;
+                case (int)Define.EquipmentType.Shoulders:
+                    previewObject.transform.localPosition = new Vector3(0f, -1.3f, 0.5f);
+                    break;
+                case (int)Define.EquipmentType.Gloves:
+                    previewObject.transform.localPosition = new Vector3(0f, -1.3f, 1.5f);
+                    break;
+                case (int)Define.EquipmentType.Pants:
+                    previewObject.transform.localPosition = new Vector3(0f, 0f, 1f);
+                    break;
+                case (int)Define.EquipmentType.Boots:
+                    previewObject.transform.localPosition = new Vector3(0f, 0.05f, 0f);
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            // 왜 y축으로 20올라간 위치에서 생성되는가 -> previewSpace 자체가 (0,-20,0)에 있기 때문이었던듯
+            previewObject = Instantiate(currentItem.ItemData.Prefab, PreviewSpace.transform);
+            CraftTable.PreviewCameraSetting(1 << LayerMask.NameToLayer("PreviewObject"));
+            previewObject.transform.localPosition = new Vector3(0, 0.2f, 0);
+        }
         previewObject.AddComponent<PreviewObject>();
         previewObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-        if (previewObject.GetComponent<Item>().ItemData.ItemName == "주괴")
-            previewObject.transform.localPosition = Vector3.zero;
+        //if (previewObject.GetComponent<Item>()?.ItemData.ItemName == "주괴")
+        //    previewObject.transform.localPosition = Vector3.zero;
         if (previewObject.GetComponent<Pickaxe>())
             previewObject.transform.localEulerAngles = new Vector3(0, 120, 0);
         previewObject.layer = LayerMask.NameToLayer("PreviewObject");
@@ -112,7 +145,7 @@ public class CraftPanel : MonoBehaviour
             // 재료 차감해주고
             UseCraftIngredients(currentItem.ItemData.Ingredients);
             // CraftTime만큼 망치질 coroutine
-            CraftTable.OnCraftAction?.Invoke(currentItem.ItemData,5f);
+            CraftTable.OnCraftAction?.Invoke(currentItem.ItemData, 5f);
             // 아이템 생성 후 inventory 빈 칸에 넣기
             Inventory.AddItem(currentItem.ItemData.Prefab.GetComponent<Item>(), 1);
         }
@@ -168,7 +201,7 @@ public class CraftPanel : MonoBehaviour
             Slot slot = Inventory.FindItemInInventory(tmpItem);
             slot.AddAmount(-ingredients[i].count);
         }
-    }    
+    }
 
     //private void OnEnable()
     //{

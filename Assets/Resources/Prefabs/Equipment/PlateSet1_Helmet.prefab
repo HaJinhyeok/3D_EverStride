@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7864012406119319688}
   - component: {fileID: 6194170444104266189}
-  m_Layer: 0
+  - component: {fileID: 4334943924147423969}
+  m_Layer: 26
   m_Name: PlateSet1_Helmet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,3 +145,17 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.73843324, y: 0.015946388, z: -0.0000731647}
     m_Extent: {x: 0.15053743, y: 0.151664, z: 0.13129225}
   m_DirtyAABB: 0
+--- !u!114 &4334943924147423969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7044875713111925570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffb16c062d97d8a4696a6a3ebba8b8fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemData: {fileID: 11400000, guid: 4d654e6e024ace04fadac9ede810742a, type: 2}
+  Amount: 1

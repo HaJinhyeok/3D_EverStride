@@ -662,6 +662,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.19999999
+        functionName: DeathSound
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 331024a2fd10a13469c89020814f97d6, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

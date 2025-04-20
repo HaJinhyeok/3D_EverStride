@@ -9,6 +9,8 @@ public class BossController : MonoBehaviour, IDamageable
     Rigidbody _rigidbody;
     Transform _player;
 
+    protected AudioSource[] _audioSources;
+
     protected float _attackRange;
     protected float _speed;
     protected float _hp;
@@ -102,6 +104,7 @@ public class BossController : MonoBehaviour, IDamageable
         if (_animator.GetBool(Define.Die)) return;
         _hp -= damage * bonusDamage;
         Instantiate(HitEffect, hitPos, Quaternion.Euler(transform.TransformDirection(Vector3.back)));
+        _audioSources[1].Play();
         BossHpBar.BossHpAction?.Invoke();
         _animator.SetTrigger(Define.TakeDamage);
         _animator.SetBool(Define.InteractionHash, false);
@@ -117,5 +120,10 @@ public class BossController : MonoBehaviour, IDamageable
     {
         Destroy(gameObject, 2f);
         ResultPanel.ResultPanelAction?.Invoke(true);
+    }
+
+    public void DeathSound()
+    {
+        _audioSources[0].Play();
     }
 }

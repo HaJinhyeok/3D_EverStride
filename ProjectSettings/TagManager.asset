@@ -12,6 +12,7 @@ TagManager:
   - EnemyHand
   - Fire
   - Floor
+  - Clothes
   layers:
   - Default
   - TransparentFX
@@ -39,12 +40,12 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Helmet
+  - Shoulders
+  - Chest
+  - Gloves
+  - Pants
+  - Boots
   m_SortingLayers:
   - name: Default
     uniqueID: 0

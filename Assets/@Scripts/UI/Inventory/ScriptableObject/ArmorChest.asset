@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8aea2743dac46284b852be876b66adaf, type: 3}
   m_Name: ArmorChest
   m_EditorClassIdentifier: 
-  ItemName: "\uAC11\uC637\uC0C1\uC758"
+  ItemName: "\uC0C1\uC758"
   ItemType: 0
   WeaponType: -1
   IngredientType: -1

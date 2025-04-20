@@ -3,10 +3,12 @@ using UnityEngine;
 public class PlayerInteractionEvents : MonoBehaviour
 {
     Animator animator;
+    Transform weaponPos;
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        weaponPos = GameObject.Find("jointItemR").transform;
     }
 
     public void OnInteractionHash()
@@ -22,5 +24,10 @@ public class PlayerInteractionEvents : MonoBehaviour
     public void OffIsAttacking()
     {
         animator.SetBool(Define.IsAttacking, false);
+    }
+
+    public void OnWeaponSound()
+    {
+        weaponPos.GetChild(0).GetComponent<AudioSource>().Play();
     }
 }

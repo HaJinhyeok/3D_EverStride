@@ -7,6 +7,8 @@ public class Define
     #region GameObjects
     public const string GameUI = "UI_Game";
     public const string CraftUI = "UI_Craft";
+    public const string CamAxis = "CamAxis";
+    public const string PlateSetPrefix = "PlateSet1_";
     #endregion
 
     #region Input
@@ -63,6 +65,7 @@ public class Define
     public const string WeaponPath = "Prefabs/Weapon";
     public const string IngredientPath = "Prefabs/Ingredient";
     public const string ConsumptionPath = "Prefabs/Consumption";
+    public const string PreviewCharacter = "Prefabs/Character/PreviewCharacter";
     public const string BossRaidAnimatorPath = "Animator/BossRaidAnimator";
     #endregion
 
@@ -111,11 +114,21 @@ public class Define
         Ingot,
     }
 
-    public enum EquipmentType : int
+    public enum EquipmentStatus : int
     {
         None,
         Base,
         Iron,
+    }
+
+    public enum EquipmentType : int
+    {
+        Helmet = 26,
+        Shoulders,
+        Chest,
+        Gloves,
+        Pants,
+        Boots,
     }
 
     public enum QuestName
@@ -144,20 +157,21 @@ public class Define
     public const string DuplicatedQuest = "이미 진행 중인 퀘스트입니다";
     public const string AlreadyFullHP = "체력이 이미 가득 찼습니다";
     public const string DontDiscardEquipments = "장비 아이템은 버릴 수 없습니다";
+    public const string AlreadyEquipSameGrade = "이미 같은 등급의 장비를 장착 중입니다";
     #endregion
 
     #region NPCtalking
-    public readonly static string[] NPC_Quest_Wood = 
+    public readonly static string[] NPC_Quest_Wood =
         {
         "안녕? 날씨가 참 좋아, 그렇지?",
             "\n슬슬 날씨가 추워질 것 같은데," +
-            "\n뗄감으로 쓸 나무조각 좀 모아다주겠어?" 
+            "\n뗄감으로 쓸 나무조각 좀 모아다주겠어?"
     };
-    public readonly static string[] NPC_Quest_Golem = 
+    public readonly static string[] NPC_Quest_Golem =
         {
         "안녕? 만나서 반가워.",
         "\n골렘 몬스터가 나타났는데,\n네가 좀 처치해줄 수 있을까?" +
-            "\n푸른 포탈을 사용하면 골렘을 처치하러 갈 수 있어." 
+            "\n푸른 포탈을 사용하면 골렘을 처치하러 갈 수 있어."
     };
     public readonly static string[] NPC_Quest_Orc =
     {

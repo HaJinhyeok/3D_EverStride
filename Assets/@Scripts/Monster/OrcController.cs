@@ -8,6 +8,7 @@ public class OrcController : BossController
         _attackRange = 1.5f;
         _speed = 4f;
         _hp = Define.OrcMaxHp;
+        _audioSources = GetComponents<AudioSource>();
     }
 
     public override void Die()

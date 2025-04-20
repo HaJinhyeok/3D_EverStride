@@ -1,14 +1,19 @@
 < 오픈월드 RPG 프로토타입 구현! >
 *** 참고 게임: 이프선셋, 원스 휴먼
 << 추가할 내용 >>
-- 제작동작 시, 카메라 고정 필요
-- CraftItem List에 갑옷 6부위 추가
+- 종료 시, Some objects were not cleande up when closing the scene. 에러 해결방법 강구 v
+- 사운드 v
+- 제작동작 시, 카메라 고정 필요 v
+- 갑옷 부위 Preview 시 좀 더 잘 보이도록 PreviewCamera 혹은 PreviewObejct 위치 수정 필요 v
+- CraftItem List에 갑옷 6부위 추가 v
+-- 갑옷 부위 CraftPanel에서 Preview에 띄울 때, 그냥 캐릭터를 띄우고 각 파츠마다 레이어를 설정해 카메라의 렌더링 레이어를 조절해주는 방식으로 해보자 v
 - 제작 아이템 목록 카테고리화 및 스크롤기능?
-- 장비 아이템은 실체가 없어서 버릴 수 없게 하거나 버리면 파괴된다는 경고창 띄우고 파괴시키기
-- 장비 아이템 장착은 shortcut or 우클릭?(PlayerController::EquipWeapon or Inventory::UseItem)
+- 장비 아이템은 실체가 없어서 버릴 수 없게 하거나 버리면 파괴된다는 경고창 띄우고 파괴시키기 v
+- 장비 아이템 장착은 shortcut or 우클릭?(PlayerController::EquipWeapon or Inventory::UseItem) v
+- 장비 아이템 장착 상태 씬 넘어가도 유지 v
 
 - 타격 시 블리딩 이펙트 추가
-- 캐릭터가 실제 쥐고 사용할 무기 프리팹과, 필드 드랍시킬 무기 아이템 프리팹을 따로 만들어야한다
+- 캐릭터가 실제 쥐고 사용할 무기 프리팹과, 필드 드랍시킬 무기 아이템 프리팹을 따로 만들어야한다 -> rigidbody constraints 조절로 해결 v 
 - 드랍되는 아이템 잘 보이게 크기 조금 키우고 아웃라인 적용시키는 방법 찾아보기
 - 포스트 프로세스, 오클루전 컬링 등 오픈월드 최적화 기법 찾아보기
 - 보스몬스터 추가

@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4529871872398605993}
   - component: {fileID: 3516985932233229574}
-  m_Layer: 0
+  - component: {fileID: 1979481682790833457}
+  m_Layer: 27
   m_Name: PlateSet1_Shoulders
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,3 +145,17 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.46488023, y: -0.116214365, z: -0.0000731498}
     m_Extent: {x: 0.07406932, y: 0.119206086, z: 0.3569091}
   m_DirtyAABB: 0
+--- !u!114 &1979481682790833457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7387083021634017121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffb16c062d97d8a4696a6a3ebba8b8fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemData: {fileID: 11400000, guid: 205c8aebb8c07904494b28bc0a2e9147, type: 2}
+  Amount: 1
