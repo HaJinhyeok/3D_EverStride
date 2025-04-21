@@ -25,7 +25,6 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     public GameObject stepRayUpper;
     public GameObject stepRayLower;
-    //[SerializeField] float stepHeight = 0.3f;
     float stepSmooth = 0.1f;
 
     Transform _character;
@@ -54,10 +53,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     Vector3 _camOffset = new Vector3(1f, 0.5f, -3f);
     Vector3 _conversationOffSet = new Vector3(0, 0, 3f);
 
-    //const float RAY_DISTANCE = 2000f;
-    //RaycastHit slopeHit;
-    //int groundLayer;
-
     public float PlayerHp
     {
         get { return _hp; }
@@ -81,7 +76,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         set { _animator.SetBool(Define.IsDash, value); }
     }
 
-    [SerializeField]
     public bool IsGround
     {
         get { return _animator.GetBool(Define.IsGround); }
@@ -111,12 +105,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         get { return _animator.GetInteger(Define.WeaponTypeHash); }
         set { _animator.SetInteger(Define.WeaponTypeHash, value); }
     }
-
-    //public bool IsCombatMode
-    //{
-    //    get { return _animator.GetBool(Define.IsCombatMode); }
-    //    set { _animator.SetBool(Define.IsCombatMode, value); }
-    //}
     #endregion
 
     // Player Setting On Awake
@@ -133,13 +121,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (SceneManager.GetActiveScene().name == Define.GameScene)
         {
             _isBossRaid = false;
-            //IsCombatMode = false;
         }
         else
         {
             _isBossRaid = true;
             ConversationCamera = null;
-            //IsCombatMode = true;
             _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
         }
 
@@ -153,7 +139,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         _camera = Camera.main;
         _camAxis = new GameObject(Define.CamAxis).transform;
         _camera.transform.parent = _camAxis;
-        //_camera.transform.localPosition = Vector3.zero;
         _camera.transform.localPosition = _camOffset;
         ConversationCamera?.gameObject.SetActive(false);
 
@@ -164,20 +149,15 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (!Define.IngredientData.ContainsKey(IngredientData[i].IngredientType))
                 Define.IngredientData.Add(IngredientData[i].IngredientType, IngredientData[i]);
         }
-        //InventoryOnOff(false);
         GameManager.Instance.LoadResources();
-        //GameManager.Instance.LoadInventory();
 
         InventoryOn(false);
-        //CraftUIOn(false);
 
         // 보스전에서 칼로 놀다가 마을 복귀 후 주먹질 할때 에러 막기용
         GameManager.Instance.OnWeaponChanged.Invoke();
 
         _hp = Define.PlayerMaxHp;
         WeaponTypeHash = (int)GetCurrentWeaponType();
-
-        //groundLayer = 1 << LayerMask.NameToLayer(Define.GroundTag);
     }
 
     private void Start()
@@ -215,7 +195,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 UnequipWeapon();
             }
             // ui 켜지면 카메라 정신사납지 않게 가만히
-            if (!GameManager.Instance.IsInventoryOn&&!GameManager.Instance.IsUIOn)
+            if (!GameManager.Instance.IsInventoryOn && !GameManager.Instance.IsUIOn)
             {
                 CameraMove();
             }
@@ -223,7 +203,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (Input.GetKeyDown(KeyCode.I))
             {
                 InventoryOn(!GameManager.Instance.IsInventoryOn);
-                // Debug.Log($"IsUIOn: {GameManager.Instance.IsUIOn}");
             }
             // 1~5번 단축키
             UseShortcut();
@@ -253,7 +232,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             if (!_audioSource.isPlaying)
                 _audioSource.Play();
-            if(!IsAttacking)
+            if (!IsAttacking)
             {
                 float h = Input.GetAxis(Define.Horizontal);
                 float v = Input.GetAxis(Define.Vertical);
@@ -265,12 +244,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 // local 방향에서 world 방향으로 바꿔주는 역할???
                 Vector3 localMovement = transform.TransformDirection(movement);
 
-                //localMovement = isOnSlope ? ProjectDirectionToSlope(localMovement) : localMovement;
-                // Vector3 tmpGravity = isOnSlope ? Vector3.zero : Vector3.up * _rigidbody.linearVelocity.y;
-
                 _rigidbody.linearVelocity = localMovement.normalized * _speed + new Vector3(0, velY, 0);
-                //_rigidbody.linearVelocity = localMovement.normalized * _speed + tmpGravity;
-
                 _character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
 
                 // player 위치 좌표 IOCP 서버로 전송
@@ -282,9 +256,6 @@ public class PlayerController : MonoBehaviour, IDamageable
                 float v = Input.GetAxis(Define.Vertical);
 
                 transform.rotation = Quaternion.Euler(new Vector3(0, _camAxis.rotation.y + _mouseX, 0) * _camSpeed);
-                //Vector3 movement = new Vector3(h, 0, v);
-                //_character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
-
             }
         }
         else
@@ -295,7 +266,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         Speed = _rigidbody.linearVelocity.sqrMagnitude;
-        //_camAxis.position = transform.position + _camOffset;
         _camAxis.position = transform.position + Vector3.up;
         _character.eulerAngles = new Vector3(0, _character.eulerAngles.y, 0);
 
@@ -530,10 +500,11 @@ public class PlayerController : MonoBehaviour, IDamageable
     #endregion
 
     #region Weapon
-    public void EquipItem(Slot currentSlot)
+    public bool EquipItem(Slot currentSlot)
     {
+        // 아이템 사용해서 개수 줄어들면 true, 아니면 false
         if (currentSlot.ItemData == null)
-            return;
+            return false;
         // 무기 아이템일 경우
         if (currentSlot.ItemData.ItemType == Define.ItemType.Weapon)
         {
@@ -545,6 +516,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             GameObject newWeapon = Instantiate(GameManager.Instance.Weapons[(int)currentSlot.ItemData.WeaponType], WeaponPos.transform);
             WeaponTypeHash = (int)currentSlot.ItemData.WeaponType;
             GameManager.Instance.OnWeaponChanged?.Invoke();
+            return false;
         }
         // 소비 및 재료 아이템일 경우
         else if (currentSlot.ItemData.ItemType == Define.ItemType.Countable)
@@ -555,27 +527,133 @@ public class PlayerController : MonoBehaviour, IDamageable
                 if (_hp >= Define.PlayerMaxHp)
                 {
                     UI_Warning.Instance.WarningEffect(Define.AlreadyFullHP);
+                    return false;
                 }
                 else
                 {
                     _animator.SetTrigger(Define.Drink);
                     GameObject gameObject = Instantiate(GameManager.Instance.ConsumptionItems[0], ItemPos.transform);
                     gameObject.GetComponent<Collider>().isTrigger = true;
-                    Debug.Log($"Drink {gameObject.name}!");
+                    //Debug.Log($"Drink {gameObject.name}!");
+                    return true;
                 }
             }
             else
             {
                 Debug.Log("할 동작이 없습니다");
+                return false;
             }
         }
         // 장비 아이템일 경우
         else if (currentSlot.ItemData.ItemType == Define.ItemType.Equipment)
         {
-            Inventory.UseItem(currentSlot);
+            // GameManager에서 현재 플레이어의 장비 장착 상태 확인 후 업그레이드 가능하면 장착시켜줌
+            switch (currentSlot.ItemData.Prefab.layer)
+            {
+                case (int)Define.EquipmentType.Helmet:
+                    // 기존 부위의 장비보다 높은 등급이면 장착
+                    if (GameManager.Instance.PlayerEquipment.helmet != Define.EquipmentStatus.Iron)
+                    {
+                        if (GameManager.Instance.PlayerEquipment.helmet == Define.EquipmentStatus.Base)
+                        {
+                            BaseClothes.transform.Find("Starter_Helmet").gameObject.SetActive(false);
+                        }
+                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Helmet").gameObject.SetActive(true);
+                        GameManager.Instance.PlayerEquipment.helmet = Define.EquipmentStatus.Iron;
+                    }
+                    // 이미 같은 등급 장착 중이면 이미 장착 중이라고 표시
+                    else
+                    {
+                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        return false;
+                    }
+                    break;
+                case (int)Define.EquipmentType.Chest:
+                    if (GameManager.Instance.PlayerEquipment.chest != Define.EquipmentStatus.Iron)
+                    {
+                        if (GameManager.Instance.PlayerEquipment.chest == Define.EquipmentStatus.Base)
+                        {
+                            BaseClothes.transform.Find("Starter_Chest").gameObject.SetActive(false);
+                        }
+                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Chest").gameObject.SetActive(true);
+                        GameManager.Instance.PlayerEquipment.chest = Define.EquipmentStatus.Iron;
+                    }
+                    else
+                    {
+                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        return false;
+                    }
+                    break;
+                case (int)Define.EquipmentType.Shoulders:
+                    if (GameManager.Instance.PlayerEquipment.shoulders != Define.EquipmentStatus.Iron)
+                    {
+                        if (GameManager.Instance.PlayerEquipment.shoulders == Define.EquipmentStatus.Base)
+                        {
+                            BaseClothes.transform.Find("Starter_Shoulders").gameObject.SetActive(false);
+                        }
+                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Shoulders").gameObject.SetActive(true);
+                        GameManager.Instance.PlayerEquipment.shoulders = Define.EquipmentStatus.Iron;
+                    }
+                    else
+                    {
+                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        return false;
+                    }
+                    break;
+                case (int)Define.EquipmentType.Gloves:
+                    if (GameManager.Instance.PlayerEquipment.gloves != Define.EquipmentStatus.Iron)
+                    {
+                        if (GameManager.Instance.PlayerEquipment.gloves == Define.EquipmentStatus.Base)
+                        {
+                            BaseClothes.transform.Find("Starter_Gloves").gameObject.SetActive(false);
+                        }
+                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Gloves").gameObject.SetActive(true);
+                        GameManager.Instance.PlayerEquipment.gloves = Define.EquipmentStatus.Iron;
+                    }
+                    else
+                    {
+                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        return false;
+                    }
+                    break;
+                case (int)Define.EquipmentType.Pants:
+                    if (GameManager.Instance.PlayerEquipment.pants != Define.EquipmentStatus.Iron)
+                    {
+                        if (GameManager.Instance.PlayerEquipment.pants == Define.EquipmentStatus.Base)
+                        {
+                            BaseClothes.transform.Find("Starter_Pants").gameObject.SetActive(false);
+                        }
+                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Pants").gameObject.SetActive(true);
+                        GameManager.Instance.PlayerEquipment.pants = Define.EquipmentStatus.Iron;
+                    }
+                    else
+                    {
+                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        return false;
+                    }
+                    break;
+                case (int)Define.EquipmentType.Boots:
+                    if (GameManager.Instance.PlayerEquipment.boots != Define.EquipmentStatus.Iron)
+                    {
+                        if (GameManager.Instance.PlayerEquipment.boots == Define.EquipmentStatus.Base)
+                        {
+                            BaseClothes.transform.Find("Starter_Boots").gameObject.SetActive(false);
+                        }
+                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Boots").gameObject.SetActive(true);
+                        GameManager.Instance.PlayerEquipment.boots = Define.EquipmentStatus.Iron;
+                    }
+                    else
+                    {
+                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        return false;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return true;
         }
-
-        //slot.UpdateSlot(null, 0);
+        return false;
     }
 
     public Define.WeaponType UnequipWeapon()
@@ -583,13 +661,13 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (WeaponPos.transform.childCount == 0)
         {
             Debug.Log("무기를 장착하고 있지 않습니다");
+            UI_Warning.Instance.WarningEffect(Define.NoWeapon);
             return Define.WeaponType.None;
         }
         GameObject weapon = WeaponPos.transform.GetChild(0).gameObject;
         if (weapon == null)
             return Define.WeaponType.None;
         Define.WeaponType weaponType = weapon.GetComponent<WeaponItem>().GetWeaponType();
-        //Inventory.AddItem(weapon.GetComponent<WeaponItem>(), 1);
         Destroy(weapon);
         // 맨손
         WeaponTypeHash = -1;
@@ -609,16 +687,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             return WeaponPos.transform.GetChild(0).gameObject.GetComponent<WeaponItem>().ItemData.WeaponType;
         }
     }
-
-    //public void OnFinishItemUse()
-    //{
-    //    if (ItemPos.transform.childCount == 0)
-    //        return;
-    //    else
-    //    {
-    //        Destroy(ItemPos.transform.GetChild(0).gameObject);
-    //    }
-    //}
     #endregion
 
     #region UI
@@ -632,9 +700,9 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void PlayerClothesSetting()
     {
-        Transform[] baseClothes=BaseClothes.GetComponentsInChildren<Transform>();
+        Transform[] baseClothes = BaseClothes.GetComponentsInChildren<Transform>();
         Transform[] plateClothes = PlateClothes.GetComponentsInChildren<Transform>();
-        switch(GameManager.Instance.PlayerEquipment.helmet)
+        switch (GameManager.Instance.PlayerEquipment.helmet)
         {
             case Define.EquipmentStatus.None:
                 plateClothes[4].gameObject.SetActive(false);
@@ -764,21 +832,4 @@ public class PlayerController : MonoBehaviour, IDamageable
             Time.timeScale = 1f - Time.timeScale;
         }
     }
-
-    // 플레이어가 현재 경사면에 있는지 확인
-    //public bool IsOnSlope()
-    //{
-    //    Ray ray=new Ray(transform.position, Vector3.down);
-    //    if(Physics.Raycast(ray,out slopeHit,RAY_DISTANCE,groundLayer))
-    //    {
-    //        float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
-    //        return angle != 0;
-    //    }
-    //    return false;
-    //}
-
-    //public Vector3 ProjectDirectionToSlope(Vector3 direction)
-    //{
-    //    return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
-    //}
 }

@@ -88,7 +88,6 @@ public class Inventory : MonoBehaviour
         rectTr.sizeDelta = new Vector2(40, 40);
         rectTr.localScale = Vector2.one;
         rectTr.localEulerAngles = Vector3.zero;
-        //dragImage.transform.SetParent(transform);
         Image image = dragImage.AddComponent<Image>();
 
         image.sprite = _slotUIs[go].ItemData.Icon;
@@ -211,118 +210,12 @@ public class Inventory : MonoBehaviour
             return;
         }
         ItemData itemData = slot.ItemData;
-        // 장비 아이템의 경우,
-        if(itemData.ItemType==Define.ItemType.Equipment)
+        if (GameManager.Instance.Player.EquipItem(slot))
         {
-            // GameManager에서 현재 플레이어의 장비 장착 상태 확인 후 업그레이드 가능하면 장착시켜줌
-            switch (itemData.Prefab.layer)
-            {
-                case (int)Define.EquipmentType.Helmet:
-                    // 기존 부위의 장비보다 높은 등급이면 장착
-                    if (GameManager.Instance.PlayerEquipment.helmet != Define.EquipmentStatus.Iron)
-                    {
-                        if (GameManager.Instance.PlayerEquipment.helmet == Define.EquipmentStatus.Base)
-                        {
-                            BaseClothes.transform.Find("Starter_Helmet").gameObject.SetActive(false);
-                        }
-                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Helmet").gameObject.SetActive(true);
-                        GameManager.Instance.PlayerEquipment.helmet = Define.EquipmentStatus.Iron;
-                    }
-                    // 이미 같은 등급 장착 중이면 이미 장착 중이라고 표시
-                    else
-                    {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
-                        return;
-                    }
-                    break;
-                case (int)Define.EquipmentType.Chest:
-                    if (GameManager.Instance.PlayerEquipment.chest != Define.EquipmentStatus.Iron)
-                    {
-                        if (GameManager.Instance.PlayerEquipment.chest == Define.EquipmentStatus.Base)
-                        {
-                            BaseClothes.transform.Find("Starter_Chest").gameObject.SetActive(false);
-                        }
-                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Chest").gameObject.SetActive(true);
-                        GameManager.Instance.PlayerEquipment.chest = Define.EquipmentStatus.Iron;
-                    }
-                    else
-                    {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
-                        return;
-                    }
-                    break;
-                case (int)Define.EquipmentType.Shoulders:
-                    if (GameManager.Instance.PlayerEquipment.shoulders != Define.EquipmentStatus.Iron)
-                    {
-                        if (GameManager.Instance.PlayerEquipment.shoulders == Define.EquipmentStatus.Base)
-                        {
-                            BaseClothes.transform.Find("Starter_Shoulders").gameObject.SetActive(false);
-                        }
-                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Shoulders").gameObject.SetActive(true);
-                        GameManager.Instance.PlayerEquipment.shoulders = Define.EquipmentStatus.Iron;
-                    }
-                    else
-                    {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
-                        return;
-                    }
-                    break;
-                case (int)Define.EquipmentType.Gloves:
-                    if (GameManager.Instance.PlayerEquipment.gloves != Define.EquipmentStatus.Iron)
-                    {
-                        if (GameManager.Instance.PlayerEquipment.gloves == Define.EquipmentStatus.Base)
-                        {
-                            BaseClothes.transform.Find("Starter_Gloves").gameObject.SetActive(false);
-                        }
-                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Gloves").gameObject.SetActive(true);
-                        GameManager.Instance.PlayerEquipment.gloves = Define.EquipmentStatus.Iron;
-                    }
-                    else
-                    {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
-                        return;
-                    }
-                    break;
-                case (int)Define.EquipmentType.Pants:
-                    if (GameManager.Instance.PlayerEquipment.pants != Define.EquipmentStatus.Iron)
-                    {
-                        if (GameManager.Instance.PlayerEquipment.pants == Define.EquipmentStatus.Base)
-                        {
-                            BaseClothes.transform.Find("Starter_Pants").gameObject.SetActive(false);
-                        }
-                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Pants").gameObject.SetActive(true);
-                        GameManager.Instance.PlayerEquipment.pants = Define.EquipmentStatus.Iron;
-                    }
-                    else
-                    {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
-                        return;
-                    }
-                    break;
-                case (int)Define.EquipmentType.Boots:
-                    if (GameManager.Instance.PlayerEquipment.boots != Define.EquipmentStatus.Iron)
-                    {
-                        if (GameManager.Instance.PlayerEquipment.boots == Define.EquipmentStatus.Base)
-                        {
-                            BaseClothes.transform.Find("Starter_Boots").gameObject.SetActive(false);
-                        }
-                        PlateClothes.transform.Find(Define.PlateSetPrefix + "Boots").gameObject.SetActive(true);
-                        GameManager.Instance.PlayerEquipment.boots = Define.EquipmentStatus.Iron;
-                    }
-                    else
-                    {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
-                        return;
-                    }
-                    break;
-                default:
-                    break;
-            }
-
+            slot.UpdateSlot(slot.ItemData, slot.Amount - 1);
+            ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
         }
-        slot.UpdateSlot(slot.ItemData, slot.Amount - 1);
         OnUseItem?.Invoke(itemData);
-        ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
     }
 
     // idx 번째 슬롯의 아이템 사용하기

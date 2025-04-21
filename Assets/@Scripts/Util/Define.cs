@@ -158,6 +158,7 @@ public class Define
     public const string AlreadyFullHP = "체력이 이미 가득 찼습니다";
     public const string DontDiscardEquipments = "장비 아이템은 버릴 수 없습니다";
     public const string AlreadyEquipSameGrade = "이미 같은 등급의 장비를 장착 중입니다";
+    public const string NoWeapon = "무기를 장착하고 있지 않습니다";
     #endregion
 
     #region NPCtalking
@@ -192,4 +193,13 @@ public class Define
     public const string WoodQuest = "나무조각 획득";
     #endregion
 
+    #region ItemCategory
+    public readonly static string[] ItemCategory =
+    {
+        "Fight","Equip","Bag"
+    };
+    public const string FightItem = "Fight";
+    public const string EquipItem = "Equip";
+    public const string BagItem = "Bag";
+    #endregion
 }

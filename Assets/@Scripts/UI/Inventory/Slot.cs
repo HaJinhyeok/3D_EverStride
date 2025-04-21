@@ -55,7 +55,7 @@ public class Slot : MonoBehaviour
         PlayerController pc = FindAnyObjectByType<PlayerController>();
         Vector3 spawnPos = pc.transform.position + (pc.transform.GetChild(0).forward * 3) + Vector3.up; // Player GameObject 안의 Knight 찾아서 앞방향
         Item item = Instantiate(ItemData.Prefab, spawnPos, Quaternion.identity).GetComponent<Item>();
-        if(item.GetComponent<Weapon>())
+        if (item.GetComponent<Weapon>() || item.ItemData.ItemName == "포션")
         {
             // 무기 아이템 버릴 시, 트리거 해제 및 constraints 초기화
             item.GetComponent<Collider>().isTrigger = false;

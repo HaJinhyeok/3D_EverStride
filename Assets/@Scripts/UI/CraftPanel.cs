@@ -12,9 +12,11 @@ public class CraftPanel : MonoBehaviour
     public Inventory Inventory;
     public GameObject PreviewSpace;
     // ItemData 리스트를 가져와서 차례로 리스트 채워넣기
-    public List<ItemData> CraftItemData = new List<ItemData>();
+    public List<ItemData> CraftItemList = new List<ItemData>();
+    public Dictionary<string, List<ItemData>> CraftItemDictionary = new Dictionary<string, List<ItemData>>();
     public Text CraftIngredientText;
     public Button CraftButton;
+    public Button[] CategoryButton;
     public CraftTable CraftTable;
 
     Vector2 _start = new Vector2(-65, 120);
@@ -22,8 +24,9 @@ public class CraftPanel : MonoBehaviour
     Vector2 _space = new Vector2(10, 10);
     int _numberOfColumn = 2;
 
-    List<CraftItemSlot> craftItemSlots = new List<CraftItemSlot>();
+    List<GameObject> craftItemSlots = new List<GameObject>();
     CraftItemSlot currentItem;
+    Button currentButton;
 
     Vector2 CalculatePosition(int i)
     {
@@ -47,20 +50,83 @@ public class CraftPanel : MonoBehaviour
 
     void CreateCraftList()
     {
-        for (int i = 0; i < CraftItemData.Count; i++)
+        for (int i = 0; i < CraftItemList.Count; i++)
         {
             GameObject craftSlot = Instantiate(CraftItemSlot, CraftItemListPanel.transform);
 
-            craftSlot.GetComponent<CraftItemSlot>().ItemData = CraftItemData[i];
-            //craftSlot.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
+            craftSlot.GetComponent<CraftItemSlot>().ItemData = CraftItemList[i];
             craftSlot.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
             craftSlot.GetComponent<RectTransform>().localEulerAngles = Vector3.zero;
             craftSlot.AddComponent<EventTrigger>();
+            craftItemSlots.Add(craftSlot);
 
-            // 필요한 이벤트
             // 클릭 시 - currentItem 변경 / ItemPreviewImage 변경
-            // 마우스 커서 올릴 시 - CraftItemSlot UI 크기 키워서 가시성 확장?
             AddEvent(craftSlot, EventTriggerType.PointerClick, (data) => OnClick(craftSlot, (PointerEventData)data));
+        }
+
+    }
+
+    void CreateCraftList(string category)
+    {
+        for (int i = 0; i < CraftItemDictionary[category].Count; i++)
+        {
+            GameObject craftSlot = Instantiate(CraftItemSlot, CraftItemListPanel.transform);
+
+            craftSlot.GetComponent<CraftItemSlot>().ItemData = CraftItemDictionary[category][i];
+            craftSlot.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
+            craftSlot.GetComponent<RectTransform>().localEulerAngles = Vector3.zero;
+            craftSlot.AddComponent<EventTrigger>();
+            craftItemSlots.Add(craftSlot);
+
+            // 클릭 시 - currentItem 변경 / ItemPreviewImage 변경
+            AddEvent(craftSlot, EventTriggerType.PointerClick, (data) => OnClick(craftSlot, (PointerEventData)data));
+        }
+
+    }
+
+    void CreateDictionary()
+    {
+        for (int i = 0; i < CraftItemList.Count; i++)
+        {
+            if (CraftItemList[i].ItemType == Define.ItemType.Weapon)
+            {
+                if (!CraftItemDictionary.ContainsKey(Define.FightItem))
+                {
+                    List<ItemData> list = new List<ItemData>();
+                    list.Add(CraftItemList[i]);
+                    CraftItemDictionary.Add(Define.FightItem, list);
+                }
+                else
+                {
+                    CraftItemDictionary[Define.FightItem].Add(CraftItemList[i]);
+                }
+            }
+            else if (CraftItemList[i].ItemType == Define.ItemType.Equipment)
+            {
+                if (!CraftItemDictionary.ContainsKey(Define.EquipItem))
+                {
+                    List<ItemData> list = new List<ItemData>();
+                    list.Add(CraftItemList[i]);
+                    CraftItemDictionary.Add(Define.EquipItem, list);
+                }
+                else
+                {
+                    CraftItemDictionary[Define.EquipItem].Add(CraftItemList[i]);
+                }
+            }
+            else if (CraftItemList[i].ItemType == Define.ItemType.Countable)
+            {
+                if (!CraftItemDictionary.ContainsKey(Define.BagItem))
+                {
+                    List<ItemData> list = new List<ItemData>();
+                    list.Add(CraftItemList[i]);
+                    CraftItemDictionary.Add(Define.BagItem, list);
+                }
+                else
+                {
+                    CraftItemDictionary[Define.BagItem].Add(CraftItemList[i]);
+                }
+            }
         }
     }
 
@@ -127,8 +193,19 @@ public class CraftPanel : MonoBehaviour
 
     private void Awake()
     {
-        CreateCraftList();
+        CreateDictionary();
         CraftButton.onClick.AddListener(OnCraftButtonClick);
+        for (int i = 0; i < CategoryButton.Length; i++)
+        {
+            int idx = i;
+            CategoryButton[i].onClick.AddListener(() => OnCategoryButtonClick(idx));
+        }
+    }
+
+    private void OnEnable()
+    {
+        currentButton = CategoryButton[0];
+        OnCategoryButtonClick(0);
     }
 
     void OnCraftButtonClick()
@@ -156,6 +233,19 @@ public class CraftPanel : MonoBehaviour
             Debug.Log("Not enough mineral!!!");
             UI_Warning.Instance.WarningEffect(Define.NotEnoughMineral);
         }
+    }
+
+    void OnCategoryButtonClick(int idx)
+    {
+        currentButton.GetComponent<RectTransform>().localScale = Vector3.one;
+        for (int i = 0; i < craftItemSlots.Count; i++)
+        {
+            Destroy(craftItemSlots[i]);
+        }
+        craftItemSlots.Clear();
+        CreateCraftList(Define.ItemCategory[idx]);
+        CategoryButton[idx].GetComponent<RectTransform>().localScale = Vector3.one * 1.2f;
+        currentButton = CategoryButton[idx];
     }
 
     bool IsCraftPossible(Ingredient[] ingredients)
@@ -203,21 +293,4 @@ public class CraftPanel : MonoBehaviour
         }
     }
 
-    //private void OnEnable()
-    //{
-    //    // previewCamera 활성화
-    //    PreviewSpace.transform.GetChild(0).gameObject.SetActive(true);
-    //}
-
-    //private void OnDisable()
-    //{
-    //    // previewObject 있으면 파괴
-    //    if (PreviewSpace?.transform.childCount >= 4)
-    //    {
-    //        GameObject previewObject = PreviewSpace.transform.GetChild(3).gameObject;
-    //        Destroy(previewObject);
-    //    }
-    //    // previewCamera 비활성화
-    //    PreviewSpace.transform.GetChild(0).gameObject.SetActive(false);
-    //}
 }

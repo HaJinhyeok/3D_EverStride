@@ -97,4 +97,9 @@ public class CraftTable : MonoBehaviour
     {
         PreviewCamera.cullingMask = layer;
     }
+
+    private void OnDestroy()
+    {
+        OnCraftAction -= StartCrafting;
+    }
 }
