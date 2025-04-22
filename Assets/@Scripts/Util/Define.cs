@@ -163,13 +163,13 @@ public class Define
 
     #region NPCtalking
     public readonly static string[] NPC_Quest_Wood =
-        {
+    {
         "안녕? 날씨가 참 좋아, 그렇지?",
             "\n슬슬 날씨가 추워질 것 같은데," +
             "\n뗄감으로 쓸 나무조각 좀 모아다주겠어?"
     };
     public readonly static string[] NPC_Quest_Golem =
-        {
+    {
         "안녕? 만나서 반가워.",
         "\n골렘 몬스터가 나타났는데,\n네가 좀 처치해줄 수 있을까?" +
             "\n푸른 포탈을 사용하면 골렘을 처치하러 갈 수 있어."
@@ -185,11 +185,13 @@ public class Define
     public readonly static string[] NPC_GOOD = { "좋아! 잘 부탁해!" };
     public readonly static string[] NPC_QUEST_ING = { "아직 퀘스트를 완료하지 못했구나." };
     public readonly static string[] NPC_QUEST_COMPLETE = { "퀘스트를 완료했구나!\n좋아, 보상을 줄게." };
+    public readonly static string[] NPC_QUIEST_ALL_DONE = { "모든 퀘스트를 완료해서 더 이상 줄 퀘스트가 없어." };
     public readonly static string[] NPC_BYE = { "다음에 또 보자구." };
     #endregion
 
     #region QuestContext
     public const string GolemQuest = "골렘 처치";
+    public const string OrcQuest = "오크 처치";
     public const string WoodQuest = "나무조각 획득";
     #endregion
 

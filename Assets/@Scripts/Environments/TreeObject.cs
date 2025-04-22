@@ -22,7 +22,6 @@ public class TreeObject : EnvironmentObject
 
     public override void DropItemsOnDestroy()
     {
-        Debug.Log("Many Woods Dropped!!!");
         for (int i = 0; i < 3; i++)
         {
             DropItem();

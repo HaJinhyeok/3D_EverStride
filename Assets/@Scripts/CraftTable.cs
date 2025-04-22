@@ -8,7 +8,6 @@ public class CraftTable : MonoBehaviour
     public Camera CraftCamera;
     public GameObject CraftPanel;
     public GameObject InteractionPanel;
-    //public GameObject CraftingNoticePanel;
     public GameObject GameUI;
     public GameObject Anvil;
     public static Action<ItemData, float> OnCraftAction;
@@ -53,11 +52,6 @@ public class CraftTable : MonoBehaviour
             CraftUIOn(!GameManager.Instance.IsCraftPanelOn);
         }
     }
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireSphere(transform.position, _interactionDistance);
-    //}
     void CraftUIOn(bool state)
     {
         GameManager.Instance.IsCraftPanelOn = state;

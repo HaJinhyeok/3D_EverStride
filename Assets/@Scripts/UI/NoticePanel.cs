@@ -26,7 +26,7 @@ public class NoticePanel : MonoBehaviour
     {
         if(string.IsNullOrEmpty(_raidSceneName))
         {
-            UI_Warning.Instance.WarningEffect(Define.NotReadyBoss);
+            UI_Warning.OnWarningEffect?.Invoke(Define.NotReadyBoss);
         }
         else
         {

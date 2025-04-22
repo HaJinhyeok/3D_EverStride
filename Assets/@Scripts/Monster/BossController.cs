@@ -45,7 +45,6 @@ public class BossController : MonoBehaviour, IDamageable
     {
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody>();
-        //_player = GameObject.Find("Player").transform;
         _player = GameObject.FindWithTag(Define.PlayerTag).transform;
         _hp = Define.GolemMaxHp;
     }
@@ -63,7 +62,6 @@ public class BossController : MonoBehaviour, IDamageable
         }
         else
         {
-            //IsAttacking = false;
             // 플레이어가 일정 거리 내에 있으면 움직임
             if (Vector3.Distance(transform.position, _player.position) < sightRange && !IsAttacking)
             {

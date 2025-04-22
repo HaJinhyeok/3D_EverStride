@@ -1,4 +1,3 @@
-using NUnit.Framework.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -116,7 +115,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         _rigidbody = gameObject.AddComponent<Rigidbody>();
         _rigidbody.freezeRotation = true;
         _audioSource = GetComponent<AudioSource>();
-        Client = GameObject.Find("TestClient").GetComponentInChildren<Client>();
+        Client = GameObject.Find("TestClient")?.GetComponentInChildren<Client>();
 
         if (SceneManager.GetActiveScene().name == Define.GameScene)
         {
@@ -128,12 +127,6 @@ public class PlayerController : MonoBehaviour, IDamageable
             ConversationCamera = null;
             _animator.runtimeAnimatorController = Resources.Load(Define.BossRaidAnimatorPath) as RuntimeAnimatorController;
         }
-
-        // * 콜라이더
-        CapsuleCollider capsule = gameObject.AddComponent<CapsuleCollider>();
-        capsule.center = new Vector3(0, 1f, 0);
-        capsule.radius = 0.5f;
-        capsule.height = 2f;
 
         // * 카메라
         _camera = Camera.main;
@@ -164,8 +157,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         Inventory.UpdateInventory(GameManager.Instance.InventorySlots, GameManager.Instance.ShortcutInventorySlots);
         Shortcut.UpdateShortcutInventory(GameManager.Instance.ShortcutInventorySlots);
-        Inventory.UpdateTestWeapons();
-        Inventory.UpdateTestIngredients();
+        //Inventory.UpdateBaseWeapon();
+        Inventory.UpdateTestItems();
         PlayerClothesSetting();
     }
 
@@ -227,7 +220,6 @@ public class PlayerController : MonoBehaviour, IDamageable
     #region Player Movement
     void Move()
     {
-        //bool isOnSlope = IsOnSlope();
         if ((Input.GetButton(Define.Horizontal) || Input.GetButton(Define.Vertical)))
         {
             if (!_audioSource.isPlaying)
@@ -241,14 +233,13 @@ public class PlayerController : MonoBehaviour, IDamageable
                 float velY = _rigidbody.linearVelocity.y;
                 transform.rotation = Quaternion.Euler(new Vector3(0, _camAxis.rotation.y + _mouseX, 0) * _camSpeed);
 
-                // local 방향에서 world 방향으로 바꿔주는 역할???
                 Vector3 localMovement = transform.TransformDirection(movement);
 
                 _rigidbody.linearVelocity = localMovement.normalized * _speed + new Vector3(0, velY, 0);
                 _character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
 
                 // player 위치 좌표 IOCP 서버로 전송
-                Client.SendMessageToServer($"{transform.position.x} {transform.position.y} {transform.position.z}");
+                Client?.SendMessageToServer($"{transform.position.x} {transform.position.y} {transform.position.z}");
             }
             else
             {
@@ -451,21 +442,24 @@ public class PlayerController : MonoBehaviour, IDamageable
             // 대화용 카메라 ON
             ConversationCamera.gameObject.SetActive(true);
             ConversationPanelObejct.gameObject.SetActive(true);
-            //GameObject.Find(Define.GameUI).SetActive(false);
             GameUI.SetActive(false);
             GameManager.Instance.IsConversating = true;
 
             // 퀘스트 없으면 새로 주고
             if (GameManager.Instance.QuestDictionary.Count == 0)
             {
-                int rnd = Random.Range(0, 2);
+                int rnd = Random.Range(0, 3);
                 if (rnd == 0)
                 {
                     ConversationPanel.OnConversationStart(Define.NPC_Quest_Wood, true, true);
                 }
-                else
+                else if (rnd == 1)
                 {
                     ConversationPanel.OnConversationStart(Define.NPC_Quest_Golem, true, true);
+                }
+                else if (rnd == 2)
+                {
+                    ConversationPanel.OnConversationStart(Define.NPC_Quest_Orc, true, true);
                 }
             }
             else
@@ -526,7 +520,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 // 포션 사용 및 포션 먹는 애니메이션
                 if (_hp >= Define.PlayerMaxHp)
                 {
-                    UI_Warning.Instance.WarningEffect(Define.AlreadyFullHP);
+                    UI_Warning.OnWarningEffect?.Invoke(Define.AlreadyFullHP);
                     return false;
                 }
                 else
@@ -534,7 +528,6 @@ public class PlayerController : MonoBehaviour, IDamageable
                     _animator.SetTrigger(Define.Drink);
                     GameObject gameObject = Instantiate(GameManager.Instance.ConsumptionItems[0], ItemPos.transform);
                     gameObject.GetComponent<Collider>().isTrigger = true;
-                    //Debug.Log($"Drink {gameObject.name}!");
                     return true;
                 }
             }
@@ -564,7 +557,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     // 이미 같은 등급 장착 중이면 이미 장착 중이라고 표시
                     else
                     {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        UI_Warning.OnWarningEffect?.Invoke(Define.AlreadyEquipSameGrade);
                         return false;
                     }
                     break;
@@ -580,7 +573,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     }
                     else
                     {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        UI_Warning.OnWarningEffect?.Invoke(Define.AlreadyEquipSameGrade);
                         return false;
                     }
                     break;
@@ -596,7 +589,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     }
                     else
                     {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        UI_Warning.OnWarningEffect?.Invoke(Define.AlreadyEquipSameGrade);
                         return false;
                     }
                     break;
@@ -612,7 +605,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     }
                     else
                     {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        UI_Warning.OnWarningEffect?.Invoke(Define.AlreadyEquipSameGrade);
                         return false;
                     }
                     break;
@@ -628,7 +621,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     }
                     else
                     {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        UI_Warning.OnWarningEffect?.Invoke(Define.AlreadyEquipSameGrade);
                         return false;
                     }
                     break;
@@ -644,7 +637,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                     }
                     else
                     {
-                        UI_Warning.Instance.WarningEffect(Define.AlreadyEquipSameGrade);
+                        UI_Warning.OnWarningEffect?.Invoke(Define.AlreadyEquipSameGrade);
                         return false;
                     }
                     break;
@@ -661,7 +654,7 @@ public class PlayerController : MonoBehaviour, IDamageable
         if (WeaponPos.transform.childCount == 0)
         {
             Debug.Log("무기를 장착하고 있지 않습니다");
-            UI_Warning.Instance.WarningEffect(Define.NoWeapon);
+            UI_Warning.OnWarningEffect?.Invoke(Define.NoWeapon);
             return Define.WeaponType.None;
         }
         GameObject weapon = WeaponPos.transform.GetChild(0).gameObject;
@@ -805,16 +798,12 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
     {
         if (_hp <= 0) return;
-        if (_animator.GetBool(Define.NoDamageMode))
-        {
-            Debug.Log("Take No Damage!");
-        }
-        else
+        
+        if (!_animator.GetBool(Define.NoDamageMode))
         {
             _hp -= damage * bonusDamage;
             PlayerHpBar.PlayerHpAction?.Invoke();
             _animator.SetTrigger(Define.TakeDamage);
-            Debug.Log($"Current Player HP: {_hp}, Attacker name: {attacker.name}");
             if (_hp <= 0)
             {
                 _animator.SetTrigger(Define.Die);

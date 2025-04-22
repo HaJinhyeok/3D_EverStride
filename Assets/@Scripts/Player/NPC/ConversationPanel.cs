@@ -13,7 +13,6 @@ public class ConversationPanel : MonoBehaviour
     public Camera ConversationCamera;
     public Text ConversationText;
     public Text NpcName;
-    //public GameObject QuestPanel;
 
     public static Action<string[], bool, bool> OnConversationStart;
     public static Action OnConversationExit;
@@ -68,6 +67,10 @@ public class ConversationPanel : MonoBehaviour
             else if (_currentContext == Define.NPC_Quest_Golem)
             {
                 GameManager.Instance.MakeQuest(Define.QuestName.Golem, Define.GolemQuest, 1);
+            }
+            else if (_currentContext == Define.NPC_Quest_Orc)
+            {
+                GameManager.Instance.MakeQuest(Define.QuestName.Orc, Define.OrcQuest, 1);
             }
             NPC.GetComponent<Animator>().SetTrigger(Define.NPCPointing);
             yield return StartCoroutine(CoWriteComment(Define.NPC_GOOD, false, false));

@@ -47,9 +47,9 @@ public class Slot : MonoBehaviour
     public void SpawnItem()
     {
         // 일단 장비 아이템은 버리지 못하도록
-        if(ItemData.ItemType==Define.ItemType.Equipment)
+        if (ItemData.ItemType == Define.ItemType.Equipment)
         {
-            UI_Warning.Instance.WarningEffect(Define.DontDiscardEquipments);
+            UI_Warning.OnWarningEffect?.Invoke(Define.DontDiscardEquipments);
             return;
         }
         PlayerController pc = FindAnyObjectByType<PlayerController>();

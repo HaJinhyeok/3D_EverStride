@@ -12,8 +12,6 @@ public class Axe : Weapon
         // 공격 중이고, 모션이 약간 진행된 상태여야 공격 판정
         if (!other.GetComponent<PlayerController>() && _animator.GetBool(Define.IsAttacking) && _animator.GetBool(Define.InteractionHash))
         {
-            //RaycastHit raycastHit;
-            //Physics.Raycast(transform.position,(other.transform.position - transform.position).normalized,1f,)
             DoAttack(other.gameObject, _atk, this.transform.position);
             _animator.SetBool(Define.InteractionHash, false);
         }

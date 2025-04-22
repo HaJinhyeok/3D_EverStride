@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class WeaponItem : Item
 {
     public WeaponItem() { }

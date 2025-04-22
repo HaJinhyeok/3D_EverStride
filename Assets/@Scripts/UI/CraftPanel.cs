@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
-using System.Collections;
 
 public class CraftPanel : MonoBehaviour
 {
@@ -46,24 +45,6 @@ public class CraftPanel : MonoBehaviour
         eventTrigger.callback.AddListener(action);
         // trigger 추가해주기
         trigger.triggers.Add(eventTrigger);
-    }
-
-    void CreateCraftList()
-    {
-        for (int i = 0; i < CraftItemList.Count; i++)
-        {
-            GameObject craftSlot = Instantiate(CraftItemSlot, CraftItemListPanel.transform);
-
-            craftSlot.GetComponent<CraftItemSlot>().ItemData = CraftItemList[i];
-            craftSlot.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
-            craftSlot.GetComponent<RectTransform>().localEulerAngles = Vector3.zero;
-            craftSlot.AddComponent<EventTrigger>();
-            craftItemSlots.Add(craftSlot);
-
-            // 클릭 시 - currentItem 변경 / ItemPreviewImage 변경
-            AddEvent(craftSlot, EventTriggerType.PointerClick, (data) => OnClick(craftSlot, (PointerEventData)data));
-        }
-
     }
 
     void CreateCraftList(string category)
@@ -177,8 +158,6 @@ public class CraftPanel : MonoBehaviour
         }
         previewObject.AddComponent<PreviewObject>();
         previewObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-        //if (previewObject.GetComponent<Item>()?.ItemData.ItemName == "주괴")
-        //    previewObject.transform.localPosition = Vector3.zero;
         if (previewObject.GetComponent<Pickaxe>())
             previewObject.transform.localEulerAngles = new Vector3(0, 120, 0);
         previewObject.layer = LayerMask.NameToLayer("PreviewObject");
@@ -208,6 +187,17 @@ public class CraftPanel : MonoBehaviour
         OnCategoryButtonClick(0);
     }
 
+    private void OnDisable()
+    {
+        currentButton.GetComponent<RectTransform>().localScale = Vector3.one;
+        if (PreviewSpace.transform.childCount >= 4)
+        {
+            GameObject previewObject = PreviewSpace.transform.GetChild(3).gameObject;
+            Destroy(previewObject);
+        }
+        CraftIngredientText.text = "";
+    }
+
     void OnCraftButtonClick()
     {
         if (currentItem == null)
@@ -215,8 +205,6 @@ public class CraftPanel : MonoBehaviour
         if (GameManager.Instance.Player.transform.GetChild(0).GetComponent<Animator>().GetBool(Define.IsCrafting))
             return;
         // 필요한 재료가 충분히 있는지 확인
-        // 현재 제작 대상 아이템 + 인벤토리 정보
-
         if (IsCraftPossible(currentItem.ItemData.Ingredients))
         {
             // 재료 차감해주고
@@ -230,8 +218,7 @@ public class CraftPanel : MonoBehaviour
         else
         {
             // 재료가 부족하다는 문구 출력
-            Debug.Log("Not enough mineral!!!");
-            UI_Warning.Instance.WarningEffect(Define.NotEnoughMineral);
+            UI_Warning.OnWarningEffect?.Invoke(Define.NotEnoughMineral);
         }
     }
 

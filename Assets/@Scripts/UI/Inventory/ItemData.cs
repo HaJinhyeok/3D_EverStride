@@ -1,11 +1,13 @@
 using System;
 using UnityEngine;
+
 [Serializable]
 public class Ingredient
 {
     public Define.IngredientType type;
     public int count;
 }
+
 [CreateAssetMenu(fileName = "ItemData", menuName = "Inventory/ItemData")]
 public class ItemData : ScriptableObject
 {

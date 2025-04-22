@@ -1,16 +1,20 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_Warning : Singleton<UI_Warning>
+public class UI_Warning : MonoBehaviour
 {
     Text WarningText;
+
+    public static Action<string> OnWarningEffect;
 
     void Start()
     {
         WarningText = gameObject.GetComponentInChildren<Text>();
         WarningText.text = "";
         WarningText.gameObject.SetActive(false);
+        OnWarningEffect += WarningEffect;
     }
 
     public void WarningEffect(string msg)
@@ -24,5 +28,10 @@ public class UI_Warning : Singleton<UI_Warning>
         WarningText.gameObject.SetActive(true);
         yield return new WaitForSeconds(2f);
         WarningText.gameObject.SetActive(false);
+    }
+
+    private void OnDestroy()
+    {
+        OnWarningEffect -= WarningEffect;
     }
 }

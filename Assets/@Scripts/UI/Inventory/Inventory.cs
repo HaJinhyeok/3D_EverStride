@@ -134,9 +134,7 @@ public class Inventory : MonoBehaviour
     {
         if (MouseData.DragImage == null)
             return;
-        //EditorApplication.isPaused = true;
         MouseData.DragImage.GetComponent<RectTransform>().position = Input.mousePosition;
-        //MouseData.DragImage.GetComponent<RectTransform>().localPosition = Input.mousePosition;
     }
 
     public void OnEndDrag(GameObject go)
@@ -148,7 +146,7 @@ public class Inventory : MonoBehaviour
         {
             if (_slotUIs[go].ItemData.ItemType == Define.ItemType.Equipment)
             {
-                UI_Warning.Instance.WarningEffect(Define.DontDiscardEquipments);
+                UI_Warning.OnWarningEffect?.Invoke(Define.DontDiscardEquipments);
                 return;
             }
             _slotUIs[go].SpawnItem();
@@ -164,16 +162,7 @@ public class Inventory : MonoBehaviour
 
     void OnRightClick(Slot slot)
     {
-        //if(slot.ItemData.WeaponType!=Define.WeaponType.None)
-        //{
-        //    GameManager.Instance.Player.EquipWeapon(slot.ItemData.Prefab.GetComponent<WeaponItem>());
-        //}
         UseItem(slot);
-    }
-
-    void OnLeftClick(Slot slot)
-    {
-        // 딱히 넣을 기능 없음. 넣고 싶은 기능 넣기
     }
 
     public void OnClick(GameObject go, PointerEventData data)
@@ -181,10 +170,6 @@ public class Inventory : MonoBehaviour
         Slot slot = _slotUIs[go];
         if (slot == null)
             return;
-        if (data.button == PointerEventData.InputButton.Left)
-        {
-            OnLeftClick(slot);
-        }
         if (data.button == PointerEventData.InputButton.Right)
         {
             OnRightClick(slot);
@@ -243,7 +228,6 @@ public class Inventory : MonoBehaviour
         if (slot == null)
             slot = _shortcutSlots?.FirstOrDefault(slot => slot?.ItemData?.name == item.ItemData?.name);
         return slot;
-        // return _slots?.FirstOrDefault(slot => slot?.ItemData?.name == item.ItemData?.name);
     }
 
     public Slot GetEmptySlot()
@@ -281,7 +265,6 @@ public class Inventory : MonoBehaviour
         {
             GameObject go = Instantiate(Slot, transform);
 
-            //go.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
             go.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
             go.AddComponent<EventTrigger>();
 
@@ -303,7 +286,6 @@ public class Inventory : MonoBehaviour
         {
             GameObject go = Instantiate(Slot, transform);
 
-            //go.GetComponent<RectTransform>().anchoredPosition = CalculatePosition(i);
             go.GetComponent<RectTransform>().localPosition = CalculateShortcutPosition(i);
             go.AddComponent<EventTrigger>();
 
@@ -326,7 +308,6 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         CreateSlot();
-        //UpdateInventory(GameManager.Instance.InventorySlots, GameManager.Instance.ShortcutInventorySlots);
 
         AddEvent(gameObject, EventTriggerType.PointerEnter, (baseEvent) => { OnEnterInterface(gameObject); });
         AddEvent(gameObject, EventTriggerType.PointerExit, (baseEvent) => { OnExitInterface(gameObject); });
@@ -349,26 +330,30 @@ public class Inventory : MonoBehaviour
         GameManager.Instance.SaveInventory(_slots, _shortcutSlots);
     }
 
-    #region Test Code
-    public void UpdateTestWeapons()
+    #region Base Code
+    public void UpdateBaseWeapon()
     {
+        // 기본으로는 도끼만 주어진다
+        _shortcutSlots[0].UpdateSlot(GameManager.Instance.Weapons[1].GetComponent<WeaponItem>().ItemData, 1);
+    }
+    #endregion
+
+    #region Test Code
+    public void UpdateTestItems()
+    {
+        // test용 무기
         for (int i = 0; i < 3; i++)
         {
             _shortcutSlots[i].UpdateSlot(GameManager.Instance.Weapons[i + 1].GetComponent<WeaponItem>().ItemData, 1);
+        }
+        // test용 재료
+        for (int i = 0; i < GameManager.Instance.Ingredients.Length; i++)
+        {
+            _slots[5 + i].UpdateSlot(GameManager.Instance.Ingredients[i].GetComponent<Item>().ItemData, 10);
         }
         // test용 포션
         _shortcutSlots[3].UpdateSlot(GameManager.Instance.ConsumptionItems[0].GetComponent<Item>().ItemData, 2);
         ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
     }
-
-    public void UpdateTestIngredients()
-    {
-        for (int i = 0; i < GameManager.Instance.Ingredients.Length; i++)
-        {
-            _slots[5 + i].UpdateSlot(GameManager.Instance.Ingredients[i].GetComponent<Item>().ItemData, 10);
-        }
-
-    }
-
     #endregion
 }

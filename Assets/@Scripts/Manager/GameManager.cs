@@ -61,7 +61,7 @@ public class GameManager : Singleton<GameManager>
         get { return player; }
     }
 
-    #region Booleaa Flags
+    #region Boolean Flags
 
     public bool IsPaused
     {
@@ -90,7 +90,7 @@ public class GameManager : Singleton<GameManager>
     public bool IsUIOn
     {
         get { return _isUiOn; }
-        set { _isUiOn=value; }
+        set { _isUiOn = value; }
     }
 
     public bool IsCraftPanelOn
@@ -118,9 +118,6 @@ public class GameManager : Singleton<GameManager>
     // Equipment 정보 저장
     public PlayerEquipment PlayerEquipment;
 
-    // 웨폰 데이터 넣으면 Weapons의 인덱스를 알려줄 수 있도록 딕셔너리...?
-    //public Dictionary<ItemData, int> WeaponsMap;
-
     private void Awake()
     {
         Slot = Resources.Load<GameObject>(Define.SlotPath);
@@ -134,7 +131,6 @@ public class GameManager : Singleton<GameManager>
 
 
             InventorySlots[i] = go.GetComponent<Slot>();
-            //InventorySlots[i].OnPostUpdate += OnPostUpdate;
             go.name = "Slot : " + i;
         }
         for (int i = 0; i < ShortcutInventorySlots.Length; i++)
@@ -144,7 +140,6 @@ public class GameManager : Singleton<GameManager>
 
 
             ShortcutInventorySlots[i] = go.GetComponent<Slot>();
-            //ShortcutInventorySlots[i].OnPostUpdate += OnPostUpdate;
             go.name = "SrhotcutSlot : " + i;
         }
         // starter base equipment
@@ -168,14 +163,6 @@ public class GameManager : Singleton<GameManager>
         OnWeaponChanged += GetWeaponTrail;
         OnTrailActivate += ActivateWeaponTrail;
     }
-
-    //public void LoadInventory()
-    //{
-    //    Inventory inventory=GameObject.Find("Inventory").AddComponent<Inventory>();
-    //    inventory = Inventory;
-    //    ShortcutInventory shortcut= GameObject.Find("ShortcutInventory").AddComponent<ShortcutInventory>();
-    //    shortcut = ShortcutInventory;
-    //}
 
     // 인벤토리에 있는 아이템 상황 저장
     public void SaveInventory(Slot[] slots, Slot[] shortcutSlots)
@@ -238,7 +225,7 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-            UI_Warning.Instance.WarningEffect(Define.DuplicatedQuest);
+            UI_Warning.OnWarningEffect?.Invoke(Define.DuplicatedQuest);
         }
     }
 
@@ -263,17 +250,20 @@ public class GameManager : Singleton<GameManager>
     public void CompleteQuest(Define.QuestName name)
     {
         // 보상 지급 후
-        if (name == Define.QuestName.Golem)
-        {
-            GameManager.Instance.Player.Inventory.AddItem(Ingredients[0].GetComponent<Item>(), 5);
-            GameManager.Instance.Player.Inventory.AddItem(Ingredients[1].GetComponent<Item>(), 5);
-        }
-        else if (name == Define.QuestName.Wood)
+        if (name == Define.QuestName.Wood)
         {
             // 나무 10개 차감 후
             player.Inventory.FindItemInInventory(Ingredients[1].GetComponent<Item>()).AddAmount(-10);
             // 돌멩이 10개로 바꿔주자
             GameManager.Instance.Player.Inventory.AddItem(Ingredients[0].GetComponent<Item>(), 10);
+        }
+        else if (name == Define.QuestName.Golem)
+        {
+            GameManager.Instance.Player.Inventory.AddItem(Ingredients[2].GetComponent<Item>(), 3);
+        }
+        else if (name == Define.QuestName.Orc)
+        {
+            GameManager.Instance.Player.Inventory.AddItem(Ingredients[2].GetComponent<Item>(), 5);
         }
         // 퀘스트 삭제
         DeleteQuest(name);

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 public class ShortcutInventory : Inventory
@@ -26,12 +25,6 @@ public class ShortcutInventory : Inventory
             GameObject go = Instantiate(Slot, transform);
 
             go.GetComponent<RectTransform>().localPosition = CalculatePosition(i);
-            // 이벤트 트리거는 일단 보류
-            //go.AddComponent<EventTrigger>();
-
-            //AddEvent(go, EventTriggerType.BeginDrag, delegate { OnStartDrag(go); });
-            //AddEvent(go, EventTriggerType.Drag, delegate { OnDrag(go); });
-            //AddEvent(go, EventTriggerType.EndDrag, delegate { OnEndDrag(go); });
 
             ShortcutSlot[i] = go.GetComponent<Slot>();
             ShortcutSlot[i].OnPostUpdate += OnPostUpdate;
@@ -47,11 +40,6 @@ public class ShortcutInventory : Inventory
         }
     }
 
-    //public Slot UseShortcutItem(int idx)
-    //{
-    //    return ShortcutSlot[idx];
-    //}
-
     private void Awake()
     {
         _start = new Vector2(-50, 2);
@@ -59,10 +47,5 @@ public class ShortcutInventory : Inventory
 
         AddEvent(gameObject, EventTriggerType.PointerEnter, (baseEvent) => { OnEnterInterface(gameObject); });
         AddEvent(gameObject, EventTriggerType.PointerExit, (baseEvent) => { OnExitInterface(gameObject); });
-    }
-
-    private void OnDestroy()
-    {
-        
     }
 }
