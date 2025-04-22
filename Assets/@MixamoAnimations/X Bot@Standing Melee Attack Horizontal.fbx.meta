@@ -69,6 +69,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 1
+        functionName: OffIsAttacking
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: f327e7886c5b7114f9bff8ac976f916a, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}

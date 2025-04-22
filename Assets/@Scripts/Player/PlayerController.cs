@@ -142,12 +142,13 @@ public class PlayerController : MonoBehaviour, IDamageable
             if (!Define.IngredientData.ContainsKey(IngredientData[i].IngredientType))
                 Define.IngredientData.Add(IngredientData[i].IngredientType, IngredientData[i]);
         }
-        GameManager.Instance.LoadResources();
+        //GameManager.Instance.LoadResources();
+        GameManager.Instance.Initiate();
+        GameManager.Instance.FindPlayer();
 
-        InventoryOn(false);
 
         // 보스전에서 칼로 놀다가 마을 복귀 후 주먹질 할때 에러 막기용
-        GameManager.Instance.OnWeaponChanged.Invoke();
+        GameManager.Instance.OnWeaponChanged?.Invoke();
 
         _hp = Define.PlayerMaxHp;
         WeaponTypeHash = (int)GetCurrentWeaponType();
@@ -157,8 +158,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         Inventory.UpdateInventory(GameManager.Instance.InventorySlots, GameManager.Instance.ShortcutInventorySlots);
         Shortcut.UpdateShortcutInventory(GameManager.Instance.ShortcutInventorySlots);
+        InventoryOn(false);
         //Inventory.UpdateBaseWeapon();
-        Inventory.UpdateTestItems();
+        //Inventory.UpdateTestItems();
         PlayerClothesSetting();
     }
 
@@ -239,7 +241,7 @@ public class PlayerController : MonoBehaviour, IDamageable
                 _character.transform.localRotation = Quaternion.Slerp(_character.transform.localRotation, Quaternion.LookRotation(movement), _rotationSpeed * Time.deltaTime);
 
                 // player 위치 좌표 IOCP 서버로 전송
-                Client?.SendMessageToServer($"{transform.position.x} {transform.position.y} {transform.position.z}");
+                //Client?.SendMessageToServer($"{transform.position.x} {transform.position.y} {transform.position.z}");
             }
             else
             {
@@ -412,23 +414,23 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         if (Input.GetKeyDown("1"))
         {
-            EquipItem(Inventory.UseShortcutItem(0));
+            Inventory.UseItem(Inventory.UseShortcutItem(0));
         }
         if (Input.GetKeyDown("2"))
         {
-            EquipItem(Inventory.UseShortcutItem(1));
+            Inventory.UseItem(Inventory.UseShortcutItem(1));
         }
         if (Input.GetKeyDown("3"))
         {
-            EquipItem(Inventory.UseShortcutItem(2));
+            Inventory.UseItem(Inventory.UseShortcutItem(2));
         }
         if (Input.GetKeyDown("4"))
         {
-            EquipItem(Inventory.UseShortcutItem(3));
+            Inventory.UseItem(Inventory.UseShortcutItem(3));
         }
         if (Input.GetKeyDown("5"))
         {
-            EquipItem(Inventory.UseShortcutItem(4));
+            Inventory.UseItem(Inventory.UseShortcutItem(4));
         }
     }
 
@@ -798,7 +800,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void GetDamage(GameObject attacker, float damage, int bonusDamage = 1, Vector3 hitPos = default)
     {
         if (_hp <= 0) return;
-        
+
         if (!_animator.GetBool(Define.NoDamageMode))
         {
             _hp -= damage * bonusDamage;

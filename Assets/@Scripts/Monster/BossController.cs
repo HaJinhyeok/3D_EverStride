@@ -62,6 +62,7 @@ public class BossController : MonoBehaviour, IDamageable
         }
         else
         {
+            IsAttacking = false;
             // 플레이어가 일정 거리 내에 있으면 움직임
             if (Vector3.Distance(transform.position, _player.position) < sightRange && !IsAttacking)
             {
@@ -106,10 +107,8 @@ public class BossController : MonoBehaviour, IDamageable
         BossHpBar.BossHpAction?.Invoke();
         _animator.SetTrigger(Define.TakeDamage);
         _animator.SetBool(Define.InteractionHash, false);
-        Debug.Log($"Current {gameObject.name} HP: {_hp}, Attacker name: {attacker.name}");
         if (_hp <= 0)
         {
-            Debug.Log("Golem Die");
             _animator.SetBool(Define.Die, true);
         }
     }

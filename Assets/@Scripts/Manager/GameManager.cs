@@ -45,6 +45,7 @@ public class GameManager : Singleton<GameManager>
     PlayerController player;
     TrailRenderer weaponTrail;
 
+    bool _isExist = false;
     bool _isNPCInteractive = false;
     bool _isPossibleCraft = false;
     bool _isConversating = false;
@@ -120,28 +121,8 @@ public class GameManager : Singleton<GameManager>
 
     private void Awake()
     {
-        Slot = Resources.Load<GameObject>(Define.SlotPath);
-        if (InventorySlots == null)
-            InventorySlots = new Slot[25];
-        if (ShortcutInventorySlots == null)
-            ShortcutInventorySlots = new Slot[5];
-        for (int i = 0; i < InventorySlots.Length; i++)
-        {
-            GameObject go = Instantiate(Slot, transform);
+        
 
-
-            InventorySlots[i] = go.GetComponent<Slot>();
-            go.name = "Slot : " + i;
-        }
-        for (int i = 0; i < ShortcutInventorySlots.Length; i++)
-        {
-            GameObject go = Instantiate(Slot, transform);
-
-
-
-            ShortcutInventorySlots[i] = go.GetComponent<Slot>();
-            go.name = "SrhotcutSlot : " + i;
-        }
         // starter base equipment
         PlayerEquipment.chest = Define.EquipmentStatus.Base;
         PlayerEquipment.pants = Define.EquipmentStatus.Base;
@@ -152,16 +133,49 @@ public class GameManager : Singleton<GameManager>
         PlayerEquipment.gloves = Define.EquipmentStatus.None;
     }
 
+    public void FindPlayer()
+    {
+        player = GameObject.Find("Player").GetComponent<PlayerController>();
+
+    }
+
     public void LoadResources()
     {
+        Slot = Resources.Load<GameObject>(Define.SlotPath);
         Weapons = Resources.LoadAll<GameObject>(Define.WeaponPath);
         Ingredients = Resources.LoadAll<GameObject>(Define.IngredientPath);
         ConsumptionItems = Resources.LoadAll<GameObject>(Define.ConsumptionPath);
         PreviewCharacter = Resources.Load<GameObject>(Define.PreviewCharacter);
 
-        player = GameObject.Find("Player").GetComponent<PlayerController>();
         OnWeaponChanged += GetWeaponTrail;
         OnTrailActivate += ActivateWeaponTrail;
+    }
+
+    // GameManager Instance 깨우는 용도
+    public void Initiate() 
+    {
+        if (_isExist)
+            return;
+        _isExist = true;
+        LoadResources();
+        if (InventorySlots == null)
+            InventorySlots = new Slot[25];
+        if (ShortcutInventorySlots == null)
+            ShortcutInventorySlots = new Slot[5];
+        for (int i = 0; i < InventorySlots.Length; i++)
+        {
+            GameObject go = Instantiate(Slot, transform);
+            InventorySlots[i] = go.GetComponent<Slot>();
+            go.name = "Slot : " + i;
+        }
+        for (int i = 0; i < ShortcutInventorySlots.Length; i++)
+        {
+            GameObject go = Instantiate(Slot, transform);
+            ShortcutInventorySlots[i] = go.GetComponent<Slot>();
+            go.name = "SrhotcutSlot : " + i;
+        }
+
+        UpdateTestItems();
     }
 
     // 인벤토리에 있는 아이템 상황 저장
@@ -175,6 +189,25 @@ public class GameManager : Singleton<GameManager>
         {
             ShortcutInventorySlots[i].UpdateSlot(shortcutSlots[i]?.ItemData, shortcutSlots[i]?.Amount ?? 0);
         }
+    }
+
+    // 인벤토리에 직접하면 씬 전환 때마다 테스트 아이템 생기므로
+    // 게임매니저에서 관리
+    public void UpdateTestItems()
+    {
+        // test용 무기
+        for (int i = 0; i < 3; i++)
+        {
+            ShortcutInventorySlots[i].UpdateSlot(GameManager.Instance.Weapons[i + 1].GetComponent<WeaponItem>().ItemData, 1);
+        }
+        // test용 재료
+        for (int i = 0; i < GameManager.Instance.Ingredients.Length; i++)
+        {
+            InventorySlots[5 + i].UpdateSlot(GameManager.Instance.Ingredients[i].GetComponent<Item>().ItemData, 10);
+        }
+        // test용 포션
+        ShortcutInventorySlots[3].UpdateSlot(GameManager.Instance.ConsumptionItems[0].GetComponent<Item>().ItemData, 2);
+        //ShortcutInventory.UpdateShortcutInventory(ShortcutInventorySlots);
     }
 
     // 트레일 이펙트 여부 확인

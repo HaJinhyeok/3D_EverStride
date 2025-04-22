@@ -122,7 +122,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: IsCombo
+    m_ConditionEvent: IsAttacking
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -4314130489343050348}
@@ -150,8 +150,7 @@ AnimatorState:
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -2170235000706779300}
-  m_StateMachineBehaviours:
-  - {fileID: -3778442519789571939}
+  m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -402,7 +401,7 @@ AnimatorStateTransition:
   m_Name: 
   m_Conditions:
   - m_ConditionMode: 1
-    m_ConditionEvent: IsCombo
+    m_ConditionEvent: IsAttacking
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 6361709607317104191}
@@ -431,8 +430,7 @@ AnimatorState:
   m_Transitions:
   - {fileID: 415877795236127588}
   - {fileID: 8699902113025344099}
-  m_StateMachineBehaviours:
-  - {fileID: 5689796857986937313}
+  m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -500,8 +498,7 @@ AnimatorState:
   m_Transitions:
   - {fileID: -8128677485960562255}
   - {fileID: -6098759672954819982}
-  m_StateMachineBehaviours:
-  - {fileID: 8462357038922227437}
+  m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1

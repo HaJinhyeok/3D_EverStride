@@ -21,17 +21,17 @@ public class Inventory : MonoBehaviour
     public GameObject BaseClothes;
     public GameObject PlateClothes;
 
-    protected Vector2 _start = new Vector2(-110, 150);    // 인벤토리 생성 시작 위치
-    protected Vector2 _size = new Vector2(50, 50);        // 슬롯 크기
-    protected Vector2 _space = new Vector2(5, 5);         // 슬롯 간의 여백
-    protected int _numberOfColumn = 5;
+    Vector2 _start = new Vector2(-110, 150);    // 인벤토리 생성 시작 위치
+    Vector2 _size = new Vector2(50, 50);        // 슬롯 크기
+    Vector2 _space = new Vector2(5, 5);         // 슬롯 간의 여백
+    int _numberOfColumn = 5;
 
     Vector2 _shortcutStart = new Vector2(-110, -150);
 
     Slot[] _slots = new Slot[25];
     Slot[] _shortcutSlots = new Slot[5];
 
-    protected Dictionary<GameObject, Slot> _slotUIs = new Dictionary<GameObject, Slot>();
+    Dictionary<GameObject, Slot> _slotUIs = new Dictionary<GameObject, Slot>();
 
     public Action<ItemData> OnUseItem;
 
@@ -96,7 +96,7 @@ public class Inventory : MonoBehaviour
     }
 
     #region Events
-    protected void AddEvent(GameObject go, EventTriggerType type, UnityAction<BaseEventData> action)
+    void AddEvent(GameObject go, EventTriggerType type, UnityAction<BaseEventData> action)
     {
         var trigger = go.GetComponent<EventTrigger>();
         if (!trigger)
@@ -197,8 +197,11 @@ public class Inventory : MonoBehaviour
         ItemData itemData = slot.ItemData;
         if (GameManager.Instance.Player.EquipItem(slot))
         {
-            slot.UpdateSlot(slot.ItemData, slot.Amount - 1);
-            ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
+            if (slot.ItemData.ItemName != "포션")
+            {
+                slot.UpdateSlot(slot.ItemData, slot.Amount - 1);
+                ShortcutInventory.UpdateShortcutInventory(_shortcutSlots);
+            }
         }
         OnUseItem?.Invoke(itemData);
     }
@@ -308,9 +311,19 @@ public class Inventory : MonoBehaviour
     private void Awake()
     {
         CreateSlot();
-
         AddEvent(gameObject, EventTriggerType.PointerEnter, (baseEvent) => { OnEnterInterface(gameObject); });
         AddEvent(gameObject, EventTriggerType.PointerExit, (baseEvent) => { OnExitInterface(gameObject); });
+    }
+
+    private void OnEnable()
+    {
+        
+    }
+
+    private void Start()
+    {
+        UpdateInventory(GameManager.Instance.InventorySlots, GameManager.Instance.ShortcutInventorySlots);
+
     }
 
     public void UpdateInventory(Slot[] slots, Slot[] shortcutSlots)
@@ -325,7 +338,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         GameManager.Instance.SaveInventory(_slots, _shortcutSlots);
     }

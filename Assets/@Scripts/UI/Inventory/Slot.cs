@@ -61,6 +61,11 @@ public class Slot : MonoBehaviour
             item.GetComponent<Collider>().isTrigger = false;
             item.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             item.GetComponent<Rigidbody>().useGravity = true;
+            AudioSource audioSource = item.GetComponent<AudioSource>();
+            if (audioSource != null)
+            {
+                audioSource.clip = null;
+            }
         }
         item.Amount = Amount;
         UpdateSlot(null, 0);

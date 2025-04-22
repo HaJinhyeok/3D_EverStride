@@ -161,6 +161,11 @@ public class CraftPanel : MonoBehaviour
         if (previewObject.GetComponent<Pickaxe>())
             previewObject.transform.localEulerAngles = new Vector3(0, 120, 0);
         previewObject.layer = LayerMask.NameToLayer("PreviewObject");
+        AudioSource audioSource = previewObject.GetComponent<AudioSource>();
+        if (audioSource != null)
+        {
+            audioSource.clip = null;
+        }
 
         CraftIngredientText.text = "";
         for (int i = 0; i < currentItem.ItemData.Ingredients.Length; i++)

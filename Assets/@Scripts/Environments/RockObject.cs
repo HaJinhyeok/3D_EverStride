@@ -32,7 +32,8 @@ public class RockObject : EnvironmentObject
     {
         _durability -= damage * bonus;
         Instantiate(HitEffect, hitPos, Quaternion.Euler(transform.TransformDirection(Vector3.back)));
-        _audioSource.Play();
+        //_audioSource.Play();
+        AudioSource.PlayClipAtPoint(_audioSource.clip, hitPos);
         if (_durability > 0)
         {
             if (bonus > 1)

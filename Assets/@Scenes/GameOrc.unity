@@ -249,8 +249,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Slot: {fileID: 7459108021378603922, guid: 02c289404b8bd9d449880e320617b031, type: 3}
   ShortcutInventory: {fileID: 2143967614}
-  BaseClothes: {fileID: 0}
-  PlateClothes: {fileID: 0}
+  BaseClothes: {fileID: 1401860338}
+  PlateClothes: {fileID: 1401860337}
 --- !u!114 &95200994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3946,6 +3946,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 152254222}
     m_Modifications:
+    - target: {fileID: 185160433139728343, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1438546959266459337, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -5647,9 +5651,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Slot: {fileID: 7459108021378603922, guid: 02c289404b8bd9d449880e320617b031, type: 3}
-  ShortcutInventory: {fileID: 0}
-  BaseClothes: {fileID: 0}
-  PlateClothes: {fileID: 0}
 --- !u!114 &2143967615
 MonoBehaviour:
   m_ObjectHideFlags: 0
