@@ -151,7 +151,6 @@ public class CraftPanel : MonoBehaviour
         }
         else
         {
-            // 왜 y축으로 20올라간 위치에서 생성되는가 -> previewSpace 자체가 (0,-20,0)에 있기 때문이었던듯
             previewObject = Instantiate(currentItem.ItemData.Prefab, PreviewSpace.transform);
             CraftTable.PreviewCameraSetting(1 << LayerMask.NameToLayer("PreviewObject"));
             previewObject.transform.localPosition = new Vector3(0, 0.2f, 0);

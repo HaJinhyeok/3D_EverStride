@@ -14,7 +14,7 @@ public class BossController : MonoBehaviour, IDamageable
     protected float _attackRange;
     protected float _speed;
     protected float _hp;
-    protected const float sightRange = 10f;
+    protected const float _sightRange = 10f;
     float _atk = 10;
 
     #region Animator
@@ -64,7 +64,7 @@ public class BossController : MonoBehaviour, IDamageable
         {
             IsAttacking = false;
             // 플레이어가 일정 거리 내에 있으면 움직임
-            if (Vector3.Distance(transform.position, _player.position) < sightRange && !IsAttacking)
+            if (Vector3.Distance(transform.position, _player.position) < _sightRange && !IsAttacking)
             {
                 MoveToPlayer();
             }
